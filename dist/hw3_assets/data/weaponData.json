@@ -1,0 +1,45 @@
+{
+    "numWeapons": 4,
+    "weapons": [
+        {
+            "weaponType": "slice",
+            "name": "knife",
+            "displayName": "Knife",
+            "animationSprite": "slice",
+            "spriteKey": "knife",
+            "damage": 1,
+            "cooldown": 200,
+            "useVolume": 0
+        },
+        {
+            "weaponType": "semiAutoGun",
+            "name": "pistol",
+            "displayName": "Pistol",
+            "spriteKey": "pistol",
+            "damage": 2,
+            "cooldown": 500,
+            "useVolume": 320,
+            "color": "#FFEEDD"
+        },
+        {
+            "weaponType": "semiAutoGun",
+            "name": "weak_pistol",
+            "displayName": "WeakPistol",
+            "spriteKey": "pistol",
+            "damage": 1,
+            "cooldown": 1000,
+            "useVolume": 320,
+            "color": "#FFEEDD"
+        },
+        {
+            "weaponType": "laserGun",
+            "name": "laser_gun",
+            "displayName": "LaserGun",
+            "spriteKey": "lasergun",
+            "damage": 100,
+            "cooldown": 20,
+            "useVolume": 320,
+            "color": "#00FF00"
+        }
+    ]
+}
