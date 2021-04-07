@@ -12,9 +12,10 @@ import Updateable from "../DataTypes/Interfaces/Updateable";
 import DebugRenderable from "../DataTypes/Interfaces/DebugRenderable";
 import Actor from "../DataTypes/Interfaces/Actor";
 import Shape from "../DataTypes/Shapes/Shape";
+import Map from "../DataTypes/Map";
 import AABB from "../DataTypes/Shapes/AABB";
 import NavigationPath from "../Pathfinding/NavigationPath";
-import TweenController from "../Rendering/Animations/TweenController";
+import TweenManager from "../Rendering/Animations/TweenManager";
 import Debug from "../Debug/Debug";
 import Color from "../Utils/Color";
 import Circle from "../DataTypes/Shapes/Circle";
@@ -33,7 +34,6 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 	/*---------- PHYSICAL ----------*/
 	hasPhysics: boolean = false;
 	moving: boolean = false;
-	frozen: boolean = false;
 	onGround: boolean = false;
 	onWall: boolean = false;
 	onCeiling: boolean = false;
@@ -43,19 +43,19 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 	isStatic: boolean;
 	isCollidable: boolean;
 	isTrigger: boolean;
-	triggerMask: number;
-	triggerEnters: Array<string>;
-	triggerExits: Array<string>;
+	group: string;
+	triggers: Map<string>;
 	_velocity: Vec2;
 	sweptRect: AABB;
 	collidedWithTilemap: boolean;
-	group: number;
+	physicsLayer: number;
 	isPlayer: boolean;
 	isColliding: boolean = false;
 
 	/*---------- ACTOR ----------*/
 	_ai: AI;
 	aiActive: boolean;
+	actorId: number;
 	path: NavigationPath;
 	pathfinding: boolean = false;
 
@@ -69,13 +69,11 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 	/** The visual layer this GameNode resides in. */
 	protected layer: Layer;
 	/** A utility that allows the use of tweens on this GameNode */
-	tweens: TweenController;
+	tweens: TweenManager;
 	/** A tweenable property for rotation. Does not affect the bounding box of this GameNode - Only rendering. */
 	rotation: number;
 	/** The opacity value of this GameNode */
-	abstract set alpha(a: number);
-
-	abstract get alpha(): number;
+	alpha: number;
 
 	// Constructor docs are ignored, as the user should NOT create new GameNodes with a raw constructor
 	constructor(){
@@ -83,27 +81,9 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 		this._position.setOnChange(() => this.positionChanged());
 		this.receiver = new Receiver();
 		this.emitter = new Emitter();
-		this.tweens = new TweenController(this);
+		this.tweens = new TweenManager(this);
 		this.rotation = 0;
-	}
-
-	destroy(){
-		this.tweens.destroy();
-		this.receiver.destroy();
-
-		if(this.hasPhysics){
-			this.removePhysics();
-		}
-
-		if(this._ai){
-			this._ai.destroy();
-			delete this._ai;
-			this.scene.getAIManager().removeActor(this);
-		}
-
-		this.scene.remove(this);
-
-		this.layer.removeNode(this);
+		this.alpha = 1;
 	}
 
 	/*---------- POSITIONED ----------*/
@@ -152,13 +132,11 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
      * @param velocity The velocity with which to move the object.
      */
 	move(velocity: Vec2): void {
-		if(this.frozen) return;
 		this.moving = true;
 		this._velocity = velocity;
 	};
 
 	moveOnPath(speed: number, path: NavigationPath): void {
-		if(this.frozen) return;
 		this.path = path;
 		let dir = path.getMoveDirection(this);
 		this.moving = true;
@@ -198,13 +176,12 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 		this.isCollidable = isCollidable;
 		this.isStatic = isStatic;
 		this.isTrigger = false;
-		this.triggerMask = 0;
-		this.triggerEnters = new Array(32);
-		this.triggerExits = new Array(32);
+		this.group = "";
+		this.triggers = new Map();
 		this._velocity = Vec2.ZERO;
 		this.sweptRect = new AABB();
 		this.collidedWithTilemap = false;
-		this.group = -1;					// The default group, collides with everything
+		this.physicsLayer = -1;
 
 		// Set the collision shape if provided, or simply use the the region if there is one.
 		if(collisionShape){
@@ -231,53 +208,6 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 		this.scene.getPhysicsManager().registerObject(this);
 	}
 
-	/** Removes this object from the physics system */
-    removePhysics(): void {
-		// Remove this from the physics manager
-		this.scene.getPhysicsManager().deregisterObject(this);
-
-		// Nullify all physics fields
-		this.hasPhysics = false;
-		this.moving = false;
-		this.onGround = false;
-		this.onWall = false;
-		this.onCeiling = false;
-		this.active = false;
-		this.isCollidable = false;
-		this.isStatic = false;
-		this.isTrigger = false;
-		this.triggerMask = 0;
-		this.triggerEnters = null;
-		this.triggerExits = null;
-		this._velocity = Vec2.ZERO;
-		this.sweptRect = null;
-		this.collidedWithTilemap = false;
-		this.group = -1;
-		this.collisionShape = null;
-		this.colliderOffset = Vec2.ZERO;
-		this.sweptRect = null;
-	}
-
-	/** Disables physics movement for this node */
-	freeze(): void {
-		this.frozen = true;
-	}
-
-	/** Reenables physics movement for this node */
-	unfreeze(): void {
-		this.frozen = false;
-	}
-
-    /** Prevents this object from participating in all collisions and triggers. It can still move. */
-    disablePhysics(): void {
-		this.active = false;
-	}
-
-    /** Enables this object to participate in collisions and triggers. This is only necessary if disablePhysics was called */
-    enablePhysics(): void {
-		this.active = true;
-	}
-
 	/**
 	 * Sets the collider for this GameNode
 	 * @param collider The new collider to use
@@ -289,40 +219,20 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 
 	// @implemented
 	/**
-     * Sets this object to be a trigger for a specific group
-     * @param group The name of the group that activates the trigger
-     * @param onEnter The name of the event to send when this trigger is activated
-     * @param onExit The name of the event to send when this trigger stops being activated
-     */
-    setTrigger(group: string, onEnter: string, onExit: string): void {
-		// Make this object a trigger
+	 * @param group The name of the group that will activate the trigger
+	 * @param eventType The type of this event to send when this trigger is activated
+	 */
+    addTrigger(group: string, eventType: string): void {
 		this.isTrigger = true;
-
-		// Get the number of the physics layer
-		let layerNumber = this.scene.getPhysicsManager().getGroupNumber(group);
-
-		if(layerNumber === 0){
-			console.warn(`Trigger for GameNode ${this.id} not set - group "${group}" was not recognized by the physics manager.`);
-			return;
-		}
-
-		// Add this to the trigger mask
-		this.triggerMask |= layerNumber;
-
-		// Layer numbers are bits, so get which bit it is
-		let index = Math.log2(layerNumber);
-
-		// Set the event names
-		this.triggerEnters[index] = onEnter;
-		this.triggerExits[index] = onExit;
+		this.triggers.add(group, eventType);
 	};
 
 	// @implemented
 	/**
-	 * @param group The physics group this node should belong to
+	 * @param layer The physics layer this node should belong to
 	 */
-	setGroup(group: string): void {
-		this.scene.getPhysicsManager().setGroup(this, group);
+	setPhysicsLayer(layer: string): void {
+		this.scene.getPhysicsManager().setLayer(this, layer);
 	}
 
 	// @implemened
@@ -437,6 +347,9 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 		while(this.receiver.hasNextEvent()){
 			this._ai.handleEvent(this.receiver.getNextEvent());
 		}
+		
+		// Update our tweens
+		this.tweens.update(deltaT);
 	}
 
 	// @implemented

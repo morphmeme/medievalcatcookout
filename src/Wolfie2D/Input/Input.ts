@@ -28,9 +28,6 @@ export default class Input {
 
 	private static keyMap: Map<Array<string>>;
 
-	private static keysDisabled: boolean;
-	private static mouseDisabled: boolean;
-
 	/**
 	 * Initializes the Input object
 	 * @param viewport A reference to the viewport of the game
@@ -46,8 +43,6 @@ export default class Input {
 		Input.mousePressPosition = new Vec2(0, 0);
 		Input.scrollDirection = 0;
 		Input.justScrolled = false;
-		Input.keysDisabled = false;
-		Input.mouseDisabled = false;
 
 		// Initialize the keymap
 		Input.keyMap = new Map();
@@ -137,8 +132,6 @@ export default class Input {
 	 * @returns True if the key was just pressed, false otherwise
 	 */
 	static isKeyJustPressed(key: string): boolean {
-		if(Input.keysDisabled) return false;
-
 		if(Input.keyJustPressed.has(key)){
 			return Input.keyJustPressed.get(key)
 		} else {
@@ -152,8 +145,6 @@ export default class Input {
 	 * @returns An array of all of the newly pressed keys.
 	 */
 	static getKeysJustPressed(): Array<string> {
-		if(Input.keysDisabled) return [];
-
 		let keys = Array<string>();
 		Input.keyJustPressed.forEach(key => {
 			if(Input.keyJustPressed.get(key)){
@@ -169,8 +160,6 @@ export default class Input {
 	 * @returns True if the key is currently pressed, false otherwise
 	 */
 	static isKeyPressed(key: string): boolean {
-		if(Input.keysDisabled) return false;
-
 		if(Input.keyPressed.has(key)){
 			return Input.keyPressed.get(key)
 		} else {
@@ -200,8 +189,6 @@ export default class Input {
 	 * @returns True if the input was just pressed, false otherwise
 	 */
 	static isJustPressed(inputName: string): boolean {
-		if(Input.keysDisabled) return false;
-
 		if(Input.keyMap.has(inputName)){
 			const keys = Input.keyMap.get(inputName);
 			let justPressed = false;
@@ -222,8 +209,6 @@ export default class Input {
 	 * @returns True if the input is pressed, false otherwise
 	 */
 	static isPressed(inputName: string): boolean {
-		if(Input.keysDisabled) return false;
-
 		if(Input.keyMap.has(inputName)){
 			const keys = Input.keyMap.get(inputName);
 			let pressed = false;
@@ -243,7 +228,7 @@ export default class Input {
 	 * @returns True if the mouse was just pressed, false otherwise
 	 */
 	static isMouseJustPressed(): boolean {
-		return Input.mouseJustPressed && !Input.mouseDisabled;
+		return Input.mouseJustPressed;
 	}
 
 	/**
@@ -251,7 +236,7 @@ export default class Input {
 	 * @returns True if the mouse is currently pressed, false otherwise
 	 */
 	static isMousePressed(): boolean {
-		return Input.mousePressed && !Input.mouseDisabled;
+		return Input.mousePressed;
 	}
 
 	/**
@@ -259,7 +244,7 @@ export default class Input {
 	 * @returns True if the user just scrolled Input frame, false otherwise
 	 */
 	static didJustScroll(): boolean {
-		return Input.justScrolled && !Input.mouseDisabled;
+		return Input.justScrolled;
 	}
 
 	/**
@@ -302,21 +287,5 @@ export default class Input {
 	 */
 	static getGlobalMousePressPosition(): Vec2 {
 		return Input.mousePressPosition.clone().add(Input.viewport.getOrigin());
-	}
-
-	/**
-	 * Disables all keypress and mouse click inputs
-	 */
-	static disableInput(): void {
-		Input.keysDisabled = true;
-		Input.mouseDisabled = true;
-	}
-
-	/**
-	 * Enables all keypress and mouse click inputs
-	 */
-	static enableInput(): void {
-		Input.keysDisabled = false;
-		Input.mouseDisabled = false;
 	}
 }

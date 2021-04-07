@@ -14,7 +14,6 @@ export default abstract class CanvasNode extends GameNode implements Region {
 	private _boundary: AABB;
 	private _hasCustomShader: boolean;
 	private _customShaderKey: string;
-	private _alpha: number;
 
 	/** A flag for whether or not the CanvasNode is visible */
 	visible: boolean = true;
@@ -29,14 +28,6 @@ export default abstract class CanvasNode extends GameNode implements Region {
 		this.updateBoundary();
 
 		this._hasCustomShader = false;
-	}
-
-	get alpha(): number {
-		return this._alpha;
-	}
-
-	set alpha(a: number) {
-		this._alpha = a;
 	}
 
 	get size(): Vec2 {

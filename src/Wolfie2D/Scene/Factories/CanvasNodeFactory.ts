@@ -180,12 +180,7 @@ export default class CanvasNodeFactory {
 	buildSlider(options: Record<string, any>): Slider {
 		this.checkIfPropExists("Slider", options, "position", Vec2, "Vec2");
 
-		let initValue = 0;
-		if(options.value !== undefined){
-			initValue = options.value;
-		}
-
-		return new Slider(options.position, initValue);
+		return new Slider(options.position);
 	}
 
 	buildTextInput(options: Record<string, any>): TextInput {

@@ -148,7 +148,7 @@ export default class hw3_scene extends Scene {
         let health = (<BattlerAI>this.player._ai).health;
 
         if(health === 0){
-            this.sceneManager.changeToScene(GameOver);
+            this.sceneManager.changeScene(GameOver);
         }
 
         // Update health gui

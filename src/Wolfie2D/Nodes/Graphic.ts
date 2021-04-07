@@ -13,14 +13,6 @@ export default abstract class Graphic extends CanvasNode {
         this.color = Color.RED;
     }
 
-    get alpha(): number {
-		return this.color.a;
-	}
-
-	set alpha(a: number) {
-		this.color.a = a;
-	}
-
     // @deprecated
     /**
      * Sets the color of the Graphic. DEPRECATED

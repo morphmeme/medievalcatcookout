@@ -145,7 +145,7 @@ export default class Game {
         this.resourceManager.loadResourcesFromQueue(() => {
             // When we're done loading, start the loop
             console.log("Finished Preload - loading first scene");
-            this.sceneManager.changeToScene(InitialScene, options);
+            this.sceneManager.addScene(InitialScene, options);
             this.loop.start();
         });
     }
@@ -155,60 +155,48 @@ export default class Game {
      * @param deltaT The time sine the last update
      */
     update(deltaT: number): void {
-        try{
-            // Handle all events that happened since the start of the last loop
-            this.eventQueue.update(deltaT);
+        // Handle all events that happened since the start of the last loop
+        this.eventQueue.update(deltaT);
 
-            // Update the input data structures so game objects can see the input
-            Input.update(deltaT);
+        // Update the input data structures so game objects can see the input
+        Input.update(deltaT);
 
-            // Update the recording of the game
-            this.recorder.update(deltaT);
+        // Update the recording of the game
+        this.recorder.update(deltaT);
 
-            // Update all scenes
-            this.sceneManager.update(deltaT);
+        // Update all scenes
+        this.sceneManager.update(deltaT);
 
-            // Update all sounds
-            this.audioManager.update(deltaT);
-            
-            // Load or unload any resources if needed
-            this.resourceManager.update(deltaT);
-        } catch(e){
-            this.loop.pause();
-            console.warn("Uncaught Error in Update - Crashing gracefully");
-            console.error(e);
-        }
+        // Update all sounds
+        this.audioManager.update(deltaT);
+        
+        // Load or unload any resources if needed
+        this.resourceManager.update(deltaT);
     }
 
     /**
      * Clears the canvas and defers scene rendering to the sceneManager. Renders the debug canvas
      */
     render(): void {
-        try{
-            // Clear the canvases
-            Debug.clearCanvas();
+        // Clear the canvases
+        Debug.clearCanvas();
 
-            this.renderingManager.clear(this.clearColor);
+        this.renderingManager.clear(this.clearColor);
 
-            this.sceneManager.render();
+        this.sceneManager.render();
 
-            // Hacky debug mode
-            if(Input.isKeyJustPressed("g")){
-                this.showDebug = !this.showDebug;
-            }
+        // Hacky debug mode
+        if(Input.isKeyJustPressed("g")){
+            this.showDebug = !this.showDebug;
+        }
 
-            // Debug render
-            if(this.showDebug){
-                Debug.render();
-            }
+        // Debug render
+        if(this.showDebug){
+            Debug.render();
+        }
 
-            if(this.showStats){
-                Stats.render();
-            }
-        } catch(e){
-            this.loop.pause();
-            console.warn("Uncaught Error in Render - Crashing gracefully");
-            console.error(e);
+        if(this.showStats){
+            Stats.render();
         }
     }
 }

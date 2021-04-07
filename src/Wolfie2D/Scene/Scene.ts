@@ -24,7 +24,6 @@ import SceneOptions from "./SceneOptions";
 import RenderingManager from "../Rendering/RenderingManager";
 import Debug from "../Debug/Debug";
 import TimerManager from "../Timing/TimerManager";
-import TweenManager from "../Rendering/Animations/TweenManager";
 
 /**
  * Scenes are the main container in the game engine.
@@ -81,17 +80,14 @@ export default class Scene implements Updateable {
     /** An interface that allows the adding of different nodes to the scene */
     public add: FactoryManager;
 
-    /** An interface that allows the loading of different files for use in the scene. An alias for resourceManager */
+    /** An interface that allows the loading of different files for use in the scene */
     public load: ResourceManager;
-
-    /** An interface that allows the loading and unloading of different files for use in the scene */
-    public resourceManager: ResourceManager;
 
     /** The configuration options for this scene */
     public sceneOptions: SceneOptions;
 
     /**
-     * Creates a new Scene. To add a new Scene in your game, use changeToScene() in @reference[SceneManager]
+     * Creates a new Scene. To add a new Scene in your game, use addScene() in @reference[SceneManager]
      * @param viewport The viewport of the game
      * @param sceneManager The SceneManager that owns this Scene
      * @param renderingManager The RenderingManager that will handle this Scene's rendering
@@ -99,7 +95,7 @@ export default class Scene implements Updateable {
      * @param options The options for Scene initialization
      */
     constructor(viewport: Viewport, sceneManager: SceneManager, renderingManager: RenderingManager, options: Record<string, any>){
-        this.sceneOptions = SceneOptions.parse(options === undefined ? {} : options);
+        this.sceneOptions = SceneOptions.parse(options? options : {});
 
         this.worldSize = new Vec2(500, 500);
         this.viewport = viewport;
@@ -123,8 +119,7 @@ export default class Scene implements Updateable {
 
         this.add = new FactoryManager(this, this.tilemaps);
 
-        this.load = ResourceManager.getInstance()
-        this.resourceManager = this.load;
+        this.load = ResourceManager.getInstance();
 
         // Get the timer manager and clear any existing timers
         TimerManager.getInstance().clearTimers();
@@ -136,6 +131,9 @@ export default class Scene implements Updateable {
     /** A lifecycle method that gets called when a new scene is created. Load all files you wish to access in the scene here. */
     loadScene(): void {}
 
+    /** A lifecycle method that gets called on scene destruction. Specify which files you no longer need for garbage collection. */
+    unloadScene(): void {}
+
     /** A lifecycle method called strictly after loadScene(). Create any game objects you wish to use in the scene here. */
     startScene(): void {}
 
@@ -144,9 +142,6 @@ export default class Scene implements Updateable {
      * @param delta The time this frame represents
      */
     updateScene(deltaT: number): void {}
-
-    /** A lifecycle method that gets called on scene destruction. Specify which files you no longer need for garbage collection. */
-    unloadScene(): void {}
 
     update(deltaT: number): void {
         this.updateScene(deltaT);
@@ -169,9 +164,6 @@ export default class Scene implements Updateable {
                 tilemap.update(deltaT);
             } 
         });
-        
-        // Update all tweens
-        TweenManager.getInstance().update(deltaT);
 
         // Update viewport
         this.viewport.update(deltaT);
@@ -216,37 +208,6 @@ export default class Scene implements Updateable {
      */
     isRunning(): boolean {
         return this.running;
-    }
-
-    /**
-     * Removes a node from this Scene
-     * @param node The node to remove
-     */
-    remove(node: GameNode): void {
-        // Remove from the scene graph
-        if(node instanceof CanvasNode){
-            this.sceneGraph.removeNode(node);
-        }
-
-    }
-
-    /** Destroys this scene and all nodes in it */
-    destroy(): void {
-        for(let node of this.sceneGraph.getAllNodes()){
-            node.destroy();
-        }
-
-        for(let tilemap of this.tilemaps){
-            tilemap.destroy();
-        }
-
-        this.receiver.destroy();
-
-        delete this.sceneGraph;
-        delete this.physicsManager;
-        delete this.navManager;
-        delete this.aiManager;
-        delete this.receiver;
     }
 
     /**

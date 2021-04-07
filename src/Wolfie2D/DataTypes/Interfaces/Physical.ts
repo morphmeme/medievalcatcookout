@@ -13,9 +13,6 @@ export default interface Physical {
     /** Represents whether the object is moving or not. */
     moving: boolean;
 
-    /** Represent whether the object is frozen from moving or not. */
-    frozen: boolean;
-
     /** Represents whether the object is on the ground or not. */
     onGround: boolean;
 
@@ -43,14 +40,11 @@ export default interface Physical {
     /** Represnts whether this object is a trigger or not. */
     isTrigger: boolean;
 
-    /** The trigger mask for this node */
-    triggerMask: number;
+    /** The physics group of this object. Used for triggers and for selective collisions. */
+    group: string;
 
-    /** Events to trigger for collision enters. */
-    triggerEnters: Array<string>;
-
-    /** Events to trigger for collision exits */
-    triggerExits: Array<string>;
+    /** Associates different groups with trigger events. */
+    triggers: Map<string>;
 
     /** A vector that allows velocity to be passed to the physics engine */
     _velocity: Vec2;
@@ -61,8 +55,8 @@ export default interface Physical {
     /** A boolean representing whether or not the node just collided with the tilemap */
     collidedWithTilemap: boolean;
 
-    /** The physics group this node belongs to */
-    group: number;
+    /** The physics layer this node belongs to */
+    physicsLayer: number;
 
     isPlayer: boolean;
 
@@ -90,28 +84,18 @@ export default interface Physical {
      */
     addPhysics(collisionShape?: Shape, colliderOffset?: Vec2, isCollidable?: boolean, isStatic?: boolean): void;
 
-    /** Removes this object from the physics system */
-    removePhysics(): void;
-
-    /** Prevents this object from participating in all collisions and triggers. It can still move. */
-    disablePhysics(): void;
-
-    /** Enables this object to participate in collisions and triggers. This is only necessary if disablePhysics was called */
-    enablePhysics(): void;
-
     /**
-     * Sets this object to be a trigger for a specific group
+     * Adds a trigger to this object for a specific group
      * @param group The name of the group that activates the trigger
-     * @param onEnter The name of the event to send when this trigger is activated
-     * @param onExit The name of the event to send when this trigger stops being activated
+     * @param eventType The name of the event to send when this trigger is activated
      */
-    setTrigger(group: string, onEnter: string, onExit: string): void;
+    addTrigger(group: string, eventType: string): void;
     
     /**
-     * Sets the physics group of this node
-     * @param group The name of the group
+     * Sets the physics layer of this node
+     * @param layer The name of the layer
      */
-    setGroup(group: string): void;
+    setPhysicsLayer(layer: string): void;
 
     /**
      * If used before "move()", it will tell you the velocity of the node after its last movement

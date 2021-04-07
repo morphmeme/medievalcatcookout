@@ -18,7 +18,7 @@ var watchedBrowserify = watchify(browserify({
 
 gulp.task('copy-html', function () {
     return gulp.src(paths.pages)
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest('public'));
 });
 
 function bundle() {
@@ -26,7 +26,7 @@ function bundle() {
         .bundle()
         .on('error', fancy_log)
         .pipe(source('bundle.js'))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest('public'));
 }
 
 gulp.task('default', gulp.series(gulp.parallel('copy-html'), bundle));

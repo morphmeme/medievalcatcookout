@@ -10,9 +10,6 @@ import Weapon from "../GameSystems/items/Weapon";
 import BattlerAI from "./BattlerAI";
 
 export default class PlayerController implements BattlerAI {
-    destroy(): void {
-        
-    }
     // Fields from BattlerAI
     health: number;
 

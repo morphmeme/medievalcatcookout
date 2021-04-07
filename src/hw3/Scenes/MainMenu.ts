@@ -116,7 +116,7 @@ export default class MainMenu extends Scene {
             console.log(event);
 
             if(event.type === "play"){
-                this.sceneManager.changeToScene(hw3_scene, {});
+                this.sceneManager.changeScene(hw3_scene, {});
             }
 
             if(event.type === "controls"){
