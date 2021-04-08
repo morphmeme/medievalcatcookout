@@ -29,6 +29,11 @@ export default class PlayerController implements BattlerAI {
     // Attacking
     private lookDirection: Vec2;
 
+    destroy() {
+        // Get rid of our reference to the owner
+        delete this.owner;
+    }
+
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
         this.direction = Vec2.ZERO;

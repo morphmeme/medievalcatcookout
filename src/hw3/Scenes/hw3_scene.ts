@@ -49,6 +49,7 @@ export default class hw3_scene extends Scene {
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "hw3_assets/spritesheets/player.json");
         this.load.spritesheet("enemy", "hw3_assets/spritesheets/enemy.json");
+        this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
 
         // Load the tilemap
         // HOMEWORK 3 - TODO
@@ -70,6 +71,9 @@ export default class hw3_scene extends Scene {
         // Load the healthpack sprite
         this.load.image("healthpack", "hw3_assets/sprites/healthpack.png");
         this.load.image("inventorySlot", "hw3_assets/sprites/inventory.png");
+        this.load.image("knife", "hw3_assets/sprites/knife.png");
+        this.load.image("lasergun", "hw3_assets/sprites/lasergun.png");
+        this.load.image("pistol", "hw3_assets/sprites/pistol.png");
     }
 
     startScene(){
@@ -148,7 +152,7 @@ export default class hw3_scene extends Scene {
         let health = (<BattlerAI>this.player._ai).health;
 
         if(health === 0){
-            this.sceneManager.changeScene(GameOver);
+            this.sceneManager.changeToScene(GameOver);
         }
 
         // Update health gui

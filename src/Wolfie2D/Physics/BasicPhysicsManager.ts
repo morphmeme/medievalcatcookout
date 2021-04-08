@@ -42,6 +42,25 @@ import AreaCollision from "../DataTypes/Physics/AreaCollision";
  * 		- Nodes that are processed early have movement priority over other nodes. This can lead to some undesirable interactions.
  */
 export default class BasicPhysicsManager extends PhysicsManager {
+	// @override
+	deregisterObject(node: Physical): void {
+		console.log("Deregistering physics object");
+		if(node.isStatic){
+			// Remove the node from the static list
+			const index = this.staticNodes.indexOf(node);
+			this.staticNodes.splice(index, 1);
+		} else {
+			// Remove the node from the dynamic list
+			const index = this.dynamicNodes.indexOf(node);
+			this.dynamicNodes.splice(index, 1);
+		}
+	}
+
+	// @override
+	deregisterTilemap(tilemap: Tilemap): void {
+		const index = this.tilemaps.indexOf(tilemap);
+		this.tilemaps.splice(index, 1);
+	}
 
 	/** The array of static nodes */
 	protected staticNodes: Array<Physical>;
@@ -73,11 +92,6 @@ export default class BasicPhysicsManager extends PhysicsManager {
 	// @override
 	registerTilemap(tilemap: Tilemap): void {
 		this.tilemaps.push(tilemap);
-	}
-
-	// @override
-	setLayer(node: GameNode, layer: string): void {
-		node.physicsLayer = this.layerMap.get(layer);
 	}
 
 	// @override
