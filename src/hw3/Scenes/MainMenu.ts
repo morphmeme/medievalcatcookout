@@ -116,7 +116,17 @@ export default class MainMenu extends Scene {
             console.log(event);
 
             if(event.type === "play"){
-                this.sceneManager.changeToScene(hw3_scene, {});
+                let sceneOptions = {
+                    physics: {
+                        groupNames: ["ground", "player"],
+                        collisions:
+                        [
+                            [0, 1],
+                            [1, 0],
+                        ]
+                    }
+                }
+                this.sceneManager.changeToScene(hw3_scene, {}, sceneOptions);
             }
 
             if(event.type === "controls"){

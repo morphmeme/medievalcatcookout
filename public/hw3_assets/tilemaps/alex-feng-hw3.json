@@ -38,6 +38,11 @@
                  "name":"Collidable",
                  "type":"bool",
                  "value":true
+                }, 
+                {
+                 "name":"Group",
+                 "type":"string",
+                 "value":"ground"
                 }],
          "type":"tilelayer",
          "visible":true,

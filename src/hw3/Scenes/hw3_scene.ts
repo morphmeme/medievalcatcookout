@@ -265,6 +265,7 @@ export default class hw3_scene extends Scene {
                 items: this.items
             });
         this.player.animation.play("IDLE");
+        this.player.setGroup("player");
     }
 
     // HOMEWORK 3 - TODO
