@@ -72,7 +72,6 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
             this.owner.isCollidable = false;
             this.owner.visible = false;
             this.owner.disablePhysics();
-            this.owner.getScene().remove(this.weapon.assets[0]);
             if(Math.random() < 0.2){
                 // Spawn a healthpack
                 this.emitter.fireEvent("healthpack", {position: this.owner.position});

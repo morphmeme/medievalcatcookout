@@ -62,4 +62,7 @@ export class TweenData {
 
     /** Whether or not this tween is currently reversing */
     reversing: boolean;
+
+    // Added by Alex F. Allows you to call a callback on end of tween duration
+    onEndCallback: () => void;
 }

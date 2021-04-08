@@ -62,7 +62,6 @@ export default class SemiAutoGun extends WeaponType {
 
         line.start = start;
         line.end = end;
-
         line.tweens.play("fade");
     }
 
@@ -79,7 +78,11 @@ export default class SemiAutoGun extends WeaponType {
                     end: 0,
                     ease: EaseFunctionType.OUT_SINE
                 }
-            ]
+            ],
+            onEndCallback: () => {
+                line.start = new Vec2(-1, 1);
+                line.end = new Vec2(-1, -1);
+            }
         });
 
         return [line];
