@@ -69,7 +69,6 @@ export default class SemiAutoGun extends WeaponType {
     createRequiredAssets(scene: Scene): [Line] {
         let line = <Line>scene.add.graphic(GraphicType.LINE, "primary", {start: new Vec2(-1, 1), end: new Vec2(-1, -1)});
         line.color = this.color;
-
         line.tweens.add("fade", {
             startDelay: 0,
             duration: 300,

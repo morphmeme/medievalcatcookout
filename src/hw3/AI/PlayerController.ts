@@ -51,8 +51,19 @@ export default class PlayerController implements BattlerAI {
 
     update(deltaT: number): void {
         // Get the movement direction
-        this.direction.x = (Input.isPressed("left") ? -1 : 0) + (Input.isPressed("right") ? 1 : 0);
-        this.direction.y = (Input.isPressed("forward") ? -1 : 0) + (Input.isPressed("backward") ? 1 : 0);
+        if (Input.isPressed("forward")) {
+            this.direction.y = -1;
+            this.direction.x = 0;
+        } else if (Input.isPressed("backward")) {
+            this.direction.y = 1;
+            this.direction.x = 0;
+        } else if (Input.isPressed("left")) {
+            this.direction.x = -1;
+            this.direction.y = 0;
+        } else if (Input.isPressed("right")) {
+            this.direction.x = 1;
+            this.direction.y = 0;
+        }
 
         if(!this.direction.isZero()){
             // Move the player

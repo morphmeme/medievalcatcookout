@@ -361,6 +361,7 @@ export default class hw3_scene extends Scene {
             }
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);
+            this.enemies[i].setGroup("enemy");
         }
     }
 }

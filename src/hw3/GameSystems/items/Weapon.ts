@@ -56,7 +56,6 @@ export default class Weapon extends Item {
         if(!this.cooldownTimer.isStopped()){
             return false;
         }
-
         // Do a type specific weapon animation
         this.type.doAnimation(user, direction, ...this.assets);
 

@@ -113,16 +113,16 @@ export default class MainMenu extends Scene {
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
 
-            console.log(event);
 
             if(event.type === "play"){
                 let sceneOptions = {
                     physics: {
-                        groupNames: ["ground", "player"],
+                        groupNames: ["ground", "player", "enemy"],
                         collisions:
                         [
-                            [0, 1],
-                            [1, 0],
+                            [0, 1, 1],
+                            [1, 0, 0],
+                            [1, 0, 0],
                         ]
                     }
                 }
