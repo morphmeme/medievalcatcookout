@@ -87,6 +87,9 @@ export default class LaserGun extends WeaponType {
     }
 
     hits(node: GameNode, line: Line): boolean {
+        if (!node) {
+            return false;
+        }
         return node.collisionShape.getBoundingRect().intersectSegment(line.start, line.end.clone().sub(line.start)) !== null;
     }
 }
