@@ -6,7 +6,7 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
-import {hw3_Names} from "../hw3_constants";
+import {Events, Names} from "../Constants";
 import EnemyAI from "../AI/EnemyAI";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
@@ -23,7 +23,7 @@ import Color from "../../Wolfie2D/Utils/Color";
 import Input from "../../Wolfie2D/Input/Input";
 import GameOver from "./GameOver";
 
-export default class hw3_scene extends Scene {
+export default class Level1 extends Scene {
     // The player
     private player: AnimatedSprite;
 
@@ -52,8 +52,6 @@ export default class hw3_scene extends Scene {
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
 
         // Load the tilemap
-        // HOMEWORK 3 - TODO
-        // Change this file to be your own tilemap
         this.load.tilemap("level", "hw3_assets/tilemaps/alex-feng-hw3.json");
 
         // Load the scene info
@@ -76,21 +74,26 @@ export default class hw3_scene extends Scene {
         this.load.image("pistol", "hw3_assets/sprites/pistol.png");
     }
 
+    /**
+     * Handles all subscriptions to events
+     */
+     protected subscribeToEvents() {
+        this.receiver.subscribe([
+            Events.HEALTHPACK_SPAWN,
+            Events.PLAYER_COLLIDES_ENEMY,
+            Events.ENEMY_COLLIDES_PLAYER
+        ]);
+    }
+
+    protected handlePlayerEnemyCollision(collider: AnimatedSprite, collidee: AnimatedSprite) {
+        (collidee.ai as EnemyAI).damage(1);
+    }
+
     startScene(){
         // Add in the tilemap
         let tilemapLayers = this.add.tilemap("level");
 
         // Get the wall layer
-        // HOMEWORK 3 - TODO
-        /*
-            Modify this line if needed.
-            
-            This line is just getting the wall layer of your tilemap to use for some calculations.
-            Make sure it is still doing so.
-
-            What the line is saying is to get the first level from the bottom (tilemapLayers[1]),
-            which in my case was the Walls layer.
-        */
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
 
         // Set the viewport bounds to the tilemap
@@ -128,7 +131,7 @@ export default class hw3_scene extends Scene {
         this.battleManager.setEnemies(this.enemies.map(enemy => <BattlerAI>enemy._ai));
 
         // Subscribe to relevant events
-        this.receiver.subscribe("healthpack");
+        this.subscribeToEvents();
 
         // Spawn items into the world
         this.spawnItems();
@@ -144,8 +147,34 @@ export default class hw3_scene extends Scene {
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
 
-            if(event.isType("healthpack")){
-                this.createHealthpack(event.data.get("position"));
+            switch(event.type){
+                case Events.HEALTHPACK_SPAWN: {
+                    this.createHealthpack(event.data.get("position"));
+                    break;
+                }
+                case Events.PLAYER_COLLIDES_ENEMY: {
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    if(node === this.player){
+                        this.handlePlayerEnemyCollision(<AnimatedSprite>node, <AnimatedSprite>other);
+                    } else {
+                        this.handlePlayerEnemyCollision(<AnimatedSprite>other,<AnimatedSprite>node);
+                    }
+                    break;
+                }
+                case Events.ENEMY_COLLIDES_PLAYER: {
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    if(node === this.player){
+                        this.handlePlayerEnemyCollision(<AnimatedSprite>other, <AnimatedSprite>node);
+                    } else {
+                        this.handlePlayerEnemyCollision(<AnimatedSprite>node, <AnimatedSprite>other);
+                    }
+                    break;
+                }
+                default: {
+
+                }
             }
         }
 
@@ -164,7 +193,6 @@ export default class hw3_scene extends Scene {
         }
     }
 
-    // HOMEWORK 3 - TODO
     /**
      * This function spawns in all of the items in "items.json"
      * 
@@ -214,7 +242,6 @@ export default class hw3_scene extends Scene {
         this.items.push(healthpack);
     }
 
-    // HOMEWORK 3 - TODO
     /**
      * You'll want to have a new weapon type available in your program - a laser gun.
      * Carefully look through the code for how the other weapon types (knife and pistol)
@@ -266,9 +293,9 @@ export default class hw3_scene extends Scene {
             });
         this.player.animation.play("IDLE");
         this.player.setGroup("player");
+        this.player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
     }
 
-    // HOMEWORK 3 - TODO
     /**
      * This function creates the navmesh for the game world.
      * 
@@ -312,10 +339,9 @@ export default class hw3_scene extends Scene {
 
         // Set this graph as a navigable entity
         let navmesh = new Navmesh(this.graph);
-        this.navManager.addNavigableEntity(hw3_Names.NAVMESH, navmesh);
+        this.navManager.addNavigableEntity(Names.NAVMESH, navmesh);
     }
 
-    // HOMEWORK 3 - TODO
     /**
      * This function creates all enemies from the enemy.json file.
      * You shouldn't have to modify any code here, but you should edit enemy.json to
@@ -362,6 +388,7 @@ export default class hw3_scene extends Scene {
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);
             this.enemies[i].setGroup("enemy");
+            this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
         }
     }
 }

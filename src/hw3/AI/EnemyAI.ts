@@ -7,7 +7,7 @@ import GameNode from "../../Wolfie2D/Nodes/GameNode";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import Weapon from "../GameSystems/items/Weapon";
-import { hw3_Events } from "../hw3_constants";
+import { Events } from "../Constants";
 import BattlerAI from "./BattlerAI";
 import Alert from "./EnemyStates/Alert";
 import Attack from "./EnemyStates/Attack";
@@ -51,7 +51,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         this.player = options.player;
 
         // Subscribe to events
-        this.receiver.subscribe(hw3_Events.SHOT_FIRED);
+        this.receiver.subscribe(Events.SHOT_FIRED);
         console.log("Subscribed to event");
 
         // Initialize to the default state
@@ -75,7 +75,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
             
             if(Math.random() < 0.2){
                 // Spawn a healthpack
-                this.emitter.fireEvent("healthpack", {position: this.owner.position});
+                this.emitter.fireEvent(Events.HEALTHPACK_SPAWN, {position: this.owner.position});
             }
             this.owner.destroy();
         }

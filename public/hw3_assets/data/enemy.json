@@ -1,5 +1,5 @@
 {
-    "numEnemies": 20,
+    "numEnemies": 10,
     "enemies": [
         {
             "position": [48, 768],
@@ -59,66 +59,6 @@
             "position": [944, 784],
             "mode": "patrol",
             "route": [16,17],
-            "health": 5
-        },
-        {
-            "position": [264, 200],
-            "mode": "guard",
-            "guardPosition": [264, 200],
-            "health": 5
-        },
-        {
-            "position": [264, 216],
-            "mode": "guard",
-            "guardPosition": [264, 216],
-            "health": 5
-        },
-        {
-            "position": [264, 300],
-            "mode": "guard",
-            "guardPosition": [264, 300],
-            "health": 5
-        },
-        {
-            "position": [264, 316],
-            "mode": "guard",
-            "guardPosition": [264, 316],
-            "health": 5
-        },
-        {
-            "position": [264, 332],
-            "mode": "guard",
-            "guardPosition": [264, 332],
-            "health": 5
-        },
-        {
-            "position": [264, 348],
-            "mode": "guard",
-            "guardPosition": [264, 348],
-            "health": 5
-        },
-        {
-            "position": [264, 500],
-            "mode": "guard",
-            "guardPosition": [264, 500],
-            "health": 5
-        },
-        {
-            "position": [264, 516],
-            "mode": "guard",
-            "guardPosition": [264, 516],
-            "health": 5
-        },
-        {
-            "position": [264, 584],
-            "mode": "guard",
-            "guardPosition": [264, 584],
-            "health": 5
-        },
-        {
-            "position": [264, 600],
-            "mode": "guard",
-            "guardPosition": [264, 600],
             "health": 5
         }
         

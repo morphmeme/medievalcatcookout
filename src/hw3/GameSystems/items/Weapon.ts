@@ -3,7 +3,7 @@ import Emitter from "../../../Wolfie2D/Events/Emitter";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
 import Sprite from "../../../Wolfie2D/Nodes/Sprites/Sprite";
 import Timer from "../../../Wolfie2D/Timing/Timer";
-import { hw3_Events } from "../../hw3_constants";
+import { Events } from "../../Constants";
 import BattleManager from "../BattleManager";
 import Item from "./Item";
 import WeaponType from "./WeaponTypes/WeaponType";
@@ -63,7 +63,7 @@ export default class Weapon extends Item {
         this.battleManager.handleInteraction(userType, this);
 
         // Send out an event to alert enemies
-        this.emitter.fireEvent(hw3_Events.SHOT_FIRED, {position: user.position.clone(), volume: this.type.useVolume});
+        this.emitter.fireEvent(Events.SHOT_FIRED, {position: user.position.clone(), volume: this.type.useVolume});
     
         // Reset the cooldown timer
         this.cooldownTimer.start();

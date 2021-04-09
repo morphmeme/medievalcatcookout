@@ -4,7 +4,7 @@ import Layer from "../../Wolfie2D/Scene/Layer";
 import Scene from "../../Wolfie2D/Scene/Scene";
 import Color from "../../Wolfie2D/Utils/Color";
 import Label from "../../Wolfie2D/Nodes/UIElements/Label";
-import hw3_scene from "./hw3_scene";
+import Level1 from "./Level1";
 
 export default class MainMenu extends Scene {
     // Layers, for multiple main menu screens
@@ -121,12 +121,12 @@ export default class MainMenu extends Scene {
                         collisions:
                         [
                             [0, 1, 1],
-                            [1, 0, 0],
-                            [1, 0, 0],
+                            [1, 0, 1],
+                            [1, 1, 1],
                         ]
                     }
                 }
-                this.sceneManager.changeToScene(hw3_scene, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level1, {}, sceneOptions);
             }
 
             if(event.type === "controls"){

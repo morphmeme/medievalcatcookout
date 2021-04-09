@@ -2,7 +2,7 @@ import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
 import NavigationPath from "../../../Wolfie2D/Pathfinding/NavigationPath";
-import { hw3_Events, hw3_Names } from "../../hw3_constants";
+import { Events, Names } from "../../Constants";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
 
@@ -32,7 +32,7 @@ export default class Patrol extends EnemyState {
     }
 
     handleInput(event: GameEvent): void {
-        if(event.type === hw3_Events.SHOT_FIRED){
+        if(event.type === Events.SHOT_FIRED){
             // Shot was fired. Go check it out if it was close to us
             if(this.owner.position.distanceTo(event.data.get("position")) < event.data.get("volume")){
                 // Shot was close enough to hear, go to the alert state
@@ -60,10 +60,10 @@ export default class Patrol extends EnemyState {
         } else {
             this.currentPath = this.getNextPath();
         }
-        // If the enemy sees the player, start attacking
-        if(this.parent.getPlayerPosition() !== null){
-            this.finished(EnemyStates.ATTACKING);
-        }
+        // // If the enemy sees the player, start attacking
+        // if(this.parent.getPlayerPosition() !== null){
+        //     this.finished(EnemyStates.ATTACKING);
+        // }
     }
 
     onExit(): Record<string, any> {
@@ -71,7 +71,7 @@ export default class Patrol extends EnemyState {
     }
 
     getNextPath(): NavigationPath {
-        let path = this.owner.getScene().getNavigationManager().getPath(hw3_Names.NAVMESH, this.owner.position, this.patrolRoute[this.routeIndex]);
+        let path = this.owner.getScene().getNavigationManager().getPath(Names.NAVMESH, this.owner.position, this.patrolRoute[this.routeIndex]);
         this.routeIndex = (this.routeIndex + 1)%this.patrolRoute.length;
         return path;
     }
