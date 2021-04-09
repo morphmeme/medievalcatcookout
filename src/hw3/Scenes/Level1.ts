@@ -22,6 +22,7 @@ import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import Color from "../../Wolfie2D/Utils/Color";
 import Input from "../../Wolfie2D/Input/Input";
 import GameOver from "./GameOver";
+import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 
 export default class Level1 extends Scene {
     // The player
@@ -85,8 +86,30 @@ export default class Level1 extends Scene {
         ]);
     }
 
-    protected handlePlayerEnemyCollision(collider: AnimatedSprite, collidee: AnimatedSprite) {
-        (collidee.ai as EnemyAI).damage(1);
+    protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
+        // If either character gets deleted.
+        if (!character0 || !character1) {
+            return;
+        }
+        const direction_0to1 = character0.position.dirTo(character1.position);
+        const cardinalRad0 = MathUtils.radiansToCardinal(character0.rotation);
+        const cardinalRad1 = MathUtils.radiansToCardinal(character1.rotation);
+        const up_0to1 = direction_0to1.dot(Vec2.DOWN) > 0.5;
+        const down_0to1 = direction_0to1.dot(Vec2.UP) > 0.5;
+        const left_0to1 = direction_0to1.dot(Vec2.RIGHT) > 0.5;
+        const right_0to1 = direction_0to1.dot(Vec2.LEFT) > 0.5;
+        if (cardinalRad0 == 2 && cardinalRad1 == 0 ||
+            cardinalRad0 == 3 && cardinalRad1 == 1) {
+            (character1.ai as EnemyAI).damage(1);
+            (character0.ai as EnemyAI).damage(1);
+        } else if (up_0to1 && cardinalRad0 == 2 ||
+            down_0to1 && cardinalRad0 == 0 ||
+            left_0to1 && cardinalRad0 == 3 ||
+            right_0to1 && cardinalRad0 == 1) {
+            (character1.ai as EnemyAI).damage(1);
+        } else {
+            (character0.ai as EnemyAI).damage(1);
+        }
     }
 
     startScene(){
@@ -152,24 +175,11 @@ export default class Level1 extends Scene {
                     this.createHealthpack(event.data.get("position"));
                     break;
                 }
-                case Events.PLAYER_COLLIDES_ENEMY: {
-                    let node = this.sceneGraph.getNode(event.data.get("node"));
-                    let other = this.sceneGraph.getNode(event.data.get("other"));
-                    if(node === this.player){
-                        this.handlePlayerEnemyCollision(<AnimatedSprite>node, <AnimatedSprite>other);
-                    } else {
-                        this.handlePlayerEnemyCollision(<AnimatedSprite>other,<AnimatedSprite>node);
-                    }
-                    break;
-                }
+                case Events.PLAYER_COLLIDES_ENEMY:
                 case Events.ENEMY_COLLIDES_PLAYER: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
-                    if(node === this.player){
-                        this.handlePlayerEnemyCollision(<AnimatedSprite>other, <AnimatedSprite>node);
-                    } else {
-                        this.handlePlayerEnemyCollision(<AnimatedSprite>node, <AnimatedSprite>other);
-                    }
+                    this.handleCharacterCollision(<AnimatedSprite>node, <AnimatedSprite>other);
                     break;
                 }
                 default: {

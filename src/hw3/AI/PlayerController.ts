@@ -54,15 +54,19 @@ export default class PlayerController implements BattlerAI {
         if (Input.isPressed("forward")) {
             this.direction.y = -1;
             this.direction.x = 0;
+            this.owner.rotation = 0;
         } else if (Input.isPressed("backward")) {
             this.direction.y = 1;
             this.direction.x = 0;
+            this.owner.rotation = Math.PI;
         } else if (Input.isPressed("left")) {
             this.direction.x = -1;
             this.direction.y = 0;
+            this.owner.rotation = Math.PI/2;
         } else if (Input.isPressed("right")) {
             this.direction.x = 1;
             this.direction.y = 0;
+            this.owner.rotation = 3*Math.PI/2;
         }
 
         if(!this.direction.isZero()){
@@ -93,9 +97,6 @@ export default class PlayerController implements BattlerAI {
                 }
             }
         }
-
-        // Rotate the player
-        this.owner.rotation = Vec2.UP.angleToCCW(this.lookDirection);
 
         // Inventory
 

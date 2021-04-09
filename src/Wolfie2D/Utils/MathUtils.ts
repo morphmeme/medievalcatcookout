@@ -172,4 +172,13 @@ export default class MathUtils {
             return String.fromCharCode(65 + num - 10);
         }
     }
+
+    /**
+     * Added by Alex F
+     * @param radians 0 to 2PI
+     * @returns 0=up,1=left,2=down,3=right
+     */
+    static radiansToCardinal(radians: number) {
+        return (Math.round((radians) / (Math.PI/2))) % 4
+    }
 }
