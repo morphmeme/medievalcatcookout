@@ -1,4 +1,5 @@
 import GameNode from "../../../../Wolfie2D/Nodes/GameNode";
+import Graphic from "../../../../Wolfie2D/Nodes/Graphic";
 import Scene from "../../../../Wolfie2D/Scene/Scene";
 
 export default abstract class WeaponType {
@@ -27,7 +28,7 @@ export default abstract class WeaponType {
      */
     abstract doAnimation(...args: any): void;
 
-    abstract createRequiredAssets(scene: Scene): Array<any>;
+    abstract createRequiredAssets(scene: Scene): void;
 
     abstract hits(node: GameNode, ...args: any): boolean;
 }

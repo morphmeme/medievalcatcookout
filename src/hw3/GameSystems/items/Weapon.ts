@@ -12,9 +12,6 @@ export default class Weapon extends Item {
     /** The type of this weapon */
     type: WeaponType;
 
-    /** A list of assets this weapon needs to be animated */
-    assets: Array<any>;
-
     /** An event emitter to hook into the EventQueue */
     emitter: Emitter
 
@@ -34,7 +31,7 @@ export default class Weapon extends Item {
         this.sprite = sprite;
 
         // Rely on the weapon type to create any necessary assets
-        this.assets = this.type.createRequiredAssets(this.sprite.getScene());
+        this.type.createRequiredAssets(this.sprite.getScene());
 
         // Create an event emitter
         this.emitter = new Emitter();
@@ -57,7 +54,7 @@ export default class Weapon extends Item {
             return false;
         }
         // Do a type specific weapon animation
-        this.type.doAnimation(user, direction, ...this.assets);
+        this.type.doAnimation(user, direction);
 
         // Apply damage
         this.battleManager.handleInteraction(userType, this);
@@ -75,6 +72,6 @@ export default class Weapon extends Item {
      * A check for whether or not this weapon hit a node
      */
     hits(node: GameNode): boolean {
-        return this.type.hits(node, ...this.assets);
+        return this.type.hits(node);
     }
 }

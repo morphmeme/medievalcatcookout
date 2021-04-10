@@ -11,7 +11,8 @@ import WeaponType from "./WeaponType";
 
 export default class SemiAutoGun extends WeaponType {
 
-    color: Color;
+    private color: Color;
+    private line: Line;
 
     initialize(options: Record<string, any>): void {
         this.damage = options.damage;
@@ -60,15 +61,15 @@ export default class SemiAutoGun extends WeaponType {
             }
         }
 
-        line.start = start;
-        line.end = end;
-        line.tweens.play("fade");
+        this.line.start = start;
+        this.line.end = end;
+        this.line.tweens.play("fade");
     }
 
-    createRequiredAssets(scene: Scene): [Line] {
-        let line = <Line>scene.add.graphic(GraphicType.LINE, "primary", {start: new Vec2(-1, 1), end: new Vec2(-1, -1)});
-        line.color = this.color;
-        line.tweens.add("fade", {
+    createRequiredAssets(scene: Scene) {
+        this.line = <Line>scene.add.graphic(GraphicType.LINE, "primary", {start: new Vec2(-1, 1), end: new Vec2(-1, -1)});
+        this.line.color = this.color;
+        this.line.tweens.add("fade", {
             startDelay: 0,
             duration: 300,
             effects: [
@@ -79,16 +80,13 @@ export default class SemiAutoGun extends WeaponType {
                     ease: EaseFunctionType.OUT_SINE
                 }
             ],
-            onEndCallback: () => {
-                line.start = new Vec2(-1, 1);
-                line.end = new Vec2(-1, -1);
-            }
         });
-
-        return [line];
     }
 
-    hits(node: GameNode, line: Line): boolean {
-        return node.collisionShape.getBoundingRect().intersectSegment(line.start, line.end.clone().sub(line.start)) !== null;
+    hits(node: GameNode): boolean {
+        if (!node) {
+            return false;
+        }
+        return node.collisionShape.getBoundingRect().intersectSegment(this.line.start, this.line.end.clone().sub(this.line.start)) !== null;
     }
 }

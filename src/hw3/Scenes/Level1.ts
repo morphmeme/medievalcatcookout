@@ -226,18 +226,15 @@ export default class Level1 extends Scene {
     spawnItems(): void {
         // Get the item data
         let itemData = this.load.getObject("itemData");
-        for(let item of itemData.items){
-            if(item.type === "healthpack"){
+        for(let itemDatum of itemData.items){
+            let item: Item = null;
+            if(itemDatum.type === "healthpack"){
                 // Create a healthpack
-                this.createHealthpack(new Vec2(item.position[0], item.position[1]));
+                item = this.createHealthpack();
             } else {
-                let weapon = this.createWeapon(item.weaponType);
-                weapon.moveSprite(new Vec2(item.position[0], item.position[1]));
-                weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-                weapon.sprite.setGroup("item");
-                weapon.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
-                this.items.set(weapon.sprite, weapon);
+                item = this.createWeapon(itemDatum.weaponType);
             }
+            item.moveSprite(new Vec2(itemDatum.position[0], itemDatum.position[1]));
         }        
     }
 
@@ -249,19 +246,28 @@ export default class Level1 extends Scene {
     createWeapon(type: string): Weapon {
         let weaponType = <WeaponType>RegistryManager.getRegistry("weaponTypes").get(type);
         let sprite = this.add.sprite(weaponType.spriteKey, "primary");
-
-        return new Weapon(sprite, weaponType, this.battleManager);
+        const weapon = new Weapon(sprite, weaponType, this.battleManager);
+        weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        weapon.sprite.setGroup("item");
+        weapon.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
+        this.items.set(weapon.sprite, weapon);
+        return weapon;
     }
 
     /**
      * Creates a healthpack at a certain position in the world
      * @param position 
      */
-    createHealthpack(position: Vec2): void {
+    createHealthpack(position?: Vec2): Item {
         let sprite = this.add.sprite("healthpack", "primary");
         let healthpack = new Healthpack(sprite)
-        healthpack.moveSprite(position);
-        this.items.set(sprite, healthpack);
+        if (position)
+            healthpack.moveSprite(position);
+        healthpack.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        healthpack.sprite.setGroup("item");
+        healthpack.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
+        this.items.set(healthpack.sprite, healthpack);
+        return healthpack;
     }
 
     /**

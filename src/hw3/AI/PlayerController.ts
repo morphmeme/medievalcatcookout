@@ -90,7 +90,6 @@ export default class PlayerController implements BattlerAI {
                 if(item instanceof Healthpack){
                     // Destroy the used healthpack
                     this.inventory.removeItem();
-                    item.sprite.visible = false;
                 }
             }
         }

@@ -72,18 +72,13 @@ export default class InventoryManager {
      * Adds an item to the currently selected slot
      */
     addItem(item: Item): boolean {
-        if(!this.items[this.currentSlot]){
-            // Add the item to the inventory
-            this.items[this.currentSlot] = item;
+        this.removeItem();
+        this.items[this.currentSlot] = item;
             
-            // Update the gui
-            item.moveSprite(new Vec2(this.position.x + this.currentSlot*(this.slotSize.x + this.padding), this.position.y), this.itemLayer);
+        // Update the gui
+        item.moveSprite(new Vec2(this.position.x + this.currentSlot*(this.slotSize.x + this.padding), this.position.y), this.itemLayer);
 
-            return true;
-        }
-        
-        // Failed to add item, something was already in the slot
-        return false;
+        return true;
     }
 
     /**
@@ -95,6 +90,7 @@ export default class InventoryManager {
         this.items[this.currentSlot] = null;
 
         if(item){
+            item.sprite.destroy();
             return item;
         } else {
             return null;
