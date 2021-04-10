@@ -23,6 +23,7 @@ import Color from "../../Wolfie2D/Utils/Color";
 import Input from "../../Wolfie2D/Input/Input";
 import GameOver from "./GameOver";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
+import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
 
 export default class Level1 extends Scene {
     // The player
@@ -38,7 +39,7 @@ export default class Level1 extends Scene {
     private graph: PositionGraph;
 
     // A list of items in the scene
-    private items: Array<Item>;
+    private items: Map<CanvasNode, Item>;
 
     // The battle manager for the scene
     private battleManager: BattleManager;
@@ -82,7 +83,8 @@ export default class Level1 extends Scene {
         this.receiver.subscribe([
             Events.HEALTHPACK_SPAWN,
             Events.PLAYER_COLLIDES_ENEMY,
-            Events.ENEMY_COLLIDES_PLAYER
+            Events.ENEMY_COLLIDES_PLAYER,
+            Events.PLAYER_COLLIDES_ITEM
         ]);
     }
 
@@ -131,7 +133,7 @@ export default class Level1 extends Scene {
         this.initializeWeapons();
 
         // Initialize the items array - this represents items that are in the game world
-        this.items = new Array();
+        this.items = new Map();
 
         // Create the player
         this.initializePlayer();
@@ -182,6 +184,14 @@ export default class Level1 extends Scene {
                     this.handleCharacterCollision(<AnimatedSprite>node, <AnimatedSprite>other);
                     break;
                 }
+                case Events.PLAYER_COLLIDES_ITEM: {
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    if (node == this.player) {
+                        const item = this.items.get(other);
+                        (this.player.ai as PlayerController).addToInventory(item);
+                    }
+                }
                 default: {
 
                 }
@@ -216,7 +226,6 @@ export default class Level1 extends Scene {
     spawnItems(): void {
         // Get the item data
         let itemData = this.load.getObject("itemData");
-
         for(let item of itemData.items){
             if(item.type === "healthpack"){
                 // Create a healthpack
@@ -224,7 +233,10 @@ export default class Level1 extends Scene {
             } else {
                 let weapon = this.createWeapon(item.weaponType);
                 weapon.moveSprite(new Vec2(item.position[0], item.position[1]));
-                this.items.push(weapon);
+                weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+                weapon.sprite.setGroup("item");
+                weapon.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
+                this.items.set(weapon.sprite, weapon);
             }
         }        
     }
@@ -249,7 +261,7 @@ export default class Level1 extends Scene {
         let sprite = this.add.sprite("healthpack", "primary");
         let healthpack = new Healthpack(sprite)
         healthpack.moveSprite(position);
-        this.items.push(healthpack);
+        this.items.set(sprite, healthpack);
     }
 
     /**
@@ -299,7 +311,6 @@ export default class Level1 extends Scene {
             {
                 speed: 100,
                 inventory: inventory,
-                items: this.items
             });
         this.player.animation.play("IDLE");
         this.player.setGroup("player");

@@ -300,7 +300,6 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 
 		// Get the number of the physics layer
 		let layerNumber = this.scene.getPhysicsManager().getGroupNumber(group);
-
 		if(layerNumber === 0){
 			console.warn(`Trigger for GameNode ${this.id} not set - group "${group}" was not recognized by the physics manager.`);
 			return;

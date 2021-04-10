@@ -1,3 +1,7 @@
+# gulp build
+public/index.html
+public/bundle.js
+
 # Logs
 logs
 *.log

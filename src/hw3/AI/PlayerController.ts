@@ -2,11 +2,9 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../Wolfie2D/Events/GameEvent";
 import Input from "../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
-import Timer from "../../Wolfie2D/Timing/Timer";
 import InventoryManager from "../GameSystems/InventoryManager";
 import Healthpack from "../GameSystems/items/Healthpack";
 import Item from "../GameSystems/items/Item";
-import Weapon from "../GameSystems/items/Weapon";
 import BattlerAI from "./BattlerAI";
 
 export default class PlayerController implements BattlerAI {
@@ -18,9 +16,6 @@ export default class PlayerController implements BattlerAI {
 
     // The inventory of the player
     private inventory: InventoryManager;
-
-    /** A list of items in the game world */
-    private items: Array<Item>;
 
     // Movement
     private direction: Vec2;
@@ -34,14 +29,16 @@ export default class PlayerController implements BattlerAI {
         delete this.owner;
     }
 
+    addToInventory(item: Item) {
+        this.inventory.addItem(item);
+    }
+
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
         this.direction = Vec2.ZERO;
         this.lookDirection = Vec2.ZERO;
         this.speed = options.speed;
         this.health = 5;
-
-        this.items = options.items;
         this.inventory = options.inventory;
     }
 
@@ -105,30 +102,6 @@ export default class PlayerController implements BattlerAI {
             this.inventory.changeSlot(0);
         } else if(Input.isJustPressed("slot2")){
             this.inventory.changeSlot(1);
-        }
-        
-        if(Input.isJustPressed("pickup")){
-            // Check if there is an item to pick up
-            for(let item of this.items){
-                if(this.owner.collisionShape.overlaps(item.sprite.boundary)){
-                    // We overlap it, try to pick it up
-                    this.inventory.addItem(item);
-                    break;
-                }
-            }
-        }
-
-        if(Input.isJustPressed("drop")){
-            // Check if we can drop our current item
-            let item = this.inventory.removeItem();
-            
-            if(item){
-                // Move the item from the ui to the gameworld
-                item.moveSprite(this.owner.position, "primary");
-
-                // Add the item to the list of items
-                this.items.push(item);
-            }
         }
     }
 
