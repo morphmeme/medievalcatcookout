@@ -34,6 +34,9 @@ export default class Slice extends WeaponType {
     }
 
     hits(node: GameNode): boolean {
+        if (!node) {
+            return false;
+        }
         return this.slice.boundary.overlaps(node.collisionShape);
     }
 }

@@ -24,11 +24,14 @@ import Input from "../../Wolfie2D/Input/Input";
 import GameOver from "./GameOver";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
+import AllyController from "../AI/AllyController";
 
 export default class Level1 extends Scene {
     // The player
     private player: AnimatedSprite;
 
+    private allies: Array<AnimatedSprite>;
+    
     // A list of enemies
     private enemies: Array<AnimatedSprite>;
 
@@ -135,8 +138,13 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
+        let inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(16, 16), 4);
+
         // Create the player
-        this.initializePlayer();
+        this.initializePlayer(inventory);
+
+        // Create allies
+        this.initializeAllies(inventory)
 
         // Make the viewport follow the player
         this.viewport.follow(this.player);
@@ -303,9 +311,8 @@ export default class Level1 extends Scene {
         }
     }
 
-    initializePlayer(): void {
+    initializePlayer(inventory: InventoryManager): void {
         // Create the inventory
-        let inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(16, 16), 4);
         let startingWeapon = this.createWeapon("knife");
         inventory.addItem(startingWeapon);
 
@@ -316,11 +323,31 @@ export default class Level1 extends Scene {
         this.player.addAI(PlayerController,
             {
                 speed: 100,
-                inventory: inventory,
+                inventory,
             });
         this.player.animation.play("IDLE");
         this.player.setGroup("player");
         this.player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+    }
+
+    initializeAllies(inventory: InventoryManager): void {
+        this.allies = new Array();
+
+        for (const i of [0,1,2]) {
+            const allySprite = this.add.animatedSprite("player", "primary");
+            allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            allySprite.addAI(AllyController,
+                {
+                    speed: 100,
+                    inventory,
+                    following: i == 0 ? this.player.ai : this.allies[this.allies.length-1].ai,
+                    followingDistance: 16,
+                });
+            allySprite.animation.play("IDLE");
+            allySprite.setGroup("player");
+            allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+            this.allies.push(allySprite);
+        }
     }
 
     /**

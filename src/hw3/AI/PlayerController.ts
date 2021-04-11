@@ -1,7 +1,9 @@
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
+import Emitter from "../../Wolfie2D/Events/Emitter";
 import GameEvent from "../../Wolfie2D/Events/GameEvent";
 import Input from "../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
+import { Events } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import Healthpack from "../GameSystems/items/Healthpack";
 import Item from "../GameSystems/items/Item";
@@ -18,11 +20,25 @@ export default class PlayerController implements BattlerAI {
     private inventory: InventoryManager;
 
     // Movement
-    private direction: Vec2;
-    private speed: number;
+    private _direction: Vec2;
+    get direction() {
+        return this._direction;
+    }
+    set direction(x: Vec2) {
+        this._direction = x;
+    }
+
+    private _speed: number;
+    get speed() {
+        return this._speed;
+    }
+    set speed(x: number) {
+        this._speed = x;
+    }
 
     // Attacking
     private lookDirection: Vec2;
+    private emitter: Emitter;
 
     destroy() {
         // Get rid of our reference to the owner
@@ -40,6 +56,7 @@ export default class PlayerController implements BattlerAI {
         this.speed = options.speed;
         this.health = 5;
         this.inventory = options.inventory;
+        this.emitter = new Emitter();
     }
 
     activate(options: Record<string, any>): void {}
@@ -48,22 +65,34 @@ export default class PlayerController implements BattlerAI {
 
     update(deltaT: number): void {
         // Get the movement direction
-        if (Input.isPressed("forward")) {
+        if (Input.isPressed("forward") && this.owner.rotation !== Math.PI) {
             this.direction.y = -1;
             this.direction.x = 0;
-            this.owner.rotation = 0;
-        } else if (Input.isPressed("backward")) {
+            const newRotation = 0;
+            if (this.owner.rotation !== newRotation)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
+        } else if (Input.isPressed("backward") && this.owner.rotation !== 0) {
             this.direction.y = 1;
             this.direction.x = 0;
-            this.owner.rotation = Math.PI;
-        } else if (Input.isPressed("left")) {
+            const newRotation = Math.PI;
+            if (this.owner.rotation !== Math.PI)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
+        } else if (Input.isPressed("left") && this.owner.rotation !== 3*Math.PI/2) {
             this.direction.x = -1;
             this.direction.y = 0;
-            this.owner.rotation = Math.PI/2;
-        } else if (Input.isPressed("right")) {
+            const newRotation = Math.PI/2;
+            if (this.owner.rotation !== newRotation)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
+        } else if (Input.isPressed("right") && this.owner.rotation !== Math.PI/2) {
             this.direction.x = 1;
             this.direction.y = 0;
-            this.owner.rotation = 3*Math.PI/2;
+            const newRotation = 3*Math.PI/2;
+            if (this.owner.rotation !== newRotation)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
         }
 
         if(!this.direction.isZero()){
@@ -75,8 +104,7 @@ export default class PlayerController implements BattlerAI {
             this.owner.animation.playIfNotAlready("IDLE", true);
         }
 
-        // Get the unit vector in the look direction
-        this.lookDirection = this.owner.position.dirTo(Input.getGlobalMousePosition());
+        this.lookDirection = new Vec2(Math.cos(this.owner.rotation + Math.PI/2), Math.sin(this.owner.rotation - Math.PI/2));
 
         // Shoot a bullet
         if(Input.isMouseJustPressed()){
@@ -93,8 +121,6 @@ export default class PlayerController implements BattlerAI {
                 }
             }
         }
-
-        // Inventory
 
         // Check for slot change
         if(Input.isJustPressed("slot1")){

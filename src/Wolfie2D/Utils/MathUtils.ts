@@ -181,4 +181,18 @@ export default class MathUtils {
     static radiansToCardinal(radians: number) {
         return (Math.round((radians) / (Math.PI/2))) % 4
     }
+
+    static rotationToDir(rotation: number) {
+        switch (rotation) {
+            case 0:
+                return Vec2.UP;
+            case Math.PI:
+                return Vec2.DOWN;
+            case Math.PI/2:
+                return Vec2.LEFT;
+            case 3*Math.PI/2:
+                return Vec2.RIGHT;
+        }
+        return Vec2.ZERO;
+    }
 }
