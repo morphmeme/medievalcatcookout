@@ -117,8 +117,6 @@ export default class AllyController extends StateMachineAI implements BattlerAI 
             }
             this.owner.move(dist)
             this.owner.animation.playIfNotAlready("WALK", true);
-        } else if (distToFollower <= this.followingDistance) {
-            this.owner.animation.playIfNotAlready("IDLE", true);
         } else if (!this.direction.isZero()
             ) {
             this.owner.move(this.owner.position.dirTo(this.following.owner.position).normalized().scale(this.speed * deltaT));
