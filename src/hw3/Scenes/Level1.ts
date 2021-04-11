@@ -1,4 +1,3 @@
-import PlayerController from "../AI/PlayerController";
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Scene from "../../Wolfie2D/Scene/Scene";
@@ -24,7 +23,7 @@ import Input from "../../Wolfie2D/Input/Input";
 import GameOver from "./GameOver";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
-import AllyController from "../AI/AllyController";
+import CharacterController from "../AI/CharacterController";
 
 export default class Level1 extends Scene {
     // The player
@@ -87,8 +86,15 @@ export default class Level1 extends Scene {
             Events.HEALTHPACK_SPAWN,
             Events.PLAYER_COLLIDES_ENEMY,
             Events.ENEMY_COLLIDES_PLAYER,
-            Events.PLAYER_COLLIDES_ITEM
+            Events.PLAYER_COLLIDES_ITEM,
+            Events.DAMAGE,
         ]);
+    }
+
+    private displayHp() {
+        this.enemies
+        this.player
+        this.allies
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -107,13 +113,22 @@ export default class Level1 extends Scene {
             cardinalRad0 == 3 && cardinalRad1 == 1) {
             (character1.ai as EnemyAI).damage(1);
             (character0.ai as EnemyAI).damage(1);
+            this.emitter.fireEvent(Events.DAMAGE, {
+                damaged: [character0, character1]
+            });
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
             (character1.ai as EnemyAI).damage(1);
+            this.emitter.fireEvent(Events.DAMAGE, {
+                damaged: [character0]
+            });
         } else {
             (character0.ai as EnemyAI).damage(1);
+            this.emitter.fireEvent(Events.DAMAGE, {
+                damaged: [character0]
+            });
         }
     }
 
@@ -168,12 +183,6 @@ export default class Level1 extends Scene {
 
         // Spawn items into the world
         this.spawnItems();
-
-        // Add a UI for health
-        this.addUILayer("health");
-
-        this.healthDisplay = <Label>this.add.uiElement(UIElementType.LABEL, "health", {position: new Vec2(200, 16), text: "Health: " + (<BattlerAI>this.player._ai).health});
-        this.healthDisplay.textColor = Color.WHITE;
     }
 
     updateScene(deltaT: number): void {
@@ -197,7 +206,7 @@ export default class Level1 extends Scene {
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     if (node == this.player) {
                         const item = this.items.get(other);
-                        (this.player.ai as PlayerController).addToInventory(item);
+                        (this.player.ai as CharacterController).addToInventory(item);
                     }
                 }
                 default: {
@@ -205,15 +214,6 @@ export default class Level1 extends Scene {
                 }
             }
         }
-
-        let health = (<BattlerAI>this.player._ai).health;
-
-        if(health === 0){
-            this.sceneManager.changeToScene(GameOver);
-        }
-
-        // Update health gui
-        this.healthDisplay.text = "Health: " + health;
 
         // Debug mode graph
         if(Input.isKeyJustPressed("g")){
@@ -320,7 +320,7 @@ export default class Level1 extends Scene {
         this.player = this.add.animatedSprite("player", "primary");
         this.player.position.set(2*16, 62*16);
         this.player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-        this.player.addAI(PlayerController,
+        this.player.addAI(CharacterController,
             {
                 speed: 100,
                 inventory,
@@ -336,7 +336,7 @@ export default class Level1 extends Scene {
         for (const i of [0,1,2]) {
             const allySprite = this.add.animatedSprite("player", "primary");
             allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-            allySprite.addAI(AllyController,
+            allySprite.addAI(CharacterController,
                 {
                     speed: 100,
                     inventory,

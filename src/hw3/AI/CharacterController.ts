@@ -10,9 +10,8 @@ import InventoryManager from "../GameSystems/InventoryManager";
 import Healthpack from "../GameSystems/items/Healthpack";
 import Item from "../GameSystems/items/Item";
 import BattlerAI from "./BattlerAI";
-import PlayerController from "./PlayerController";
 
-export default class AllyController extends StateMachineAI implements BattlerAI {
+export default class CharacterController extends StateMachineAI implements BattlerAI {
     // Fields from BattlerAI
     health: number;
 
@@ -22,9 +21,12 @@ export default class AllyController extends StateMachineAI implements BattlerAI 
     // The inventory of the player
     private inventory: InventoryManager;
 
-    // Movement
-    private following: PlayerController;
+    // Ally attributes
+    private following: CharacterController;
     private followingDistance: number;
+    private destinationPos: Queue<Vec2>;
+    private destinationRot: Queue<number>;
+    private lookDirection: Vec2;
 
     private _direction: Vec2;
     get direction() {
@@ -42,8 +44,7 @@ export default class AllyController extends StateMachineAI implements BattlerAI 
         this._speed = x;
     }
 
-    private destinationPos: Queue<Vec2>;
-    private destinationRot: Queue<number>;
+    
 
     destroy() {
         // Get rid of our reference to the owner
@@ -54,7 +55,7 @@ export default class AllyController extends StateMachineAI implements BattlerAI 
         this.inventory.addItem(item);
     }
 
-    forceFollowPosition() {
+    private forceFollowPosition() {
         if (this.owner.rotation === 0)
             this.owner.position.set(this.following.owner.position.x,
                                     this.following.owner.position.y + this.followingDistance);
@@ -73,26 +74,26 @@ export default class AllyController extends StateMachineAI implements BattlerAI 
         this.owner = owner;
         this.health = 5;
         this.inventory = options.inventory;
+        this.direction = Vec2.ZERO;
+        this.speed = options.speed;
+        this.lookDirection = Vec2.ZERO;
         this.receiver.subscribe(Events.PLAYER_ROTATE);
         this.following = options.following;
         this.followingDistance = options.followingDistance;
-        this.forceFollowPosition();
+        if (this.following)
+            this.forceFollowPosition();
         this.destinationPos = new Queue(1000000);
         this.destinationRot = new Queue(1000000);
     }
 
-    activate(options: Record<string, any>): void {}
-
-    handleEvent(event: GameEvent): void {}
-
-    crossInflection(rot: number, pos: Vec2, currentPos: Vec2) {
+    private crossInflection(rot: number, pos: Vec2, currentPos: Vec2) {
         return rot === 0 && currentPos.y <= pos.y ||
                rot === Math.PI && currentPos.y >= pos.y ||
                rot === Math.PI/2 && currentPos.x <= pos.x ||
                rot === 3*Math.PI/2 && currentPos.x >= pos.x;
     }
 
-    update(deltaT: number): void {
+    private allyUpdate(deltaT: number): void {
         this.speed = this.following.speed;
         this.direction = this.following.direction;
         const distToFollower = this.owner.position.distanceTo(this.following.owner.position);
@@ -136,11 +137,82 @@ export default class AllyController extends StateMachineAI implements BattlerAI 
         }
     }
 
+    private playerUpdate(deltaT: number) {
+        // Get the movement direction
+        if (Input.isPressed("forward") && this.owner.rotation !== Math.PI) {
+            this.direction.y = -1;
+            this.direction.x = 0;
+            const newRotation = 0;
+            if (this.owner.rotation !== newRotation)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
+        } else if (Input.isPressed("backward") && this.owner.rotation !== 0) {
+            this.direction.y = 1;
+            this.direction.x = 0;
+            const newRotation = Math.PI;
+            if (this.owner.rotation !== Math.PI)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
+        } else if (Input.isPressed("left") && this.owner.rotation !== 3*Math.PI/2) {
+            this.direction.x = -1;
+            this.direction.y = 0;
+            const newRotation = Math.PI/2;
+            if (this.owner.rotation !== newRotation)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
+        } else if (Input.isPressed("right") && this.owner.rotation !== Math.PI/2) {
+            this.direction.x = 1;
+            this.direction.y = 0;
+            const newRotation = 3*Math.PI/2;
+            if (this.owner.rotation !== newRotation)
+                this.emitter.fireEvent(Events.PLAYER_ROTATE, {position: this.owner.position.clone(), rotation: newRotation});
+            this.owner.rotation = newRotation;
+        }
+
+        if(!this.direction.isZero()){
+            // Move the player
+            this.owner.move(this.direction.normalized().scale(this.speed * deltaT));
+            this.owner.animation.playIfNotAlready("WALK", true);
+        } else {
+            // Player is idle
+            this.owner.animation.playIfNotAlready("IDLE", true);
+        }
+
+        this.lookDirection = new Vec2(Math.cos(this.owner.rotation + Math.PI/2), Math.sin(this.owner.rotation - Math.PI/2));
+
+        // Shoot a bullet
+        if(Input.isMouseJustPressed()){
+            // Get the current item
+            let item = this.inventory.getItem();
+
+            // If there is an item in the current slot, use it
+            if(item){
+                item.use(this.owner, "player", this.lookDirection);
+
+                if(item instanceof Healthpack){
+                    // Destroy the used healthpack
+                    this.inventory.removeItem();
+                }
+            }
+        }
+
+        // Check for slot change
+        if(Input.isJustPressed("slot1")){
+            this.inventory.changeSlot(0);
+        } else if(Input.isJustPressed("slot2")){
+            this.inventory.changeSlot(1);
+        }
+    }
+
+    update(deltaT: number): void {
+        if (this.following) {
+            this.allyUpdate(deltaT);
+        } else {
+            this.playerUpdate(deltaT);
+        }
+    }
+
     damage(damage: number): void {
         this.health -= damage;
-
-        if(this.health <= 0){
-            console.log("Game Over");
-        }
     }
 }
