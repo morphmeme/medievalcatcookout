@@ -92,9 +92,9 @@ export default class Level1 extends Scene {
     }
 
     private drawHp(hp: number, maxHp: number, charPos: Vec2) {
-        const redHpBar = this.add.graphic(GraphicType.RECT, "primary", {position: charPos.clone().inc(0, -10), size: new Vec2(12, 1)});
+        const redHpBar = this.add.graphic(GraphicType.RECT, "health", {position: charPos.clone().inc(0, -10), size: new Vec2(12, 1)});
         redHpBar.color = Color.RED;
-        const greenHpBar = this.add.graphic(GraphicType.RECT, "primary", {position: charPos.clone().inc(-(12 - 12 * (hp/maxHp)) / 2, -10), size: new Vec2(12 * (hp/maxHp), 1)});
+        const greenHpBar = this.add.graphic(GraphicType.RECT, "health", {position: charPos.clone().inc(-(12 - 12 * (hp/maxHp)) / 2, -10), size: new Vec2(12 * (hp/maxHp), 1)});
         greenHpBar.color = Color.GREEN;
         return [greenHpBar, redHpBar];
     }
@@ -156,7 +156,7 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        let inventory = new InventoryManager(this, 2, "inventorySlot", new Vec2(16, 16), 4);
+        let inventory = new InventoryManager(this, 10, "inventorySlot", new Vec2(16, 16), 4);
 
         // Create the player
         this.initializePlayer(inventory);
@@ -188,7 +188,7 @@ export default class Level1 extends Scene {
         this.spawnItems();
 
         // Add a UI for health
-        this.addUILayer("health");
+        this.addLayer("health", 10);
     }
 
     updateScene(deltaT: number): void {
@@ -228,6 +228,10 @@ export default class Level1 extends Scene {
         // Debug mode graph
         if(Input.isKeyJustPressed("g")){
             this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
+        }
+        if(Input.isJustPressed("inventory")){
+            this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
+            this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
         }
     }
 

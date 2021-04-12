@@ -19,7 +19,7 @@ import MainMenu from "./hw3/Scenes/MainMenu";
             {name: "backward", keys: ["s"]},
             {name: "left", keys: ["a"]},
             {name: "right", keys: ["d"]},
-            {name: "pickup", keys: ["e"]},
+            {name: "inventory", keys: ["e"]},
             {name: "drop", keys: ["q"]},
             {name: "slot1", keys: ["1"]},
             {name: "slot2", keys: ["2"]}

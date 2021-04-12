@@ -2,7 +2,7 @@ import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import Input from "../../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
-import { Events, Names } from "../../Constants";
+import { Events } from "../../Constants";
 import Healthpack from "../../GameSystems/items/Healthpack";
 import CharacterController from "../CharacterController";
 import CharacterState from "./CharacterState";
@@ -65,7 +65,7 @@ export default class Ally extends CharacterState {
         if(Input.isMouseJustPressed()){
             // Get the current item
             let item = this.parent.inventory.getItem();
-
+            
             // If there is an item in the current slot, use it
             if(item){
                 item.use(this.owner, "player", lookDirection);
@@ -75,13 +75,6 @@ export default class Ally extends CharacterState {
                     this.parent.inventory.removeItem();
                 }
             }
-        }
-
-        // Check for slot change
-        if(Input.isJustPressed("slot1")){
-            this.parent.inventory.changeSlot(0);
-        } else if(Input.isJustPressed("slot2")){
-            this.parent.inventory.changeSlot(1);
         }
     }
 

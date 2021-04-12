@@ -6,6 +6,11 @@ import Scene from "../../Wolfie2D/Scene/Scene";
 import Color from "../../Wolfie2D/Utils/Color";
 import Item from "./items/Item";
 
+const LayerNames = {
+    SLOT_LAYER: "slots",
+    ITEM_LAYER: "items",
+}
+
 export default class InventoryManager {
 
     private position: Vec2;
@@ -13,27 +18,29 @@ export default class InventoryManager {
     private inventorySlots: Array<Sprite>;
     private slotSize: Vec2;
     private padding: number;
-    private currentSlot: number;
-    private slotLayer: string;
-    private itemLayer: string;
+    private lastSlot: number;
     private selectedSlot: Rect;
+    private selectedSlotIdx: number;
 
     constructor(scene: Scene, size: number, inventorySlot: string, position: Vec2, padding: number){
         this.items = new Array(size);
         this.inventorySlots = new Array(size);
         this.padding = padding;
         this.position = position;
-        this.currentSlot = 0;
+        this.lastSlot = 0;
+        this.selectedSlotIdx = 0;
 
         // Add layers
-        this.slotLayer = "slots";
-        scene.addUILayer(this.slotLayer).setDepth(100);
-        this.itemLayer = "items";
-        scene.addUILayer(this.itemLayer).setDepth(101);
+        const slotLayer = scene.addUILayer(LayerNames.SLOT_LAYER);
+        slotLayer.setDepth(100)
+        slotLayer.setHidden(true);
+        const itemLayer = scene.addUILayer(LayerNames.ITEM_LAYER);
+        itemLayer.setDepth(101)
+        itemLayer.setHidden(true);
 
         // Create the inventory slots
         for(let i = 0; i < size; i++){
-            this.inventorySlots[i] = scene.add.sprite(inventorySlot, this.slotLayer);
+            this.inventorySlots[i] = scene.add.sprite(inventorySlot, LayerNames.SLOT_LAYER);
         }
 
         this.slotSize = this.inventorySlots[0].size.clone();
@@ -50,14 +57,14 @@ export default class InventoryManager {
     }
 
     getItem(): Item {
-        return this.items[this.currentSlot];
+        return this.items[this.selectedSlotIdx];
     }
 
     /**
      * Changes the currently selected slot
      */
     changeSlot(slot: number): void {
-        this.currentSlot = slot;
+        this.selectedSlotIdx = slot;
         this.selectedSlot.position.copy(this.inventorySlots[slot].position);
     }
 
@@ -65,19 +72,22 @@ export default class InventoryManager {
      * Gets the currently selected slot
      */
     getSlot(): number {
-        return this.currentSlot;
+        return this.selectedSlotIdx;
     }
 
     /**
      * Adds an item to the currently selected slot
      */
     addItem(item: Item): boolean {
-        this.removeItem();
-        this.items[this.currentSlot] = item;
+        if (this.items[this.lastSlot]) {
+            this.removeItem();
+        }
+        this.items[this.lastSlot] = item;
             
         // Update the gui
-        item.moveSprite(new Vec2(this.position.x + this.currentSlot*(this.slotSize.x + this.padding), this.position.y), this.itemLayer);
+        item.moveSprite(new Vec2(this.position.x + this.lastSlot*(this.slotSize.x + this.padding), this.position.y), LayerNames.ITEM_LAYER);
 
+        this.lastSlot = Math.min(this.items.length - 1, this.lastSlot + 1);
         return true;
     }
 
@@ -85,9 +95,9 @@ export default class InventoryManager {
      * Removes and returns an item from the the currently selected slot, if possible
      */
     removeItem(): Item {
-        let item = this.items[this.currentSlot];
+        let item = this.items[this.lastSlot];
 
-        this.items[this.currentSlot] = null;
+        this.items[this.lastSlot] = null;
 
         if(item){
             item.sprite.destroy();

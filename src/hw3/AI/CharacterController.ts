@@ -1,13 +1,8 @@
 import StateMachineAI from "../../Wolfie2D/AI/StateMachineAI";
-import Queue from "../../Wolfie2D/DataTypes/Queue";
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
-import Emitter from "../../Wolfie2D/Events/Emitter";
-import GameEvent from "../../Wolfie2D/Events/GameEvent";
-import Input from "../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { Events } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
-import Healthpack from "../GameSystems/items/Healthpack";
 import Item from "../GameSystems/items/Item";
 import BattlerAI from "./BattlerAI";
 import Ally from "./CharacterStates/Ally";
