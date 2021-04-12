@@ -14,6 +14,7 @@ import BattlerAI from "./BattlerAI";
 export default class CharacterController extends StateMachineAI implements BattlerAI {
     // Fields from BattlerAI
     health: number;
+    maxHealth: number;
 
     // The actual player sprite
     owner: AnimatedSprite;
@@ -72,7 +73,8 @@ export default class CharacterController extends StateMachineAI implements Battl
 
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
-        this.health = 5;
+        this.health = 25;
+        this.maxHealth = this.health;
         this.inventory = options.inventory;
         this.direction = Vec2.ZERO;
         this.speed = options.speed;
@@ -82,8 +84,8 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.followingDistance = options.followingDistance;
         if (this.following)
             this.forceFollowPosition();
-        this.destinationPos = new Queue(1000000);
-        this.destinationRot = new Queue(1000000);
+        this.destinationPos = new Queue(100000);
+        this.destinationRot = new Queue(100000);
     }
 
     private crossInflection(rot: number, pos: Vec2, currentPos: Vec2) {
@@ -214,5 +216,6 @@ export default class CharacterController extends StateMachineAI implements Battl
 
     damage(damage: number): void {
         this.health -= damage;
+        this.health = Math.max(this.health, 0);
     }
 }

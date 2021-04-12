@@ -5,6 +5,10 @@
     ],
     "compilerOptions": {
         "noImplicitAny": true,
-        "target": "es2016"
+        "target": "ES2016",
+        "lib": [
+            "ES2019",
+            "DOM"
+          ]
     }
 }

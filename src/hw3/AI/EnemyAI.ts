@@ -20,6 +20,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
 
     /** The amount of health this entity has */
     health: number;
+    maxHealth: number;
 
     /** The default movement speed of this AI */
     speed: number = 20;
@@ -45,6 +46,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         this.addState(EnemyStates.ATTACKING, new Attack(this, owner));
 
         this.health = options.health;
+        this.maxHealth = options.health;
 
         this.weapon = options.weapon;
 

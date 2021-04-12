@@ -24,6 +24,7 @@ import GameOver from "./GameOver";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
 import CharacterController from "../AI/CharacterController";
+import Graphic from "../../Wolfie2D/Nodes/Graphic";
 
 export default class Level1 extends Scene {
     // The player
@@ -46,8 +47,8 @@ export default class Level1 extends Scene {
     // The battle manager for the scene
     private battleManager: BattleManager;
 
-    // Player health
-    private healthDisplay: Label;
+    // Characters healths
+    private hpBars: Array<Graphic>;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -87,14 +88,25 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_ENEMY,
             Events.ENEMY_COLLIDES_PLAYER,
             Events.PLAYER_COLLIDES_ITEM,
-            Events.DAMAGE,
         ]);
     }
 
+    private drawHp(hp: number, maxHp: number, charPos: Vec2) {
+        const redHpBar = this.add.graphic(GraphicType.RECT, "primary", {position: charPos.clone().inc(0, -10), size: new Vec2(12, 1)});
+        redHpBar.color = Color.RED;
+        const greenHpBar = this.add.graphic(GraphicType.RECT, "primary", {position: charPos.clone().inc(-(12 - 12 * (hp/maxHp)) / 2, -10), size: new Vec2(12 * (hp/maxHp), 1)});
+        greenHpBar.color = Color.GREEN;
+        return [greenHpBar, redHpBar];
+    }
+
     private displayHp() {
-        this.enemies
-        this.player
-        this.allies
+        return [this.player, ...this.allies, ...this.enemies].map(character => {
+            if (character?.ai && this.viewport.includes(character)) {
+                const { health, maxHealth } = (character.ai as BattlerAI);
+                return this.drawHp(health, maxHealth, character.position);
+            }
+            return [];
+        }).flat();
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -113,22 +125,13 @@ export default class Level1 extends Scene {
             cardinalRad0 == 3 && cardinalRad1 == 1) {
             (character1.ai as EnemyAI).damage(1);
             (character0.ai as EnemyAI).damage(1);
-            this.emitter.fireEvent(Events.DAMAGE, {
-                damaged: [character0, character1]
-            });
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
             (character1.ai as EnemyAI).damage(1);
-            this.emitter.fireEvent(Events.DAMAGE, {
-                damaged: [character0]
-            });
         } else {
             (character0.ai as EnemyAI).damage(1);
-            this.emitter.fireEvent(Events.DAMAGE, {
-                damaged: [character0]
-            });
         }
     }
 
@@ -183,6 +186,9 @@ export default class Level1 extends Scene {
 
         // Spawn items into the world
         this.spawnItems();
+
+        // Add a UI for health
+        this.addUILayer("health");
     }
 
     updateScene(deltaT: number): void {
@@ -214,6 +220,10 @@ export default class Level1 extends Scene {
                 }
             }
         }
+        if (this.hpBars) {
+            this.hpBars.forEach(hpBar => hpBar.destroy());
+        }
+        this.hpBars = this.displayHp();
 
         // Debug mode graph
         if(Input.isKeyJustPressed("g")){
