@@ -1,4 +1,6 @@
+import AABB from "../DataTypes/Shapes/AABB";
 import Vec2 from "../DataTypes/Vec2";
+import OrthogonalTilemap from "../Nodes/Tilemaps/OrthogonalTilemap";
 
 /** A class containing some utility functions for math operations */
 export default class MathUtils {
@@ -194,5 +196,40 @@ export default class MathUtils {
                 return Vec2.RIGHT;
         }
         return Vec2.ZERO;
+    }
+
+    static visibleBetweenPos(pos0: Vec2, pos1: Vec2, walls: OrthogonalTilemap) {
+        let delta = pos1.clone().sub(pos0);
+
+        // Iterate through the tilemap region until we find a collision
+        let minX = Math.min(pos0.x, pos1.x);
+        let maxX = Math.max(pos0.x, pos1.x);
+        let minY = Math.min(pos0.y, pos1.y);
+        let maxY = Math.max(pos0.y, pos1.y);
+
+        let minIndex = walls.getColRowAt(new Vec2(minX, minY));
+        let maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
+
+        let tileSize = walls.getTileSize();
+
+        for(let col = minIndex.x; col <= maxIndex.x; col++){
+            for(let row = minIndex.y; row <= maxIndex.y; row++){
+                if(walls.isTileCollidable(col, row)){
+                    // Get the position of this tile
+                    let tilePos = new Vec2(col * tileSize.x + tileSize.x/2, row * tileSize.y + tileSize.y/2);
+
+                    // Create a collider for this tile
+                    let collider = new AABB(tilePos, tileSize.scaled(1/2));
+
+                    let hit = collider.intersectSegment(pos0, delta, Vec2.ZERO);
+
+                    if(hit !== null && pos0.distanceSqTo(hit.pos) < pos0.distanceSqTo(pos1)){
+                        // We hit a wall, we can't see the player
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

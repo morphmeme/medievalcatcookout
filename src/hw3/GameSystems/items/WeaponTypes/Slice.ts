@@ -16,7 +16,10 @@ export default class Slice extends WeaponType {
         this.useVolume = options.useVolume;
     }
 
-    doAnimation(attacker: GameNode, direction: Vec2): void {
+    doAnimation(scene: Scene, attacker: GameNode, direction: Vec2): void {
+        this.slice = scene.add.animatedSprite("slice", "primary");
+        this.slice.animation.play("NORMAL", true);
+
         // Rotate this with the game node
         this.slice.rotation = attacker.rotation;
 
@@ -26,11 +29,6 @@ export default class Slice extends WeaponType {
         // Play the slice animation w/o loop, but queue the normal animation
         this.slice.animation.play("SLICE");
         this.slice.animation.queue("NORMAL", true);
-    }
-
-    createRequiredAssets(scene: Scene) {
-        this.slice = scene.add.animatedSprite("slice", "primary");
-        this.slice.animation.play("NORMAL", true);
     }
 
     hits(node: GameNode): boolean {

@@ -32,8 +32,8 @@ import MainMenu from "./hw3/Scenes/MainMenu";
     let weaponTemplateRegistry = new WeaponTemplateRegistry();
     RegistryManager.addCustomRegistry("weaponTemplates", weaponTemplateRegistry);
     
-    let weaponTypeRegistry = new WeaponTypeRegistry();
-    RegistryManager.addCustomRegistry("weaponTypes", weaponTypeRegistry);
+    // let weaponTypeRegistry = new WeaponTypeRegistry();
+    // RegistryManager.addCustomRegistry("weaponTypes", weaponTypeRegistry);
 
     // Create a game with the options specified
     const game = new Game(options);

@@ -30,9 +30,6 @@ export default class Weapon extends Item {
         // Keep a reference to the sprite of this weapon
         this.sprite = sprite;
 
-        // Rely on the weapon type to create any necessary assets
-        this.type.createRequiredAssets(this.sprite.getScene());
-
         // Create an event emitter
         this.emitter = new Emitter();
 
@@ -54,7 +51,7 @@ export default class Weapon extends Item {
             return false;
         }
         // Do a type specific weapon animation
-        this.type.doAnimation(user, direction);
+        this.type.doAnimation(this.sprite.getScene(), user, direction);
 
         // Apply damage
         this.battleManager.handleInteraction(userType, this);

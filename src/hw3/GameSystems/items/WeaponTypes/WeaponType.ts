@@ -26,9 +26,7 @@ export default abstract class WeaponType {
     /**
      * The animation to do when this weapon is used
      */
-    abstract doAnimation(...args: any): void;
-
-    abstract createRequiredAssets(scene: Scene): void;
+    abstract doAnimation(scene: Scene, ...args: any): void;
 
     abstract hits(node: GameNode, ...args: any): boolean;
 }

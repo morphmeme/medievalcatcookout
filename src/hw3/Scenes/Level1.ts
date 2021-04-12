@@ -50,6 +50,8 @@ export default class Level1 extends Scene {
     // Characters healths
     private hpBars: Array<Graphic>;
 
+    private weaponTypeMap: Map<string, any>;
+
     loadScene(){
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "hw3_assets/spritesheets/player.json");
@@ -91,6 +93,8 @@ export default class Level1 extends Scene {
         ]);
     }
 
+    // TODO: This will crash the game after awhile (not long enough to care)
+    // because too many IDs are being generated for each node. Need to reuse IDs or use UUID. Fuck Wolfie2D.
     private drawHp(hp: number, maxHp: number, charPos: Vec2) {
         const redHpBar = this.add.graphic(GraphicType.RECT, "health", {position: charPos.clone().inc(0, -10), size: new Vec2(12, 1)});
         redHpBar.color = Color.RED;
@@ -260,13 +264,10 @@ export default class Level1 extends Scene {
         }        
     }
 
-    /**
-     * 
-     * Creates and returns a new weapon
-     * @param type The weaponType of the weapon, as a string
-     */
-    createWeapon(type: string): Weapon {
-        let weaponType = <WeaponType>RegistryManager.getRegistry("weaponTypes").get(type);
+    createWeapon(name: string): Weapon {
+        const [constr, data] = this.weaponTypeMap.get(name);
+        let weaponType = <WeaponType> new constr();
+        weaponType.initialize(data);
         let sprite = this.add.sprite(weaponType.spriteKey, "primary");
         const weapon = new Weapon(sprite, weaponType, this.battleManager);
         weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
@@ -307,29 +308,25 @@ export default class Level1 extends Scene {
      */
     initializeWeapons(): void{
         let weaponData = this.load.getObject("weaponData");
-
+        this.weaponTypeMap = new Map();
         for(let i = 0; i < weaponData.numWeapons; i++){
             let weapon = weaponData.weapons[i];
-
             // Get the constructor of the prototype
             let constr = RegistryManager.getRegistry("weaponTemplates").get(weapon.weaponType);
-
+            this.weaponTypeMap.set(weapon.name, [constr, weapon]);
             // Create a weapon type
-            let weaponType = new constr();
+            // let weaponType = new constr();
 
             // Initialize the weapon type
-            weaponType.initialize(weapon);
+            // weaponType.initialize(weapon);
+            
 
             // Register the weapon type
-            RegistryManager.getRegistry("weaponTypes").registerItem(weapon.name, weaponType)
+            // RegistryManager.getRegistry("weaponTypes").registerItem(weapon.name, weaponType)
         }
     }
 
     initializePlayer(inventory: InventoryManager): void {
-        // Create the inventory
-        let startingWeapon = this.createWeapon("knife");
-        inventory.addItem(startingWeapon);
-
         // Create the player
         this.player = this.add.animatedSprite("player", "primary");
         this.player.position.set(2*16, 62*16);
@@ -458,5 +455,9 @@ export default class Level1 extends Scene {
             this.enemies[i].setGroup("enemy");
             this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
         }
+
+        [this.player, ...this.allies].forEach(character => {
+            (character.ai as CharacterController).setEnemies(this.enemies);
+        })
     }
 }

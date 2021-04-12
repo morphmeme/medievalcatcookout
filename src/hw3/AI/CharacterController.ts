@@ -1,6 +1,9 @@
 import StateMachineAI from "../../Wolfie2D/AI/StateMachineAI";
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
+import GameNode from "../../Wolfie2D/Nodes/GameNode";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
+import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
+import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import { Events } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import Item from "../GameSystems/items/Item";
@@ -15,6 +18,8 @@ export default class CharacterController extends StateMachineAI implements Battl
 
     // The actual player sprite
     owner: AnimatedSprite;
+
+    enemies: Array<GameNode>
 
     // The inventory of the player
     inventory: InventoryManager;
@@ -53,7 +58,8 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.maxHealth = this.health;
         this.inventory = options.inventory;
         this.direction = Vec2.ZERO;
-        this.speed = options.speed;
+        this.speed = options.speed || 0;
+        this.enemies = [];
 
         this.receiver.subscribe(Events.PLAYER_ROTATE);
 
@@ -68,6 +74,26 @@ export default class CharacterController extends StateMachineAI implements Battl
     damage(damage: number): void {
         this.health -= damage;
         this.health = Math.max(this.health, 0);
+    }
+
+    public setEnemies(enemies: Array<GameNode>) {
+        this.enemies = enemies;
+    }
+
+    public nearestEnemy() {
+        let minDist = Number.MAX_VALUE;
+        let minEnemy = null;
+        for (const enemy of this.enemies) {
+            const dist = this.owner.position.distanceSqTo(enemy.position);
+            if (dist < minDist) {
+                minDist = dist;
+                minEnemy = enemy;
+            }
+        }
+        const walls = <OrthogonalTilemap> this.owner.getScene().getLayer("Wall").getItems()[0];
+        if (minEnemy && MathUtils.visibleBetweenPos(this.owner.position, minEnemy.position, walls))
+            return minEnemy;
+        return null;
     }
 }
 

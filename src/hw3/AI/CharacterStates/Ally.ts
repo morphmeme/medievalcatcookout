@@ -2,6 +2,7 @@ import Queue from "../../../Wolfie2D/DataTypes/Queue";
 import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
+import Timer from "../../../Wolfie2D/Timing/Timer";
 import { Events } from "../../Constants";
 import CharacterController from "../CharacterController";
 import CharacterState from "./CharacterState";
@@ -9,9 +10,12 @@ import CharacterState from "./CharacterState";
 export default class Ally extends CharacterState {
     private destinationPos: Queue<Vec2>;
     private destinationRot: Queue<number>;
+    private pollTimer: Timer;
 
     constructor(parent: CharacterController, owner: AnimatedSprite, private following: CharacterController, private followingDistance: number){
         super(parent, owner);
+
+        this.pollTimer = new Timer(100);
     }
     
     onEnter(options: Record<string, any>): void {
@@ -52,6 +56,18 @@ export default class Ally extends CharacterState {
     }
 
     update(deltaT: number): void {
+        if(this.pollTimer.isStopped()){
+            this.pollTimer.start();
+
+            const enemyPos = this.parent.nearestEnemy()?.position;
+            if(enemyPos){
+                let dir = enemyPos.clone().sub(this.owner.position).normalize();
+                const weapon = this.parent.inventory.getItem();
+                weapon.use(this.owner, "enemy", dir)
+            }
+        }
+
+
         this.parent.speed = this.following.speed;
         this.parent.direction = this.following.direction;
         const distToFollower = this.owner.position.distanceTo(this.following.owner.position);

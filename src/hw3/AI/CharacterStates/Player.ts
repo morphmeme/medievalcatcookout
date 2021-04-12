@@ -76,6 +76,13 @@ export default class Ally extends CharacterState {
                 }
             }
         }
+
+        // Check for slot change
+        if(Input.isJustPressed("slot1")){
+            this.parent.inventory.changeSlot(0);
+        } else if(Input.isJustPressed("slot2")){
+            this.parent.inventory.changeSlot(1);
+        }
     }
 
     onExit(): Record<string, any> {

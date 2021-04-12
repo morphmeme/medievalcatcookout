@@ -23,7 +23,7 @@ export default class SemiAutoGun extends WeaponType {
         this.useVolume = options.useVolume;
     }
 
-    doAnimation(shooter: GameNode, direction: Vec2, line: Line): void {
+    doAnimation(scene: Scene, shooter: GameNode, direction: Vec2): void {
         let start = shooter.position.clone();
         let end = shooter.position.clone().add(direction.scaled(900));
         let delta = end.clone().sub(start);
@@ -60,14 +60,10 @@ export default class SemiAutoGun extends WeaponType {
                 }
             }
         }
-
-        this.line.start = start;
-        this.line.end = end;
-        this.line.tweens.play("fade");
-    }
-
-    createRequiredAssets(scene: Scene) {
-        this.line = <Line>scene.add.graphic(GraphicType.LINE, "primary", {start: new Vec2(-1, 1), end: new Vec2(-1, -1)});
+        if (this.line) {
+            this.line.destroy();
+        }
+        this.line = <Line> scene.add.graphic(GraphicType.LINE, "primary", {start, end});
         this.line.color = this.color;
         this.line.tweens.add("fade", {
             startDelay: 0,
@@ -80,7 +76,11 @@ export default class SemiAutoGun extends WeaponType {
                     ease: EaseFunctionType.OUT_SINE
                 }
             ],
+            onEndCallback: () => {
+                
+            }
         });
+        this.line.tweens.play("fade");
     }
 
     hits(node: GameNode): boolean {

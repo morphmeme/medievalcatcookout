@@ -68,7 +68,6 @@ export default class TweenController {
     play(key: string, loop?: boolean): void {
         if(this.tweens.has(key)){
             let tween = this.tweens.get(key);
-
             // Set loop if needed
             if(loop !== undefined){
                 tween.loop = loop;
