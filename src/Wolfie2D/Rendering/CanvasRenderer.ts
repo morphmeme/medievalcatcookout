@@ -123,8 +123,10 @@ export default class CanvasRenderer extends RenderingManager {
         sortedUILayers.forEach(uiLayer => {
 			if(!uiLayer.isHidden())
 				uiLayer.getItems().forEach(node => {
-                    if((<CanvasNode>node).visible){
-                        this.renderNode(<CanvasNode>node)
+                    const canvasNode = <CanvasNode>node;
+                    if(canvasNode.visible){
+                        this.renderNode(canvasNode)
+                        canvasNode.checkMouseClick();
                     }
                 })
 		});

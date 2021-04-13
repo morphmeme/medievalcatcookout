@@ -2,6 +2,7 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
+import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import Scene from "../../Wolfie2D/Scene/Scene";
 import Color from "../../Wolfie2D/Utils/Color";
 import Item from "./items/Item";
@@ -12,7 +13,6 @@ const LayerNames = {
 }
 
 export default class InventoryManager {
-
     private position: Vec2;
     private items: Array<Item>;
     private inventorySlots: Array<Sprite>;
@@ -40,18 +40,23 @@ export default class InventoryManager {
 
         // Create the inventory slots
         for(let i = 0; i < size; i++){
-            this.inventorySlots[i] = scene.add.sprite(inventorySlot, LayerNames.SLOT_LAYER);
+            const slot = scene.add.sprite(inventorySlot, LayerNames.SLOT_LAYER);
+            slot.onClick = () => {
+                this.changeSlot(i);
+            }
+            this.inventorySlots[i] = slot;
         }
 
         this.slotSize = this.inventorySlots[0].size.clone();
 
         // Position the inventory slots
         for(let i = 0; i < size; i++){
-            this.inventorySlots[i].position.set(position.x + i*(this.slotSize.x + this.padding), position.y);
+            const posX = position.x + i*(this.slotSize.x + this.padding);
+            this.inventorySlots[i].position.set(posX, position.y);
         }
 
         // Add a rect for the selected slot
-        this.selectedSlot = <Rect>scene.add.graphic(GraphicType.RECT, "slots", {position: this.position.clone(), size: this.slotSize.clone().inc(-2)});
+        this.selectedSlot = <Rect>scene.add.graphic(GraphicType.RECT, LayerNames.SLOT_LAYER, {position: this.position.clone(), size: this.slotSize.clone().inc(-2)});
         this.selectedSlot.color = Color.WHITE;
         this.selectedSlot.color.a = 0.2;
     }

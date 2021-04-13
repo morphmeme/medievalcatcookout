@@ -7,7 +7,7 @@ import Healthpack from "../../GameSystems/items/Healthpack";
 import CharacterController from "../CharacterController";
 import CharacterState from "./CharacterState";
 
-export default class Ally extends CharacterState {
+export default class Player extends CharacterState {
     constructor(parent: CharacterController, owner: AnimatedSprite){
         super(parent, owner);
     }

@@ -94,7 +94,7 @@ export default class Level1 extends Scene {
     }
 
     // TODO: This will crash the game after awhile (not long enough to care)
-    // because too many IDs are being generated for each node. Need to reuse IDs or use UUID. Fuck Wolfie2D.
+    // because too many IDs are being generated for each node. Need to reuse IDs or use UUID.
     private drawHp(hp: number, maxHp: number, charPos: Vec2) {
         const redHpBar = this.add.graphic(GraphicType.RECT, "health", {position: charPos.clone().inc(0, -10), size: new Vec2(12, 1)});
         redHpBar.color = Color.RED;
@@ -230,12 +230,19 @@ export default class Level1 extends Scene {
         this.hpBars = this.displayHp();
 
         // Debug mode graph
-        if(Input.isKeyJustPressed("g")){
-            this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
-        }
+        // if(Input.isKeyJustPressed("g")){
+        //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
+        // }
         if(Input.isJustPressed("inventory")){
             this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
             this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
+
+            // pause game
+            this.getLayer("primary").toggle();
+            this.getLayer("health").toggle();
+            this.player.togglePhysics();
+            this.allies.forEach(ally => ally.togglePhysics());
+            this.enemies.forEach(enemy => enemy.togglePhysics());
         }
     }
 

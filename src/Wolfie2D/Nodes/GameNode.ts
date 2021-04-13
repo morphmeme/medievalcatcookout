@@ -278,6 +278,10 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 		this.active = true;
 	}
 
+	togglePhysics(): void {
+		this.active = !this.active;
+	}
+
 	/**
 	 * Sets the collider for this GameNode
 	 * @param collider The new collider to use

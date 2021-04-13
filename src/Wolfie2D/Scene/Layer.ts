@@ -114,6 +114,11 @@ export default class Layer {
         this.hidden = false;
     }
 
+    toggle(): void {
+        this.paused = !this.paused;
+        this.hidden = !this.hidden;
+    }
+
     /**
      * Sets whether or not the scene will ySort automatically.
      * ySorting means that CanvasNodes on this layer will have their depth sorted depending on their y-value.
