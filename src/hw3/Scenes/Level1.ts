@@ -160,7 +160,7 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        let inventory = new InventoryManager(this, 10, "inventorySlot", new Vec2(16, 16), 4);
+        let inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4);
 
         // Create the player
         this.initializePlayer(inventory);
@@ -172,7 +172,7 @@ export default class Level1 extends Scene {
         this.viewport.follow(this.player);
 
         // Zoom in to a reasonable level
-        this.viewport.enableZoom();
+        // this.viewport.enableZoom();
         this.viewport.setZoomLevel(4);
 
         // Create the navmesh
@@ -236,14 +236,16 @@ export default class Level1 extends Scene {
         if(Input.isJustPressed("inventory")){
             this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
             this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
-
-            // pause game
-            this.getLayer("primary").toggle();
-            this.getLayer("health").toggle();
-            this.player.togglePhysics();
-            this.allies.forEach(ally => ally.togglePhysics());
-            this.enemies.forEach(enemy => enemy.togglePhysics());
+            this.togglePause();
         }
+    }
+
+    togglePause() {
+        this.getLayer("primary").toggle();
+        this.getLayer("health").toggle();
+        this.player.togglePhysics();
+        this.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
     }
 
     /**
@@ -346,6 +348,7 @@ export default class Level1 extends Scene {
         this.player.animation.play("IDLE");
         this.player.setGroup("player");
         this.player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+        inventory.addCharacter(this.player);
     }
 
     initializeAllies(inventory: InventoryManager): void {
@@ -364,6 +367,7 @@ export default class Level1 extends Scene {
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
             allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+            inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
     }
