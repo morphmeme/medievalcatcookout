@@ -20,8 +20,6 @@ export default abstract class UIElement extends CanvasNode {
 	padding: Vec2;
 
 	// EventAttributes
-	/** The reaction of this UIElement on a click */
-	onClick: Function;
 	/** The event propagated on click */
 	onClickEventId: string;
 	/** The reaction to the release of a click */

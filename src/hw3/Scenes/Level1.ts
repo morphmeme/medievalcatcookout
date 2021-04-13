@@ -94,7 +94,7 @@ export default class Level1 extends Scene {
     }
 
     // TODO: This will crash the game after awhile (not long enough to care)
-    // because too many IDs are being generated for each node. Need to reuse IDs or use UUID. Fuck Wolfie2D.
+    // because too many IDs are being generated for each node. Need to reuse IDs or use UUID.
     private drawHp(hp: number, maxHp: number, charPos: Vec2) {
         const redHpBar = this.add.graphic(GraphicType.RECT, "health", {position: charPos.clone().inc(0, -10), size: new Vec2(12, 1)});
         redHpBar.color = Color.RED;
@@ -160,7 +160,7 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        let inventory = new InventoryManager(this, 10, "inventorySlot", new Vec2(16, 16), 4);
+        let inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4);
 
         // Create the player
         this.initializePlayer(inventory);
@@ -172,7 +172,7 @@ export default class Level1 extends Scene {
         this.viewport.follow(this.player);
 
         // Zoom in to a reasonable level
-        this.viewport.enableZoom();
+        // this.viewport.enableZoom();
         this.viewport.setZoomLevel(4);
 
         // Create the navmesh
@@ -230,13 +230,22 @@ export default class Level1 extends Scene {
         this.hpBars = this.displayHp();
 
         // Debug mode graph
-        if(Input.isKeyJustPressed("g")){
-            this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
-        }
+        // if(Input.isKeyJustPressed("g")){
+        //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
+        // }
         if(Input.isJustPressed("inventory")){
             this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
             this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
+            this.togglePause();
         }
+    }
+
+    togglePause() {
+        this.getLayer("primary").toggle();
+        this.getLayer("health").toggle();
+        this.player.togglePhysics();
+        this.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
     }
 
     /**
@@ -339,6 +348,7 @@ export default class Level1 extends Scene {
         this.player.animation.play("IDLE");
         this.player.setGroup("player");
         this.player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+        inventory.addCharacter(this.player);
     }
 
     initializeAllies(inventory: InventoryManager): void {
@@ -357,6 +367,7 @@ export default class Level1 extends Scene {
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
             allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+            inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
     }

@@ -4,6 +4,8 @@ import Region from "../DataTypes/Interfaces/Region";
 import AABB from "../DataTypes/Shapes/AABB";
 import Debug from "../Debug/Debug";
 import Color from "../Utils/Color";
+import Input from "../Input/Input";
+import { GraphicType } from "./Graphics/GraphicTypes";
 
 /**
  * The representation of an object in the game world that can be drawn to the screen
@@ -15,6 +17,13 @@ export default abstract class CanvasNode extends GameNode implements Region {
 	private _hasCustomShader: boolean;
 	private _customShaderKey: string;
 	private _alpha: number;
+	private _onClick: Function;
+	public get onClick(): Function {
+		return this._onClick;
+	}
+	public set onClick(value: Function) {
+		this._onClick = value;
+	}
 
 	/** A flag for whether or not the CanvasNode is visible */
 	visible: boolean = true;
@@ -29,6 +38,7 @@ export default abstract class CanvasNode extends GameNode implements Region {
 		this.updateBoundary();
 
 		this._hasCustomShader = false;
+		this.onClick = null;
 	}
 
 	get alpha(): number {
@@ -106,8 +116,17 @@ export default abstract class CanvasNode extends GameNode implements Region {
 
 	get sizeWithZoom(): Vec2 {
 		let zoom = this.scene.getViewScale();
-
 		return this.boundary.halfSize.clone().scaled(zoom, zoom);
+	}
+
+	get boundaryWithZoom(): AABB {
+		const origin = this.scene.getViewTranslation(this);;
+		const zoom = this.scene.getViewScale();
+
+		const newBoundary = this.boundary.clone();
+		newBoundary.center.set((this.position.x - origin.x)*zoom, (this.position.y - origin.y)*zoom);
+		newBoundary.halfSize.scale(zoom);
+		return newBoundary;
 	}
 
 	/**
@@ -129,9 +148,24 @@ export default abstract class CanvasNode extends GameNode implements Region {
 		return this._boundary.containsPoint(new Vec2(x, y));
 	}
 
+	containsWithZoom(x: number, y: number): boolean {
+		return this.boundaryWithZoom.containsPoint(new Vec2(x, y));
+	}
+
 	// @implemented
 	debugRender(): void {
 		Debug.drawBox(this.relativePosition, this.sizeWithZoom, false, Color.BLUE);
 		super.debugRender();
+	}
+
+	public checkMouseClick() {
+		if(Input.isMouseJustPressed()){
+			let clickPos = Input.getMousePressPosition();
+			if(this.containsWithZoom(clickPos.x, clickPos.y) && this.visible && !this.layer.isHidden()){
+				if(this.onClick !== null){
+					this.onClick();
+				}
+			}
+		}
 	}
 }
