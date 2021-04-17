@@ -19,6 +19,7 @@ export default class Player extends CharacterState {
     }
 
     update(deltaT: number): void {
+        this.parent.inventory.update();
         // Get the movement direction
         if (Input.isPressed("forward") && this.owner.rotation !== Math.PI) {
             this.parent.direction.y = -1;

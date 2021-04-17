@@ -126,8 +126,8 @@ export default class CanvasRenderer extends RenderingManager {
                     const canvasNode = <CanvasNode>node;
                     if(canvasNode.visible){
                         this.renderNode(canvasNode)
-                        canvasNode.checkMouseClick();
                     }
+                    // canvasNode.checkMouseClick();
                 })
 		});
     }
