@@ -3,7 +3,7 @@ import BattlerAI from "../AI/BattlerAI";
 import Weapon from "./items/Weapon";
 
 export default class BattleManager {
-    player: BattlerAI;
+    allies: Array<BattlerAI>;
 
     enemies: Array<BattlerAI>;
 
@@ -16,15 +16,17 @@ export default class BattleManager {
                 }
             }
         } else {
-            // Check for collision with player
-            if(weapon.hits(this.player.owner)){
-                this.player.damage(weapon.type.damage);
-            }
+            // Check for collision with allies
+            this.allies.forEach(ally => {
+                if(weapon.hits(ally.owner)){
+                    ally.damage(weapon.type.damage);
+                }
+            })
         }
     }
 
-    setPlayer(player: BattlerAI): void {
-        this.player = player;
+    setAllies(allies: Array<BattlerAI>): void {
+        this.allies = allies;
     }
 
     setEnemies(enemies: Array<BattlerAI>): void {

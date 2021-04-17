@@ -12,7 +12,7 @@ export default class Ally extends CharacterState {
     private destinationRot: Queue<number>;
     private pollTimer: Timer;
 
-    constructor(parent: CharacterController, owner: AnimatedSprite, private following: CharacterController, private followingDistance: number){
+    constructor(parent: CharacterController, owner: AnimatedSprite, private followingDistance: number){
         super(parent, owner);
 
         this.pollTimer = new Timer(100);
@@ -35,17 +35,17 @@ export default class Ally extends CharacterState {
 
     private forceFollowPosition() {
         if (this.owner.rotation === 0)
-            this.owner.position.set(this.following.owner.position.x,
-                                    this.following.owner.position.y + this.followingDistance);
+            this.owner.position.set(this.parent.following.owner.position.x,
+                                    this.parent.following.owner.position.y + this.followingDistance);
         else if (this.owner.rotation === Math.PI)
-            this.owner.position.set(this.following.owner.position.x,
-                                    this.following.owner.position.y - this.followingDistance);
+            this.owner.position.set(this.parent.following.owner.position.x,
+                                    this.parent.following.owner.position.y - this.followingDistance);
         else if (this.owner.rotation === Math.PI/2)
-            this.owner.position.set(this.following.owner.position.x - this.followingDistance,
-                                    this.following.owner.position.y);
+            this.owner.position.set(this.parent.following.owner.position.x - this.followingDistance,
+                                    this.parent.following.owner.position.y);
         else if (this.owner.rotation === 3*Math.PI/2)
-            this.owner.position.set(this.following.owner.position.x + this.followingDistance,
-                                    this.following.owner.position.y);
+            this.owner.position.set(this.parent.following.owner.position.x + this.followingDistance,
+                                    this.parent.following.owner.position.y);
     }
 
     private crossInflection(rot: number, pos: Vec2, currentPos: Vec2) {
@@ -64,14 +64,14 @@ export default class Ally extends CharacterState {
             if(enemyPos){
                 let dir = enemyPos.clone().sub(this.owner.position).normalize();
                 const weapon = this.parent.inventory.getWeapon(this.owner);
-                weapon?.use(this.owner, "enemy", dir)
+                weapon?.use(this.owner, "player", dir)
             }
         }
 
 
-        this.parent.speed = this.following.speed;
-        this.parent.direction = this.following.direction;
-        const distToFollower = this.owner.position.distanceTo(this.following.owner.position);
+        this.parent.speed = this.parent.following.speed;
+        this.parent.direction = this.parent.following.direction;
+        const distToFollower = this.owner.position.distanceTo(this.parent.following.owner.position);
         // Speed up if left behind
         if (distToFollower - this.followingDistance >= 1) {
             const catchUpFactor = this.parent.speed + (distToFollower - this.followingDistance) ** 1.5;
@@ -95,7 +95,7 @@ export default class Ally extends CharacterState {
             this.owner.animation.playIfNotAlready("WALK", true);
         } else if (!this.parent.direction.isZero()
             ) {
-            this.owner.move(this.owner.position.dirTo(this.following.owner.position).normalized().scale(this.parent.speed * deltaT));
+            this.owner.move(this.owner.position.dirTo(this.parent.following.owner.position).normalized().scale(this.parent.speed * deltaT));
             this.owner.animation.playIfNotAlready("WALK", true);
         } else {
             this.owner.animation.playIfNotAlready("IDLE", true);
