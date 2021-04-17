@@ -21,6 +21,8 @@ export default class CharacterController extends StateMachineAI implements Battl
 
     enemies: Array<GameNode>
 
+    allies: Array<GameNode>
+
     // The inventory of the player
     inventory: InventoryManager;
 
@@ -57,6 +59,7 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.health = 25;
         this.maxHealth = this.health;
         this.inventory = options.inventory;
+        this.allies = options.allies;
         this.direction = Vec2.ZERO;
         this.speed = options.speed || 0;
         this.enemies = [];
@@ -91,7 +94,8 @@ export default class CharacterController extends StateMachineAI implements Battl
             }
         }
         const walls = <OrthogonalTilemap> this.owner.getScene().getLayer("Wall").getItems()[0];
-        if (minEnemy && MathUtils.visibleBetweenPos(this.owner.position, minEnemy.position, walls))
+        console.log(this.allies.filter(ally => ally !== this.owner).length);
+        if (minEnemy && MathUtils.visibleBetweenPos(this.owner.position, minEnemy.position, walls, this.allies.filter(ally => ally !== this.owner)))
             return minEnemy;
         return null;
     }

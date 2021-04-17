@@ -108,7 +108,7 @@ export default class Level1 extends Scene {
     }
 
     private displayHp() {
-        return [this.player, ...this.allies, ...this.enemies].map(character => {
+        return [...this.allies, ...this.enemies].map(character => {
             if (character?.ai && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
                 return this.drawHp(health, maxHealth, character.position);
@@ -167,10 +167,9 @@ export default class Level1 extends Scene {
 
         let inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
 
+        this.allies = new Array();
         // Create the player
         this.initializePlayer(inventory);
-
-        this.allies = new Array();
 
         // Create allies
         this.initializeAllies(inventory)
@@ -260,7 +259,6 @@ export default class Level1 extends Scene {
         
         this.getLayer("primary").toggle();
         this.getLayer("health").toggle();
-        this.player.togglePhysics();
         this.allies.forEach(ally => ally.togglePhysics());
         this.enemies.forEach(enemy => enemy.togglePhysics());
         if (this.viewport.getZoomLevel() !== 4) {
@@ -366,6 +364,7 @@ export default class Level1 extends Scene {
             {
                 speed: 100,
                 inventory,
+                allies: this.allies,
             });
         this.player.animation.play("IDLE");
         this.player.setGroup("player");
@@ -373,6 +372,7 @@ export default class Level1 extends Scene {
         this.player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         this.player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         inventory.addCharacter(this.player);
+        this.allies.push(this.player);
     }
 
     initializeAllies(inventory: InventoryManager): void {
@@ -385,6 +385,7 @@ export default class Level1 extends Scene {
                     inventory,
                     following: i == 0 ? this.player.ai : this.allies[this.allies.length-1].ai,
                     followingDistance: 22,
+                    allies: this.allies,
                 });
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
@@ -491,7 +492,7 @@ export default class Level1 extends Scene {
             this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
         }
 
-        [this.player, ...this.allies].forEach(character => {
+        this.allies.forEach(character => {
             (character.ai as CharacterController).setEnemies(this.enemies);
         })
     }
