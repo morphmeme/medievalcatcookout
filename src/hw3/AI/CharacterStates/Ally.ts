@@ -56,6 +56,7 @@ export default class Ally extends CharacterState {
     }
 
     update(deltaT: number): void {
+        // Using weapon
         if(this.pollTimer.isStopped()){
             this.pollTimer.start();
 

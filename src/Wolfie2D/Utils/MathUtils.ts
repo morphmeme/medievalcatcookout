@@ -1,5 +1,6 @@
 import AABB from "../DataTypes/Shapes/AABB";
 import Vec2 from "../DataTypes/Vec2";
+import GameNode from "../Nodes/GameNode";
 import OrthogonalTilemap from "../Nodes/Tilemaps/OrthogonalTilemap";
 
 /** A class containing some utility functions for math operations */
@@ -198,7 +199,7 @@ export default class MathUtils {
         return Vec2.ZERO;
     }
 
-    static visibleBetweenPos(pos0: Vec2, pos1: Vec2, walls: OrthogonalTilemap) {
+    static visibleBetweenPos(pos0: Vec2, pos1: Vec2, walls: OrthogonalTilemap, avoid?: Array<GameNode>) {
         let delta = pos1.clone().sub(pos0);
 
         // Iterate through the tilemap region until we find a collision
@@ -211,6 +212,16 @@ export default class MathUtils {
         let maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
 
         let tileSize = walls.getTileSize();
+
+        if (avoid) {
+            for (const avoiding of avoid) {
+                const hit = (avoiding.collisionShape as AABB).intersectSegment(pos0, delta, Vec2.ZERO);
+                if(hit !== null && pos0.distanceSqTo(hit.pos) < pos0.distanceSqTo(pos1)){
+                    // We hit an ally, we can't see the player
+                    return false;
+                }
+            }
+        }
 
         for(let col = minIndex.x; col <= maxIndex.x; col++){
             for(let row = minIndex.y; row <= maxIndex.y; row++){
