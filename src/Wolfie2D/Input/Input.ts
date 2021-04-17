@@ -112,7 +112,7 @@ export default class Input {
 			}
 
 			if(event.type === GameEventType.CANVAS_BLUR){
-				Input.clearKeyPresses()
+				Input.clearKeyPresses();
 			}
 
 			if(event.type === GameEventType.WHEEL_UP){
@@ -292,7 +292,7 @@ export default class Input {
 	 * @returns The mouse position stored as a Vec2
 	 */
 	static getMousePressPosition(): Vec2 {
-		return Input.mousePressPosition;
+		return Input.mousePressPosition.scaled(1/this.viewport.getZoomLevel());
 	}
 
 	/**

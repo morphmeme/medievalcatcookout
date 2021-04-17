@@ -276,6 +276,15 @@ export default class BasicPhysicsManager extends PhysicsManager {
 					});
 				}
 
+				// Added because Tilemaps don't have triggers.
+				if (overlap.other instanceof OrthogonalTilemap && node.isTrigger && (node.triggerMask & overlap.other.group)) {
+					let index = Math.floor(Math.log2(overlap.other.group));
+					this.emitter.fireEvent(node.triggerEnters[index], {
+						node: (<GameNode>node).id,
+						other: (<GameNode>overlap.other).id
+					});
+				}
+
 				// Ignore collision sides for nodes we don't interact with
 				if((this.collisionMasks[groupIndex] & overlap.other.group) === 0) continue;
 

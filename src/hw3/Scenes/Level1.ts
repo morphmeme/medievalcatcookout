@@ -90,6 +90,8 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_ENEMY,
             Events.ENEMY_COLLIDES_PLAYER,
             Events.PLAYER_COLLIDES_ITEM,
+            Events.PLAYER_COLLIDES_PLAYER,
+            Events.PLAYER_COLLIDES_GROUND
         ]);
     }
 
@@ -127,15 +129,15 @@ export default class Level1 extends Scene {
         const right_0to1 = direction_0to1.dot(Vec2.LEFT) > 0.5;
         if (cardinalRad0 == 2 && cardinalRad1 == 0 ||
             cardinalRad0 == 3 && cardinalRad1 == 1) {
-            (character1.ai as EnemyAI).damage(1);
-            (character0.ai as EnemyAI).damage(1);
+            (character1.ai as BattlerAI).damage(1);
+            (character0.ai as BattlerAI).damage(1);
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
-            (character1.ai as EnemyAI).damage(1);
+            (character1.ai as BattlerAI).damage(1);
         } else {
-            (character0.ai as EnemyAI).damage(1);
+            (character0.ai as BattlerAI).damage(1);
         }
     }
 
@@ -165,6 +167,8 @@ export default class Level1 extends Scene {
         // Create the player
         this.initializePlayer(inventory);
 
+        this.allies = new Array();
+
         // Create allies
         this.initializeAllies(inventory)
 
@@ -192,7 +196,7 @@ export default class Level1 extends Scene {
         this.spawnItems();
 
         // Add a UI for health
-        this.addLayer("health", 10);
+        this.addLayer("health", 200);
     }
 
     updateScene(deltaT: number): void {
@@ -205,10 +209,17 @@ export default class Level1 extends Scene {
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ENEMY:
-                case Events.ENEMY_COLLIDES_PLAYER: {
+                case Events.ENEMY_COLLIDES_PLAYER:
+                case Events.PLAYER_COLLIDES_PLAYER: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     this.handleCharacterCollision(<AnimatedSprite>node, <AnimatedSprite>other);
+                    break;
+                }
+                case Events.PLAYER_COLLIDES_GROUND: {
+                    console.log("What")
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    (node.ai as BattlerAI).damage(1);
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ITEM: {
@@ -236,6 +247,7 @@ export default class Level1 extends Scene {
         if(Input.isJustPressed("inventory")){
             this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
             this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
+            this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
             this.togglePause();
         }
     }
@@ -348,12 +360,12 @@ export default class Level1 extends Scene {
         this.player.animation.play("IDLE");
         this.player.setGroup("player");
         this.player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+        this.player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
+        this.player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         inventory.addCharacter(this.player);
     }
 
     initializeAllies(inventory: InventoryManager): void {
-        this.allies = new Array();
-
         for (const i of [0,1,2]) {
             const allySprite = this.add.animatedSprite("player", "primary");
             allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
@@ -362,11 +374,13 @@ export default class Level1 extends Scene {
                     speed: 100,
                     inventory,
                     following: i == 0 ? this.player.ai : this.allies[this.allies.length-1].ai,
-                    followingDistance: 16,
+                    followingDistance: 22,
                 });
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
             allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+            allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
+            allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
             inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
