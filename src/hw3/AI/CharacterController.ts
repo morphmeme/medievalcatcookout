@@ -3,6 +3,7 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import GameNode from "../../Wolfie2D/Nodes/GameNode";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
+import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import { Events } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
@@ -26,6 +27,8 @@ export default class CharacterController extends StateMachineAI implements Battl
     // The inventory of the player
     inventory: InventoryManager;
 
+    following: CharacterController;
+
     _direction: Vec2;
     get direction() {
         return this._direction;
@@ -42,7 +45,7 @@ export default class CharacterController extends StateMachineAI implements Battl
         this._speed = x;
     }
 
-    
+    private viewport: Viewport;
 
     destroy() {
         // Get rid of our reference to the owner
@@ -60,23 +63,47 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.maxHealth = this.health;
         this.inventory = options.inventory;
         this.allies = options.allies;
+        this.viewport = options.viewport;
         this.direction = Vec2.ZERO;
         this.speed = options.speed || 0;
+        this.following = options.following;
         this.enemies = [];
 
         this.receiver.subscribe(Events.PLAYER_ROTATE);
 
+        this.addState(CharacterStates.ALLY, new Ally(this, owner, options.followingDistance));
+        this.addState(CharacterStates.PLAYER, new Player(this, owner));
         if (options.following) {
-            this.addState(CharacterStates.DEFAULT, new Ally(this, owner, options.following, options.followingDistance));
+            this.initialize(CharacterStates.ALLY);
         } else {
-            this.addState(CharacterStates.DEFAULT, new Player(this, owner));
+            this.initialize(CharacterStates.PLAYER);
         }
-        this.initialize(CharacterStates.DEFAULT);
+        
     }
 
     damage(damage: number): void {
         this.health -= damage;
         this.health = Math.max(this.health, 0);
+        if (this.health === 0) {
+            const indexOfCharacter = this.allies.indexOf(this.owner);
+            if (indexOfCharacter === 0) {
+                if (this.allies.length > 1) {
+                    (this.allies[1].ai as CharacterController).changeState(CharacterStates.PLAYER);
+                    this.viewport.follow(this.allies[1]);
+                }
+            } else {
+                console.log(this.allies[indexOfCharacter-1]);
+                console.log(this.allies[indexOfCharacter+1]);
+                if (this.allies[indexOfCharacter-1]?.ai && this.allies[indexOfCharacter+1]?.ai)
+                    (this.allies[indexOfCharacter+1].ai as CharacterController).following = (this.allies[indexOfCharacter-1].ai as CharacterController);
+            }
+            this.owner.setAIActive(false, {});
+            this.owner.isCollidable = false;
+            this.owner.visible = false;
+            this.owner.disablePhysics();
+            this.owner.destroy();
+            this.allies.splice(indexOfCharacter, 1);
+        }
     }
 
     public setEnemies(enemies: Array<GameNode>) {
@@ -88,13 +115,12 @@ export default class CharacterController extends StateMachineAI implements Battl
         let minEnemy = null;
         for (const enemy of this.enemies) {
             const dist = this.owner.position.distanceSqTo(enemy.position);
-            if (dist < minDist) {
+            if (enemy.ai && dist < minDist) {
                 minDist = dist;
                 minEnemy = enemy;
             }
         }
         const walls = <OrthogonalTilemap> this.owner.getScene().getLayer("Wall").getItems()[0];
-        console.log(this.allies.filter(ally => ally !== this.owner).length);
         if (minEnemy && MathUtils.visibleBetweenPos(this.owner.position, minEnemy.position, walls, this.allies.filter(ally => ally !== this.owner)))
             return minEnemy;
         return null;
@@ -102,5 +128,6 @@ export default class CharacterController extends StateMachineAI implements Battl
 }
 
 export enum CharacterStates {
-    DEFAULT = "default",
+    ALLY = "ally",
+    PLAYER = "player",
 }

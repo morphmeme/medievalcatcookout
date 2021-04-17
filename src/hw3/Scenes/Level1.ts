@@ -25,11 +25,11 @@ import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
 import CharacterController from "../AI/CharacterController";
 import Graphic from "../../Wolfie2D/Nodes/Graphic";
+import Timer from "../../Wolfie2D/Timing/Timer";
+import { drawProgressBar } from "../Util";
 
 export default class Level1 extends Scene {
-    // The player
-    private player: AnimatedSprite;
-
+    // The players
     private allies: Array<AnimatedSprite>;
     
     // A list of enemies
@@ -49,10 +49,11 @@ export default class Level1 extends Scene {
 
     // Characters healths
     private hpBars: Array<Graphic>;
-
+    private hpBarUpdateTimer: Timer;
     private weaponTypeMap: Map<string, any>;
 
     private zoomLevel: number;
+    private inventory: InventoryManager;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -97,21 +98,11 @@ export default class Level1 extends Scene {
         ]);
     }
 
-    // TODO: This will crash the game after awhile (not long enough to care)
-    // because too many IDs are being generated for each node. Need to reuse IDs or use UUID.
-    private drawHp(hp: number, maxHp: number, charPos: Vec2) {
-        const redHpBar = this.add.graphic(GraphicType.RECT, "health", {position: charPos.clone().inc(0, -10), size: new Vec2(12, 1)});
-        redHpBar.color = Color.RED;
-        const greenHpBar = this.add.graphic(GraphicType.RECT, "health", {position: charPos.clone().inc(-(12 - 12 * (hp/maxHp)) / 2, -10), size: new Vec2(12 * (hp/maxHp), 1)});
-        greenHpBar.color = Color.GREEN;
-        return [greenHpBar, redHpBar];
-    }
-
     private displayHp() {
         return [...this.allies, ...this.enemies].map(character => {
             if (character?.ai && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
-                return this.drawHp(health, maxHealth, character.position);
+                return drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
             }
             return [];
         }).flat();
@@ -145,6 +136,7 @@ export default class Level1 extends Scene {
 
     startScene(){
         this.zoomLevel = 4;
+        this.hpBarUpdateTimer = new Timer(10);
         // Add in the tilemap
         let tilemapLayers = this.add.tilemap("level");
 
@@ -165,20 +157,20 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        let inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
+        this.inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
 
         this.allies = new Array();
         // Create the player
-        this.initializePlayer(inventory);
+        this.initializePlayer(this.inventory);
 
         // Create allies
-        this.initializeAllies(inventory)
+        this.initializeAllies(this.inventory)
 
         // Make the viewport follow the player
-        this.viewport.follow(this.player);
+        this.viewport.follow(this.allies[0]);
 
         // Zoom in to a reasonable level
-        // this.viewport.enableZoom();
+        this.viewport.enableZoom();
         this.viewport.setZoomLevel(this.zoomLevel);
 
         // Create the navmesh
@@ -188,7 +180,7 @@ export default class Level1 extends Scene {
         this.initializeEnemies();
 
         // Send the player and enemies to the battle manager
-        this.battleManager.setPlayer(<BattlerAI>this.player._ai);
+        this.battleManager.setAllies(this.allies.map(ally => <BattlerAI>ally._ai));
         this.battleManager.setEnemies(this.enemies.map(enemy => <BattlerAI>enemy._ai));
 
         // Subscribe to relevant events
@@ -202,6 +194,9 @@ export default class Level1 extends Scene {
     }
 
     updateScene(deltaT: number): void {
+        if (this.allies.length === 0) {
+            this.sceneManager.changeToScene(GameOver);
+        }
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
 
@@ -220,26 +215,27 @@ export default class Level1 extends Scene {
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
-                    (node.ai as BattlerAI).damage(1);
+                    (node?.ai as BattlerAI)?.damage(1);
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ITEM: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
-                    if (node == this.player) {
-                        const item = this.items.get(other);
-                        (this.player.ai as CharacterController).addToInventory(item);
-                    }
+                    const item = this.items.get(other);
+                    (node?.ai as CharacterController)?.addToInventory(item);
                 }
                 default: {
 
                 }
             }
         }
-        if (this.hpBars) {
-            this.hpBars.forEach(hpBar => hpBar.destroy());
+        if (this.hpBarUpdateTimer.isStopped()) {
+            this.hpBarUpdateTimer.start();
+            if (this.hpBars) {
+                this.hpBars.forEach(hpBar => hpBar?.destroy());
+            }
+            this.hpBars = this.displayHp();
         }
-        this.hpBars = this.displayHp();
 
         // Debug mode graph
         // if(Input.isKeyJustPressed("g")){
@@ -247,6 +243,7 @@ export default class Level1 extends Scene {
         // }
         if(Input.isJustPressed("inventory")){
             this.togglePause();
+            this.inventory.updateHpBars();
         }
     }
 
@@ -262,6 +259,7 @@ export default class Level1 extends Scene {
         this.allies.forEach(ally => ally.togglePhysics());
         this.enemies.forEach(enemy => enemy.togglePhysics());
         if (this.viewport.getZoomLevel() !== 4) {
+            this.zoomLevel = this.viewport.getZoomLevel();
             this.viewport.setZoomLevel(4);
         } else {
             this.viewport.setZoomLevel(this.zoomLevel);
@@ -357,22 +355,23 @@ export default class Level1 extends Scene {
 
     initializePlayer(inventory: InventoryManager): void {
         // Create the player
-        this.player = this.add.animatedSprite("player", "primary");
-        this.player.position.set(2*16, 62*16);
-        this.player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-        this.player.addAI(CharacterController,
+        const player = this.add.animatedSprite("player", "primary");
+        player.position.set(2*16, 62*16);
+        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        player.addAI(CharacterController,
             {
                 speed: 100,
                 inventory,
                 allies: this.allies,
+                viewport: this.viewport,
             });
-        this.player.animation.play("IDLE");
-        this.player.setGroup("player");
-        this.player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
-        this.player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
-        this.player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
-        inventory.addCharacter(this.player);
-        this.allies.push(this.player);
+        player.animation.play("IDLE");
+        player.setGroup("player");
+        player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+        player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
+        player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+        inventory.addCharacter(player);
+        this.allies.push(player);
     }
 
     initializeAllies(inventory: InventoryManager): void {
@@ -383,9 +382,10 @@ export default class Level1 extends Scene {
                 {
                     speed: 100,
                     inventory,
-                    following: i == 0 ? this.player.ai : this.allies[this.allies.length-1].ai,
+                    following: this.allies[this.allies.length-1].ai,
                     followingDistance: 22,
                     allies: this.allies,
+                    viewport: this.viewport,
                 });
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
@@ -483,7 +483,7 @@ export default class Level1 extends Scene {
                 patrolRoute: data.route,            // This only matters if they're a patroller
                 guardPosition: data.guardPosition,  // This only matters if the're a guard
                 health: data.health,
-                player: this.player,
+                allies: this.allies,
                 weapon: this.createWeapon("weak_pistol")
             }
 

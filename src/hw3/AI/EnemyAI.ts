@@ -28,7 +28,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     weapon: Weapon;
 
     /** A reference to the player object */
-    player: GameNode;
+    allies: Array<GameNode>;
 
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
@@ -49,7 +49,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
 
         this.weapon = options.weapon;
 
-        this.player = options.player;
+        this.allies = options.allies;
 
         // Subscribe to events
         this.receiver.subscribe(Events.SHOT_FIRED);
@@ -83,7 +83,12 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
 
 
     getPlayerPosition(): Vec2 {
-        let pos = this.player.position;
+        // Attack first of snake TODO: change?
+        if (this.allies[0] === null || this.allies[0] === undefined) {
+            console.log(this.allies.toString());
+            return null;
+        }
+        let pos = this.allies[0].position;
         let start = this.owner.position.clone();
 
         let walls = <OrthogonalTilemap> this.owner.getScene().getLayer("Wall").getItems()[0];

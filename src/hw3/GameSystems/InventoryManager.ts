@@ -1,15 +1,20 @@
 import AABB from "../../Wolfie2D/DataTypes/Shapes/AABB";
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import Input from "../../Wolfie2D/Input/Input";
+import GameNode from "../../Wolfie2D/Nodes/GameNode";
+import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
 import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
+import UILayer from "../../Wolfie2D/Scene/Layers/UILayer";
 import Scene from "../../Wolfie2D/Scene/Scene";
 import Color from "../../Wolfie2D/Utils/Color";
+import BattlerAI from "../AI/BattlerAI";
 import CharacterController from "../AI/CharacterController";
 import { Events } from "../Constants";
+import { drawProgressBar } from "../Util";
 import Item from "./items/Item";
 
 const LayerNames = {
@@ -18,6 +23,12 @@ const LayerNames = {
     ITEM_LAYER: "items",
     CLICK_LAYER: "inv_click",
     BACKGROUND_LAYER: "inv_bg",
+}
+
+type CharacterInfo = {
+    slotIdxStart: number,
+    hpBars: Graphic[],
+    character: AnimatedSprite,
 }
 
 export default class InventoryManager {
@@ -33,10 +44,12 @@ export default class InventoryManager {
     private viewPortWidth: number;
     private margin: number;
     private slotsCount: number;
+    private portraitLayer: UILayer;
 
     private currentlyMoving: [Item, number];
     private inventoryStart: number;
-    private characterToIdx: Map<number, number>;
+    // Partitions some slots for characters
+    private characterToInfo: Map<number, CharacterInfo>;
 
     constructor(private scene: Scene, size: number, private inventorySlot: string, position: Vec2, padding: number, private zoomLevel: number){
         this.items = new Array(size);
@@ -48,7 +61,7 @@ export default class InventoryManager {
         this.margin = 120;
         this.currentlyMoving = null;
         this.inventoryStart = 0;
-        this.characterToIdx = new Map();
+        this.characterToInfo = new Map();
         this.slotPositions = new Map();
         this.slotsCount = size;
         
@@ -56,9 +69,9 @@ export default class InventoryManager {
         const bgLayer = scene.addUILayer(LayerNames.BACKGROUND_LAYER);
         bgLayer.setDepth(100)
         bgLayer.setHidden(true);
-        const portraitLayer = scene.addUILayer(LayerNames.PORTRAIT_LAYER);
-        portraitLayer.setDepth(101)
-        portraitLayer.setHidden(true);
+        this.portraitLayer = scene.addUILayer(LayerNames.PORTRAIT_LAYER);
+        this.portraitLayer.setDepth(101)
+        this.portraitLayer.setHidden(true);
         const slotLayer = scene.addUILayer(LayerNames.SLOT_LAYER);
         slotLayer.setDepth(102)
         slotLayer.setHidden(true);
@@ -108,7 +121,7 @@ export default class InventoryManager {
 
     // Called by player update
     update() {
-        this.currentlyMoving?.[0]?.moveSprite(Input.getMousePosition(), LayerNames.ITEM_LAYER)
+        this.currentlyMoving?.[0]?.moveSprite(Input.getMousePosition(), LayerNames.ITEM_LAYER);
     }
 
     slotOnClick(i: number) {
@@ -139,11 +152,14 @@ export default class InventoryManager {
     }
 
     addCharacter(character: AnimatedSprite) {
-        this.characterToIdx.set(character.id, this.inventoryStart);
+        this.characterToInfo.set(character.id, {character, slotIdxStart: this.inventoryStart, ...this.characterToInfo.get(character.id)});
         // TODO edit player
-        this.drawCharacterPortrait(this.inventoryStart, "player");
+        this.drawCharacterPortrait(this.inventoryStart, character, "player");
         this.inventoryStart += 1;
+    }
 
+    // TODO later
+    deleteCharacter(character: AnimatedSprite) {
     }
 
     moveSlotSprites(i: number, pos: Vec2) {
@@ -158,7 +174,29 @@ export default class InventoryManager {
         }
     }
 
-    drawCharacterPortrait(i: number, spriteImageId: string) {
+    private updateHpBar(character: AnimatedSprite, pos: Vec2) {
+        const hpBars = character.ai ?
+            drawProgressBar(this.scene, (character.ai as BattlerAI).health, (character.ai as BattlerAI).maxHealth, 50, pos, LayerNames.PORTRAIT_LAYER)
+            : drawProgressBar(this.scene, 0, 1, 50, pos, LayerNames.PORTRAIT_LAYER)
+        ;
+        this.characterToInfo.set(character.id, {hpBars, ...this.characterToInfo.get(character.id)});
+    }
+
+    updateHpBars() {
+        for (const {hpBars, character} of this.characterToInfo.values()) {
+            if (hpBars) {
+                const pos = hpBars[0].position.clone();
+                const [prevGreenBar, prevRedBar] = hpBars;
+                if (prevGreenBar.tweens)
+                    prevGreenBar.destroy();
+                if (prevRedBar.tweens)
+                    prevRedBar.destroy();
+                this.updateHpBar(character, pos);
+            }
+        }
+    }
+
+    drawCharacterPortrait(i: number, character: AnimatedSprite, spriteImageId: string) {
         const centerOfPortait = this.position.clone().add(new Vec2(i * (this.viewPortWidth / (4*this.zoomLevel)) + 7 * this.padding, 10 * this.padding));
         const width = 60;
         const height = 90;
@@ -172,7 +210,13 @@ export default class InventoryManager {
         characterImg.animation.play("IDLE");
         characterImg.position.set(centerOfPortait.x - width / 4, centerOfPortait.y);
         
+        // Character hp
+        this.updateHpBar(character, centerOfPortait.clone().inc(0, -10));
+
+        // Character Name
         this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x, centerOfPortait.y - height / 3), text: `Character ${i+1}`});
+
+        // Updates inventory slot positions an add new ones for those that were taken by characters
         this.createInventorySlots(this.slotsCount, this.slotsCount+1);
         this.slotsCount += 1;
         this.moveTailSlots(i);
@@ -180,7 +224,7 @@ export default class InventoryManager {
     }
 
     getWeapon(character: AnimatedSprite): any {
-        const slotIdx = this.characterToIdx.get(character.id);
+        const slotIdx = this.characterToInfo.get(character.id).slotIdxStart;
         return this.items[slotIdx];
     }
 
