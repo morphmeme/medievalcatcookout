@@ -52,6 +52,8 @@ export default class Level1 extends Scene {
 
     private weaponTypeMap: Map<string, any>;
 
+    private zoomLevel: number;
+
     loadScene(){
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "hw3_assets/spritesheets/player.json");
@@ -142,6 +144,7 @@ export default class Level1 extends Scene {
     }
 
     startScene(){
+        this.zoomLevel = 4;
         // Add in the tilemap
         let tilemapLayers = this.add.tilemap("level");
 
@@ -162,7 +165,7 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        let inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4);
+        let inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
 
         // Create the player
         this.initializePlayer(inventory);
@@ -177,7 +180,7 @@ export default class Level1 extends Scene {
 
         // Zoom in to a reasonable level
         // this.viewport.enableZoom();
-        this.viewport.setZoomLevel(4);
+        this.viewport.setZoomLevel(this.zoomLevel);
 
         // Create the navmesh
         this.createNavmesh();
@@ -217,7 +220,6 @@ export default class Level1 extends Scene {
                     break;
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
-                    console.log("What")
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     (node.ai as BattlerAI).damage(1);
                     break;
@@ -245,19 +247,27 @@ export default class Level1 extends Scene {
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
         if(Input.isJustPressed("inventory")){
-            this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
-            this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
-            this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
             this.togglePause();
         }
     }
 
     togglePause() {
+        this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
+        this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
+        this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
+        this.getLayer("inv_bg").setHidden(!this.getLayer("inv_portrait").isHidden())
+        this.getLayer("inv_portrait").setHidden(!this.getLayer("inv_portrait").isHidden())
+        
         this.getLayer("primary").toggle();
         this.getLayer("health").toggle();
         this.player.togglePhysics();
         this.allies.forEach(ally => ally.togglePhysics());
         this.enemies.forEach(enemy => enemy.togglePhysics());
+        if (this.viewport.getZoomLevel() !== 4) {
+            this.viewport.setZoomLevel(4);
+        } else {
+            this.viewport.setZoomLevel(this.zoomLevel);
+        }
     }
 
     /**
