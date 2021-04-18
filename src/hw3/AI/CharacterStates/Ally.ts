@@ -8,20 +8,21 @@ import CharacterController from "../CharacterController";
 import CharacterState from "./CharacterState";
 
 export default class Ally extends CharacterState {
-    private destinationPos: Queue<Vec2>;
-    private destinationRot: Queue<number>;
+    public destinationPos: Queue<Vec2>;
+    public destinationRot: Queue<number>;
     private pollTimer: Timer;
 
-    constructor(parent: CharacterController, owner: AnimatedSprite, private followingDistance: number){
+    constructor(parent: CharacterController, owner: AnimatedSprite, private followingDistance: number, destinationPos?: Queue<Vec2>, destinationRot?: Queue<number>){
         super(parent, owner);
-
         this.pollTimer = new Timer(100);
+        this.destinationPos = destinationPos;
+        this.destinationRot = destinationRot;
     }
     
     onEnter(options: Record<string, any>): void {
         this.forceFollowPosition();
-        this.destinationPos = new Queue(100000);
-        this.destinationRot = new Queue(100000);
+        this.destinationPos = this.destinationPos || new Queue(100000);
+        this.destinationRot = this.destinationRot || new Queue(100000);
     }
 
     handleInput(event: GameEvent): void {
