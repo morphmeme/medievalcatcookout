@@ -173,9 +173,8 @@ export default class Level1 extends Scene {
         this.allies = new Array();
         // Create the player
         this.initializePlayer(this.inventory);
-
-        // Create allies
-        this.initializeAllies(this.inventory)
+        this.initializeAllies(this.inventory);
+        this.initializeRescues(this.inventory);
 
         // Make the viewport follow the player
         this.viewport.follow(this.allies[0]);
@@ -447,6 +446,25 @@ export default class Level1 extends Scene {
             inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
+    }
+
+    initializeRescues(inventory: InventoryManager): void {
+        const allySprite = this.add.animatedSprite("player", "primary");
+        allySprite.position.set(16*16, 62*16);
+        allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        allySprite.addAI(CharacterController,
+            {
+                speed: 0,
+                inventory,
+                allies: this.allies,
+                viewport: this.viewport,
+                rescue: true,
+            });
+        allySprite.animation.play("IDLE");
+        allySprite.setGroup("player");
+        allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+        allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
+        allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
     }
 
     /**

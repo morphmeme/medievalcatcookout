@@ -11,6 +11,7 @@ import Item from "../GameSystems/items/Item";
 import BattlerAI from "./BattlerAI";
 import Ally from "./CharacterStates/Ally";
 import Player from "./CharacterStates/Player";
+import Rescue from "./CharacterStates/Rescue";
 
 export default class CharacterController extends StateMachineAI implements BattlerAI {
     // Fields from BattlerAI
@@ -73,8 +74,11 @@ export default class CharacterController extends StateMachineAI implements Battl
 
         this.addState(CharacterStates.ALLY, new Ally(this, owner, options.followingDistance));
         this.addState(CharacterStates.PLAYER, new Player(this, owner));
+        this.addState(CharacterStates.RESCUE, new Rescue(this, owner));
         if (options.following) {
             this.initialize(CharacterStates.ALLY);
+        } else if (options.rescue) {
+            this.initialize(CharacterStates.RESCUE);
         } else {
             this.initialize(CharacterStates.PLAYER);
         }
@@ -130,4 +134,5 @@ export default class CharacterController extends StateMachineAI implements Battl
 export enum CharacterStates {
     ALLY = "ally",
     PLAYER = "player",
+    RESCUE = "rescue",
 }
