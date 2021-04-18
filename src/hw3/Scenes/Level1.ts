@@ -28,6 +28,12 @@ import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
 
+type HpBarData = {
+    lastHp: number,
+    bars: Graphic[],
+    character: AnimatedSprite,
+}
+
 export default class Level1 extends Scene {
     // The players
     private allies: Array<AnimatedSprite>;
@@ -48,7 +54,7 @@ export default class Level1 extends Scene {
     private battleManager: BattleManager;
 
     // Characters healths
-    private hpBars: Array<Graphic>;
+    private hpBars: Map<number, HpBarData>;
     private hpBarUpdateTimer: Timer;
     private weaponTypeMap: Map<string, any>;
 
@@ -111,13 +117,48 @@ export default class Level1 extends Scene {
     }
 
     private displayHp() {
+        for (const [id, data] of this.hpBars.entries()) {
+            if (!data?.character?.ai) {
+                data.bars.forEach(bar => {
+                    bar.destroy();
+                })
+                this.hpBars.delete(id);
+            }
+        }
         return [...this.allies, ...this.enemies].map(character => {
             if (character?.ai && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
-                return drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                if (this.hpBars.has(character.id)) {
+                    const existingHpBarData = this.hpBars.get(character.id);
+                    if (existingHpBarData.lastHp != health) {
+                        const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                        existingHpBarData.bars.forEach(bar => {
+                            bar.destroy();
+                        })
+                        this.hpBars.set(character.id, {
+                            lastHp: health,
+                            bars,
+                            character,
+                        })
+                    } else {
+                        // Move bars instead of redrawing
+                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, -10));
+                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, -10)
+                                                                                       .inc(-(12 - 12 * (health/maxHealth)) / 2, 0));
+                        existingHpBarData.bars[0].size.copy(new Vec2(12 * (health/maxHealth), 1));
+                    }
+                } else {
+                    const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                    this.hpBars.set(character.id, {
+                        lastHp: health,
+                        bars,
+                        character,
+                    })
+                }
+                
             }
-            return [];
-        }).flat();
+            return {id: null, bars: null};
+        });
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -148,7 +189,9 @@ export default class Level1 extends Scene {
 
     startScene(){
         this.zoomLevel = 4;
-        this.hpBarUpdateTimer = new Timer(10);
+        this.hpBarUpdateTimer = new Timer(15);
+        this.hpBars = new Map();
+        
         // Add in the tilemap
         let tilemapLayers = this.add.tilemap("level");
 
@@ -205,21 +248,21 @@ export default class Level1 extends Scene {
 
         // UI layer
         this.addUILayer("UI");
-        // const viewportHalfSize = this.viewport.getHalfSize();
-        // const width = viewportHalfSize.x * 2;
-        // const height = viewportHalfSize.y * 2;
+        const viewportHalfSize = this.viewport.getHalfSize();
+        const width = viewportHalfSize.x * 2 * this.zoomLevel;
+        const height = viewportHalfSize.y * 2 * this.zoomLevel;
         // coin label TODO coin image
-        this.coinCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(200, 50), text: `Coins: ${Level1.coinCount}`});
+        this.coinCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(width / 8, height / 20), text: `Coins: ${Level1.coinCount}`});
         this.coinCountLabel.textColor = Color.WHITE
         this.coinCountLabel.font = "PixelSimple";
 
         // timer label
-        this.timerLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(600, 50), text: `00:00:00`});
+        this.timerLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(width / 2, height / 20), text: `00:00:00`});
         this.timerLabel.textColor = Color.WHITE
         this.timerLabel.font = "PixelSimple";
 
         // Placeholder for image
-        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(1000, 50), text: `STAGE 1-1 Burger Kat`});
+        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(7 * width / 8, height / 20), text: `STAGE 1-1 Burger Kat`});
         stageNameLabel.textColor = Color.WHITE
         stageNameLabel.font = "PixelSimple";
     }
@@ -288,11 +331,7 @@ export default class Level1 extends Scene {
         }
         // Update hp bars every x time.
         if (this.hpBarUpdateTimer.isStopped()) {
-            this.hpBarUpdateTimer.start();
-            if (this.hpBars) {
-                this.hpBars.forEach(hpBar => hpBar?.destroy());
-            }
-            this.hpBars = this.displayHp();
+            this.displayHp();
         }
 
         if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT)) {
@@ -327,6 +366,10 @@ export default class Level1 extends Scene {
         } else {
             this.viewport.setZoomLevel(this.zoomLevel);
         }
+    }
+
+    toggleInventory() {
+
     }
 
     /**
