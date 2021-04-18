@@ -152,8 +152,6 @@ export default class CanvasRenderer extends RenderingManager {
             yScale = node.invertY ? -1 : 1;
         }
 
-        this.ctx.setTransform(xScale, 0, 0, yScale, (node.position.x - this.origin.x)*this.zoom, (node.position.y - this.origin.y)*this.zoom);
-        this.ctx.rotate(-node.rotation);
         let globalAlpha = this.ctx.globalAlpha;
         if(node instanceof Rect){
             Debug.log("node" + node.id, "Node" + node.id + " Alpha: " + node.alpha);
@@ -161,12 +159,20 @@ export default class CanvasRenderer extends RenderingManager {
         this.ctx.globalAlpha = node.alpha;
         
         if(node instanceof AnimatedSprite){
+            this.ctx.setTransform(xScale, 0, 0, yScale, (node.position.x - this.origin.x)*this.zoom, (node.position.y - this.origin.y)*this.zoom);
+            this.ctx.rotate(-node.rotation);
             this.renderAnimatedSprite(<AnimatedSprite>node);
         } else if(node instanceof Sprite){
+            this.ctx.setTransform(xScale, 0, 0, yScale, (node.position.x - this.origin.x)*this.zoom, (node.position.y - this.origin.y)*this.zoom);
+            this.ctx.rotate(-node.rotation);
             this.renderSprite(<Sprite>node);
         } else if(node instanceof Graphic){
+            this.ctx.setTransform(xScale, 0, 0, yScale, (node.position.x - this.origin.x)*this.zoom, (node.position.y - this.origin.y)*this.zoom);
+            this.ctx.rotate(-node.rotation);
             this.renderGraphic(<Graphic>node);
         } else if(node instanceof UIElement){
+            this.ctx.setTransform(xScale, 0, 0, yScale, (node.position.x - this.origin.x), (node.position.y - this.origin.y));
+            this.ctx.rotate(-node.rotation);
             this.renderUIElement(<UIElement>node);
         }
 
