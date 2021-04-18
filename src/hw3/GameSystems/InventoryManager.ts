@@ -214,7 +214,7 @@ export default class InventoryManager {
         this.updateHpBar(character, centerOfPortait.clone().inc(0, -10));
 
         // Character Name
-        this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x, centerOfPortait.y - height / 3), text: `Character ${i+1}`});
+        this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
 
         // Updates inventory slot positions an add new ones for those that were taken by characters
         this.createInventorySlots(this.slotsCount, this.slotsCount+1);

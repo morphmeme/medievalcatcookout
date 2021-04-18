@@ -55,6 +55,14 @@ export default class Level1 extends Scene {
     private zoomLevel: number;
     private inventory: InventoryManager;
 
+    // coins
+    protected static coinCount: number = 0;
+    protected coinCountLabel: Label;
+
+    // timer
+    protected timer: number = 0;
+    protected timerLabel: Label;
+
     loadScene(){
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "hw3_assets/spritesheets/player.json");
@@ -82,6 +90,8 @@ export default class Level1 extends Scene {
         this.load.image("knife", "hw3_assets/sprites/knife.png");
         this.load.image("lasergun", "hw3_assets/sprites/lasergun.png");
         this.load.image("pistol", "hw3_assets/sprites/pistol.png");
+
+        this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
 
     /**
@@ -94,7 +104,8 @@ export default class Level1 extends Scene {
             Events.ENEMY_COLLIDES_PLAYER,
             Events.PLAYER_COLLIDES_ITEM,
             Events.PLAYER_COLLIDES_PLAYER,
-            Events.PLAYER_COLLIDES_GROUND
+            Events.PLAYER_COLLIDES_GROUND,
+            Events.PLAYER_HIT_COIN,
         ]);
     }
 
@@ -191,6 +202,26 @@ export default class Level1 extends Scene {
 
         // Add a UI for health
         this.addLayer("health", 200);
+
+        // UI layer
+        this.addUILayer("UI");
+        // const viewportHalfSize = this.viewport.getHalfSize();
+        // const width = viewportHalfSize.x * 2;
+        // const height = viewportHalfSize.y * 2;
+        // coin label TODO coin image
+        this.coinCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(200, 50), text: `Coins: ${Level1.coinCount}`});
+        this.coinCountLabel.textColor = Color.WHITE
+        this.coinCountLabel.font = "PixelSimple";
+
+        // timer label
+        this.timerLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(600, 50), text: `00:00:00`});
+        this.timerLabel.textColor = Color.WHITE
+        this.timerLabel.font = "PixelSimple";
+
+        // Placeholder for image
+        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(1000, 50), text: `STAGE 1-1 Burger Kat`});
+        stageNameLabel.textColor = Color.WHITE
+        stageNameLabel.font = "PixelSimple";
     }
 
     updateScene(deltaT: number): void {
@@ -223,12 +254,28 @@ export default class Level1 extends Scene {
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     const item = this.items.get(other);
                     (node?.ai as CharacterController)?.addToInventory(item);
+                    break;
+                }
+                case Events.PLAYER_HIT_COIN:
+                {
+                    // Hit a coin
+                    let coin = this.sceneGraph.getNode(event.data.get("other"));
+                    // Remove coin
+                    coin.destroy();
+
+                    // Increment our number of coins
+                    this.incPlayerCoins(1);
+
+                    // Play a coin sound
+                    // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "coin", loop: false, holdReference: false});
+                    break;
                 }
                 default: {
 
                 }
             }
         }
+        // Update hp bars every x time.
         if (this.hpBarUpdateTimer.isStopped()) {
             this.hpBarUpdateTimer.start();
             if (this.hpBars) {
@@ -237,6 +284,11 @@ export default class Level1 extends Scene {
             this.hpBars = this.displayHp();
         }
 
+        if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT)) {
+            this.updateTimerLabel(deltaT);
+        }
+        this.timer += deltaT;
+        
         // Debug mode graph
         // if(Input.isKeyJustPressed("g")){
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
@@ -495,5 +547,21 @@ export default class Level1 extends Scene {
         this.allies.forEach(character => {
             (character.ai as CharacterController).setEnemies(this.enemies);
         })
+    }
+
+    /**
+     * Increments the number of coins the player has
+     * @param amt The amount to add the the number of coins
+     */
+    protected incPlayerCoins(amt: number): void {
+        Level1.coinCount += amt;
+        this.coinCountLabel.text = "Coins: " + Level1.coinCount;
+    }
+
+    protected updateTimerLabel(deltaT: number) {
+        const time_ms = Math.floor(this.timer + deltaT);
+        const date = new Date(0);
+        date.setSeconds(time_ms);
+        this.timerLabel.text = `${date.toISOString().substr(11, 8)}`;
     }
 }
