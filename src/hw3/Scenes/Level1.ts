@@ -212,7 +212,7 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        this.inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
+        this.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
 
         this.allies = new Array();
         // Create the player
