@@ -151,7 +151,7 @@ export default class InventoryManager {
         }
     }
 
-    addCharacter(character: AnimatedSprite) {
+    addCharacter(character: GameNode) {
         this.characterToInfo.set(character.id, {character, slotIdxStart: this.inventoryStart, ...this.characterToInfo.get(character.id)});
         // TODO edit player
         this.drawCharacterPortrait(this.inventoryStart, character, "player");
@@ -171,10 +171,11 @@ export default class InventoryManager {
     moveTailSlots(startIdx: number) {
         for (let i = this.slotsCount-1; i >= startIdx+1; i--) {
             this.moveSlotSprites(i, this.getSlotPosition(i-1));
+            this.items[i] = this.items[i-1];
         }
     }
 
-    private updateHpBar(character: AnimatedSprite, pos: Vec2) {
+    private updateHpBar(character: GameNode, pos: Vec2) {
         const hpBars = character.ai ?
             drawProgressBar(this.scene, (character.ai as BattlerAI).health, (character.ai as BattlerAI).maxHealth, 50, pos, LayerNames.PORTRAIT_LAYER)
             : drawProgressBar(this.scene, 0, 1, 50, pos, LayerNames.PORTRAIT_LAYER)
@@ -196,7 +197,7 @@ export default class InventoryManager {
         }
     }
 
-    drawCharacterPortrait(i: number, character: AnimatedSprite, spriteImageId: string) {
+    drawCharacterPortrait(i: number, character: GameNode, spriteImageId: string) {
         const centerOfPortait = this.position.clone().add(new Vec2(i * (this.viewPortWidth / (4*this.zoomLevel)) + 7 * this.padding, 10 * this.padding));
         const width = 60;
         const height = 90;
