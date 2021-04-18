@@ -1,0 +1,66 @@
+{
+    "numEnemies": 10,
+    "enemies": [
+        {
+            "position": [48, 768],
+            "mode": "patrol",
+            "route": [0,1],
+            "health": 5
+        },
+        {
+            "position": [944, 752],
+            "mode": "patrol",
+            "route": [2,3],
+            "health": 5
+        },
+        {
+            "position": [48, 736],
+            "mode": "patrol",
+            "route": [4,5],
+            "health": 5
+        },
+        {
+            "position": [944, 720],
+            "mode": "patrol",
+            "route": [6,7],
+            "health": 5
+        },
+        {
+            "position": [48, 704],
+            "mode": "patrol",
+            "route": [8,9],
+            "health": 5
+        },
+        {
+            "position": [944, 688],
+            "mode": "patrol",
+            "route": [10,11],
+            "health": 5
+        },
+        {
+            "position": [48, 672],
+            "mode": "patrol",
+            "route": [10,11],
+            "health": 5
+        },
+        {
+            "position": [944, 656],
+            "mode": "patrol",
+            "route": [12,13],
+            "health": 5
+        },
+        {
+            "position": [48, 640],
+            "mode": "patrol",
+            "route": [14,15],
+            "health": 5
+        },
+        {
+            "position": [944, 784],
+            "mode": "patrol",
+            "route": [16,17],
+            "health": 5
+        }
+        
+    ]
+}

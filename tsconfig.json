@@ -1,0 +1,14 @@
+{
+    "include": [
+        "src/**/*",
+        "src/*"
+    ],
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "ES2016",
+        "lib": [
+            "ES2019",
+            "DOM"
+          ]
+    }
+}
