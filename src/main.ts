@@ -12,7 +12,7 @@ import MainMenu from "./hw3/Scenes/MainMenu";
 
     // Set up options for our game
     let options = {
-        canvasSize: {x: 1920, y: 1080},          // The size of the game
+        canvasSize: {x: 1280, y: 720},          // The size of the game
         clearColor: {r: 0.1, g: 0.1, b: 0.1},   // The color the game clears to
         inputs: [
             {name: "forward", keys: ["w"]},

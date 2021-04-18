@@ -38,11 +38,11 @@ export default class MainMenu extends Scene {
 
         // Add logo
         const logo = this.add.sprite("logo", "mainMenu");
-        logo.position.set(1920 / 2, 1080 /4);
-        logo.scale = new Vec2(0.25, 0.25);
+        logo.position.set(1280 / 2, 720 /4);
+        logo.scale = new Vec2(0.15, 0.15);
 
         // Add play button, and give it an event to emit on press
-        const play = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y + 100), text: "Play"});
+        const play = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y), text: "Play"});
         play.size.set(200, 50);
         play.borderWidth = 2;
         play.borderColor = Color.WHITE;
@@ -50,7 +50,7 @@ export default class MainMenu extends Scene {
         play.onClickEventId = "play";
 
         // Add level select button
-        const levelSelect = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y + 200), text: "Level Select"});
+        const levelSelect = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y + 100), text: "Level Select"});
         levelSelect.size.set(200, 50);
         levelSelect.borderWidth = 2;
         levelSelect.borderColor = Color.WHITE;
@@ -58,7 +58,7 @@ export default class MainMenu extends Scene {
         levelSelect.onClickEventId = "level_select";
 
         // Add control button
-        const controls = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y + 300), text: "Controls"});
+        const controls = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y + 200), text: "Controls"});
         controls.size.set(200, 50);
         controls.borderWidth = 2;
         controls.borderColor = Color.WHITE;
@@ -66,7 +66,7 @@ export default class MainMenu extends Scene {
         controls.onClickEventId = "controls";
 
         // Add event button
-        const about = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y + 400), text: "About"});
+        const about = this.add.uiElement(UIElementType.BUTTON, "mainMenu", {position: new Vec2(center.x, center.y + 300), text: "About"});
         about.size.set(200, 50);
         about.borderWidth = 2;
         about.borderColor = Color.WHITE;
