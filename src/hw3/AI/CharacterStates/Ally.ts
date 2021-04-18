@@ -4,7 +4,7 @@ import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Timer from "../../../Wolfie2D/Timing/Timer";
 import { Events } from "../../Constants";
-import CharacterController from "../CharacterController";
+import CharacterController, { CharacterStates } from "../CharacterController";
 import CharacterState from "./CharacterState";
 
 export default class Ally extends CharacterState {
@@ -103,7 +103,9 @@ export default class Ally extends CharacterState {
     }
 
     onExit(): Record<string, any> {
-        return {};
+        return {
+            previousState: CharacterStates.ALLY
+        };
     }
 
 }

@@ -78,7 +78,10 @@ export default class Attack extends EnemyState {
     }
 
     onExit(): Record<string, any> {
-        return this.retObj;
+        return {
+            previousState: EnemyStates.ATTACKING,
+            ...this.retObj
+        };
     }
 
 }

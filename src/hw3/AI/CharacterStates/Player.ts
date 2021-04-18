@@ -4,7 +4,7 @@ import Input from "../../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { Events } from "../../Constants";
 import Healthpack from "../../GameSystems/items/Healthpack";
-import CharacterController from "../CharacterController";
+import CharacterController, { CharacterStates } from "../CharacterController";
 import CharacterState from "./CharacterState";
 
 export default class Player extends CharacterState {
@@ -80,7 +80,9 @@ export default class Player extends CharacterState {
     }
 
     onExit(): Record<string, any> {
-        return {};
+        return {
+            previousState: CharacterStates.PLAYER
+        };
     }
 
 }

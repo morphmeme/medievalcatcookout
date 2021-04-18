@@ -54,7 +54,9 @@ export default class Alert extends EnemyState {
     }
 
     onExit(): Record<string, any> {
-        return {};
+        return {
+            previousState: EnemyStates.ALERT
+        };
     }
 
 }

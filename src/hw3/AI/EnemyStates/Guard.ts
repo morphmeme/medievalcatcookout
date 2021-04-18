@@ -63,7 +63,9 @@ export default class Guard extends EnemyState {
     }
 
     onExit(): Record<string, any> {
-        return this.retObj;
+        return {
+            previousState: EnemyStates.DEFAULT
+        };
     }
 
 }

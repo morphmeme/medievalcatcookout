@@ -27,6 +27,8 @@ import CharacterController from "../AI/CharacterController";
 import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
+import StateMachineAI from "../../Wolfie2D/AI/StateMachineAI";
+import Collision from "../AI/CommonStates/Collision";
 
 export default class Level1 extends Scene {
     // The players
@@ -120,8 +122,7 @@ export default class Level1 extends Scene {
         const down_0to1 = direction_0to1.dot(Vec2.UP) > 0.5;
         const left_0to1 = direction_0to1.dot(Vec2.RIGHT) > 0.5;
         const right_0to1 = direction_0to1.dot(Vec2.LEFT) > 0.5;
-        if (cardinalRad0 == 2 && cardinalRad1 == 0 ||
-            cardinalRad0 == 3 && cardinalRad1 == 1) {
+        if (cardinalRad0 == MathUtils.oppositeCardinal(cardinalRad1)) {
             (character1.ai as BattlerAI).damage(1);
             (character0.ai as BattlerAI).damage(1);
         } else if (up_0to1 && cardinalRad0 == 2 ||
@@ -211,11 +212,34 @@ export default class Level1 extends Scene {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     this.handleCharacterCollision(<AnimatedSprite>node, <AnimatedSprite>other);
+                    const directions = MathUtils.collisionDirection(node, other);
+                    if (event.type == Events.PLAYER_COLLIDES_PLAYER || !node?.ai || !other?.ai) {
+                        break;
+                    }
+                    // Bounce back collisions
+                    if (directions[0] && !((node.ai as StateMachineAI).currentState instanceof Collision)) {
+                        (node.ai as StateMachineAI).addState("collision", new Collision((node.ai as StateMachineAI), node, MathUtils.cardinalToDir(directions[0])));
+                        (node.ai as StateMachineAI).changeState("collision");
+                    }
+                    if (directions[1] && !((other.ai as StateMachineAI).currentState instanceof Collision)) {
+                        (other.ai as StateMachineAI).addState("collision", new Collision((other.ai as StateMachineAI), other, MathUtils.cardinalToDir(directions[1])));
+                        (other.ai as StateMachineAI).changeState("collision");
+                    }
                     break;
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     (node?.ai as BattlerAI)?.damage(1);
+                    if (!node?.ai) {
+                        break;
+                    }
+                    // Bounce back player from wall
+                    const cardinal = MathUtils.radiansToCardinal(node.rotation);
+                    const collisionDirection = MathUtils.cardinalToDir(MathUtils.oppositeCardinal(cardinal));
+                    if (!((node.ai as StateMachineAI).currentState instanceof Collision)) {
+                        (node.ai as StateMachineAI).addState("collision", new Collision((node.ai as StateMachineAI), node, collisionDirection));
+                        (node.ai as StateMachineAI).changeState("collision");
+                    }
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ITEM: {
@@ -242,12 +266,12 @@ export default class Level1 extends Scene {
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
         if(Input.isJustPressed("inventory")){
-            this.togglePause();
+            this.toggleInventory();
             this.inventory.updateHpBars();
         }
     }
 
-    togglePause() {
+    toggleInventory() {
         this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
         this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
         this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())

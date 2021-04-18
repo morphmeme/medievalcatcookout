@@ -67,7 +67,10 @@ export default class Patrol extends EnemyState {
     }
 
     onExit(): Record<string, any> {
-        return this.retObj;
+        return {
+            previousState: EnemyStates.DEFAULT,
+            ...this.retObj
+        };
     }
 
     getNextPath(): NavigationPath {

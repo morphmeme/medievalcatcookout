@@ -16,7 +16,7 @@ export default class StateMachine implements Updateable {
     /** A mape of state keys to actual state instances */
     protected stateMap: Map<State>;
     /** The current state */
-    protected currentState: State;
+    public currentState: State;
     /** An event receiver */
     protected receiver: Receiver;
     /** An event emitter */

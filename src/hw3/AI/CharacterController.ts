@@ -1,5 +1,6 @@
 import StateMachineAI from "../../Wolfie2D/AI/StateMachineAI";
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
+import GameEvent from "../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../Wolfie2D/Nodes/GameNode";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
@@ -78,7 +79,6 @@ export default class CharacterController extends StateMachineAI implements Battl
         } else {
             this.initialize(CharacterStates.PLAYER);
         }
-        
     }
 
     damage(damage: number): void {
@@ -88,6 +88,7 @@ export default class CharacterController extends StateMachineAI implements Battl
             const indexOfCharacter = this.allies.indexOf(this.owner);
             if (indexOfCharacter === 0) {
                 if (this.allies.length > 1) {
+                    // Set next in line as player
                     (this.allies[1].ai as CharacterController).changeState(CharacterStates.PLAYER);
                     this.viewport.follow(this.allies[1]);
                 }

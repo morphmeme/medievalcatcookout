@@ -1,6 +1,7 @@
 import AABB from "../DataTypes/Shapes/AABB";
 import Vec2 from "../DataTypes/Vec2";
 import GameNode from "../Nodes/GameNode";
+import AnimatedSprite from "../Nodes/Sprites/AnimatedSprite";
 import OrthogonalTilemap from "../Nodes/Tilemaps/OrthogonalTilemap";
 
 /** A class containing some utility functions for math operations */
@@ -197,6 +198,56 @@ export default class MathUtils {
                 return Vec2.RIGHT;
         }
         return Vec2.ZERO;
+    }
+
+    static cardinalToDir(cardinal: number) {
+        switch (cardinal) {
+            case 0:
+                return Vec2.UP;
+            case 1:
+                return Vec2.LEFT;
+            case 2:
+                return Vec2.DOWN;
+            case 3:
+                return Vec2.RIGHT;
+        }
+        return Vec2.ZERO;
+    }
+
+    static oppositeCardinal(cardinal: number) {
+        switch (cardinal) {
+            case 0:
+                return 2;
+            case 1:
+                return 3;
+            case 2:
+                return 0;
+            case 3:
+                return 1;
+        }
+    }
+
+    static collisionDirection(character0: GameNode, character1: GameNode) {
+        if (!character0 || !character1) {
+            return [null, null];
+        }
+        const direction_0to1 = character0.position.dirTo(character1.position);
+        const cardinalRad0 = MathUtils.radiansToCardinal(character0.rotation);
+        const cardinalRad1 = MathUtils.radiansToCardinal(character1.rotation);
+        const up_0to1 = direction_0to1.dot(Vec2.DOWN) > 0.5;
+        const down_0to1 = direction_0to1.dot(Vec2.UP) > 0.5;
+        const left_0to1 = direction_0to1.dot(Vec2.RIGHT) > 0.5;
+        const right_0to1 = direction_0to1.dot(Vec2.LEFT) > 0.5;
+        if (cardinalRad0 == MathUtils.oppositeCardinal(cardinalRad1)) {
+            return [cardinalRad1, cardinalRad0];
+        } else if (up_0to1 && cardinalRad0 == 2 ||
+            down_0to1 && cardinalRad0 == 0 ||
+            left_0to1 && cardinalRad0 == 3 ||
+            right_0to1 && cardinalRad0 == 1) {
+            return [MathUtils.oppositeCardinal(cardinalRad1), cardinalRad0];
+        } else {
+            return [cardinalRad1, MathUtils.oppositeCardinal(cardinalRad0)];
+        }
     }
 
     static visibleBetweenPos(pos0: Vec2, pos1: Vec2, walls: OrthogonalTilemap, avoid?: Array<GameNode>) {
