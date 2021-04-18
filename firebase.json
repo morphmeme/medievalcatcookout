@@ -12,6 +12,10 @@
         "destination": "/benchmark1.html"
       },
       {
+        "source": "/benchmark2",
+        "destination": "/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
