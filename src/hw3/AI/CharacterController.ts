@@ -92,7 +92,15 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.following = following;
         this.owner.setGroup("player");
         this.owner.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
-        this.addState(CharacterStates.ALLY, new Ally(this, this.owner, followingDistance));
+        // Copy ally's rotations
+        if (following.currentState instanceof Ally) {
+            const destinationPos = (following.currentState as Ally).destinationPos.clone();
+            const destinationRot = (following.currentState as Ally).destinationRot.clone();
+            this.addState(CharacterStates.ALLY, new Ally(this, this.owner, followingDistance, destinationPos, destinationRot));
+        } else {
+            this.addState(CharacterStates.ALLY, new Ally(this, this.owner, followingDistance));
+        }
+        
         this.changeState(CharacterStates.ALLY);
     }
 
