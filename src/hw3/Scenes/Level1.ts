@@ -76,7 +76,7 @@ export default class Level1 extends Scene {
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         // Load the tilemap
-        this.load.tilemap("level", "hw3_assets/tilemaps/alex-feng-hw3.json");
+        this.load.tilemap("level", "hw3_assets/tilemaps/testmap.json");
 
         // Load the scene info
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
@@ -465,7 +465,7 @@ export default class Level1 extends Scene {
     initializePlayer(inventory: InventoryManager): void {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
-        player.position.set(2*16, 62*16);
+        player.position.set(28*32, 155*32);
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
         player.addAI(CharacterController,
             {
