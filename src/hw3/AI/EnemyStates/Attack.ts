@@ -2,6 +2,7 @@ import AABB from "../../../Wolfie2D/DataTypes/Shapes/AABB";
 import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
+import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import OrthogonalTilemap from "../../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import Timer from "../../../Wolfie2D/Timing/Timer";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
@@ -21,7 +22,7 @@ export default class Attack extends EnemyState {
     // The return object for this state
     retObj: Record<string, any>;
 
-    constructor(parent: EnemyAI, owner: GameNode){
+    constructor(parent: EnemyAI, owner: AnimatedSprite){
         super(parent, owner);
 
         // Regularly update the player location
@@ -61,7 +62,8 @@ export default class Attack extends EnemyState {
             dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
             if(this.parent.weapon.use(this.owner, "enemy", dir)){
                 // If we fired, face that direction
-                this.owner.rotation = Vec2.UP.angleToCCW(dir);
+                this.parent.rotation = Vec2.UP.angleToCCW(dir);
+                this.parent.setMovingAnimation();
             }
 
         }

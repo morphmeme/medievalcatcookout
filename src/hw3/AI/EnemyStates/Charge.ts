@@ -2,6 +2,7 @@ import AABB from "../../../Wolfie2D/DataTypes/Shapes/AABB";
 import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
+import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import OrthogonalTilemap from "../../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import Timer from "../../../Wolfie2D/Timing/Timer";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
@@ -19,7 +20,7 @@ export default class Charge extends EnemyState {
     // The return object for this state
     retObj: Record<string, any>;
 
-    constructor(parent: EnemyAI, owner: GameNode){
+    constructor(parent: EnemyAI, owner: AnimatedSprite){
         super(parent, owner);
 
         this.exitTimer = new Timer(1000);
@@ -49,7 +50,8 @@ export default class Charge extends EnemyState {
             // Fire at player
             const dir = this.owner.position.dirTo(this.playerPos);
             this.owner.move(dir.normalized().scale(3 * this.parent.speed * deltaT));
-            this.owner.rotation = Vec2.UP.angleToCCW(dir);
+            this.parent.rotation = Vec2.UP.angleToCCW(dir);
+            this.parent.setMovingAnimation();
         }
 
         if(this.exitTimer.isStopped()){

@@ -32,6 +32,8 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     allies: Array<GameNode>;
     attack: string;
 
+    rotation: number = 0;
+
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
         this.attack = options.attack;
@@ -114,6 +116,19 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         if (MathUtils.visibleBetweenPos(start, pos, walls))
             return pos;
         return null;
+    }
+
+    setMovingAnimation() {
+        const direction = MathUtils.radiansToCardinal(this.rotation);
+        if (direction === 0)
+            this.owner.animation.playIfNotAlready("WALK_BACK", true);
+        else if (direction === 2) {
+            this.owner.animation.playIfNotAlready("WALK_FRONT", true);
+        } else if (direction === 1) {
+            this.owner.animation.playIfNotAlready("WALK_LEFT", true);
+        } else if (direction === 3) {
+            this.owner.animation.playIfNotAlready("WALK_RIGHT", true);
+        }
     }
 }
 

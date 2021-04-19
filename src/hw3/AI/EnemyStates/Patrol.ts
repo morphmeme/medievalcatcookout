@@ -1,6 +1,7 @@
 import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
+import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import NavigationPath from "../../../Wolfie2D/Pathfinding/NavigationPath";
 import { Events, Names } from "../../Constants";
 import EnemyAI, { Attacks, EnemyStates } from "../EnemyAI";
@@ -20,7 +21,7 @@ export default class Patrol extends EnemyState {
     // A return object for exiting this state
     protected retObj: Record<string, any>;
 
-    constructor(parent: EnemyAI, owner: GameNode, patrolRoute: Array<Vec2>){
+    constructor(parent: EnemyAI, owner: AnimatedSprite, patrolRoute: Array<Vec2>){
         super(parent, owner);
 
         this.patrolRoute = patrolRoute;
@@ -56,7 +57,8 @@ export default class Patrol extends EnemyState {
     update(deltaT: number): void {
         if(!this.currentPath.isDone()){
             this.owner.moveOnPath(this.parent.speed * deltaT, this.currentPath);
-            this.owner.rotation = Vec2.UP.angleToCCW(this.currentPath.getMoveDirection(this.owner));
+            this.parent.rotation = Vec2.UP.angleToCCW(this.currentPath.getMoveDirection(this.owner));
+            this.parent.setMovingAnimation();
         } else {
             this.currentPath = this.getNextPath();
         }

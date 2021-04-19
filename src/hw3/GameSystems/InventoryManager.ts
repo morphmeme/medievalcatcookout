@@ -211,7 +211,7 @@ export default class InventoryManager {
         characterImg.position.set(centerOfPortait.x - width / 4, centerOfPortait.y);
         
         // Character hp
-        this.updateHpBar(character, centerOfPortait.clone().inc(0, -10));
+        this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
 
         // Character Name
         this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
@@ -220,7 +220,7 @@ export default class InventoryManager {
         this.createInventorySlots(this.slotsCount, this.slotsCount+1);
         this.slotsCount += 1;
         this.moveTailSlots(i);
-        this.moveSlotSprites(i, centerOfPortait);
+        this.moveSlotSprites(i, centerOfPortait.clone().inc(10, 0));
     }
 
     getWeapon(character: AnimatedSprite): any {

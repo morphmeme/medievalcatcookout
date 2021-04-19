@@ -71,8 +71,8 @@ export default class Level1 extends Scene {
 
     loadScene(){
         // Load the player and enemy spritesheets
-        this.load.spritesheet("player", "hw3_assets/spritesheets/player.json");
-        this.load.spritesheet("enemy", "hw3_assets/spritesheets/enemy.json");
+        this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
+        this.load.spritesheet("enemy", "mcc_assets/spritesheets/enemy/enemy1-cat-sheet.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         // Load the tilemap
@@ -135,7 +135,7 @@ export default class Level1 extends Scene {
                 if (this.hpBars.has(character.id)) {
                     const existingHpBarData = this.hpBars.get(character.id);
                     if (existingHpBarData.lastHp != health) {
-                        const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                        const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -20), "health");
                         existingHpBarData.bars.forEach(bar => {
                             bar.destroy();
                         })
@@ -146,13 +146,13 @@ export default class Level1 extends Scene {
                         })
                     } else {
                         // Move bars instead of redrawing
-                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, -10));
-                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, -10)
+                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, -20));
+                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, -20)
                                                                                        .inc(-(12 - 12 * (health/maxHealth)) / 2, 0));
                         existingHpBarData.bars[0].size.copy(new Vec2(12 * (health/maxHealth), 1));
                     }
                 } else {
-                    const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                    const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -20), "health");
                     this.hpBars.set(character.id, {
                         lastHp: health,
                         bars,
@@ -171,8 +171,8 @@ export default class Level1 extends Scene {
             return;
         }
         const direction_0to1 = character0.position.dirTo(character1.position);
-        const cardinalRad0 = MathUtils.radiansToCardinal(character0.rotation);
-        const cardinalRad1 = MathUtils.radiansToCardinal(character1.rotation);
+        const cardinalRad0 = MathUtils.radiansToCardinal((character0.ai as BattlerAI).rotation);
+        const cardinalRad1 = MathUtils.radiansToCardinal((character1.ai as BattlerAI).rotation);
         const up_0to1 = direction_0to1.dot(Vec2.DOWN) > 0.5;
         const down_0to1 = direction_0to1.dot(Vec2.UP) > 0.5;
         const left_0to1 = direction_0to1.dot(Vec2.RIGHT) > 0.5;
@@ -316,7 +316,7 @@ export default class Level1 extends Scene {
                 case Events.PLAYER_COLLIDES_PLAYER: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
-                    this.handleCharacterCollision(<AnimatedSprite>node, <AnimatedSprite>other);
+                    this.handleCharacterCollision(node as AnimatedSprite, other as AnimatedSprite);
                     break;
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
