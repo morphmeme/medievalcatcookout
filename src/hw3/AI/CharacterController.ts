@@ -11,6 +11,7 @@ import Item from "../GameSystems/items/Item";
 import BattlerAI from "./BattlerAI";
 import Ally from "./CharacterStates/Ally";
 import Player from "./CharacterStates/Player";
+import Rescue from "./CharacterStates/Rescue";
 
 export default class CharacterController extends StateMachineAI implements BattlerAI {
     // Fields from BattlerAI
@@ -28,6 +29,8 @@ export default class CharacterController extends StateMachineAI implements Battl
     inventory: InventoryManager;
 
     following: CharacterController;
+
+    rescue: boolean;
 
     _direction: Vec2;
     get direction() {
@@ -68,23 +71,52 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.speed = options.speed || 0;
         this.following = options.following;
         this.enemies = [];
+        this.rescue = options.rescue;
 
         this.receiver.subscribe(Events.PLAYER_ROTATE);
 
         this.addState(CharacterStates.ALLY, new Ally(this, owner, options.followingDistance));
         this.addState(CharacterStates.PLAYER, new Player(this, owner));
+        this.addState(CharacterStates.RESCUE, new Rescue(this, owner));
         if (options.following) {
             this.initialize(CharacterStates.ALLY);
+        } else if (this.rescue) {
+            this.initialize(CharacterStates.RESCUE);
         } else {
             this.initialize(CharacterStates.PLAYER);
         }
+    }
+
+    rescued(following: CharacterController, followingDistance: number) {
+        this.rescue = false;
+        this.following = following;
+        this.owner.setGroup("player");
+        this.owner.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
+        // Copy ally's rotations
+        if (following.currentState instanceof Ally) {
+            const destinationPos = (following.currentState as Ally).destinationPos.clone();
+            const destinationRot = (following.currentState as Ally).destinationRot.clone();
+            this.addState(CharacterStates.ALLY, new Ally(this, this.owner, followingDistance, destinationPos, destinationRot));
+        } else {
+            this.addState(CharacterStates.ALLY, new Ally(this, this.owner, followingDistance));
+        }
         
+        this.changeState(CharacterStates.ALLY);
     }
 
     damage(damage: number): void {
         this.health -= damage;
         this.health = Math.max(this.health, 0);
         if (this.health === 0) {
+            // If it's not part of the snake
+            if (this.rescue) {
+                this.owner.setAIActive(false, {});
+                this.owner.isCollidable = false;
+                this.owner.visible = false;
+                this.owner.disablePhysics();
+                this.owner.destroy();
+                return;
+            }
             const indexOfCharacter = this.allies.indexOf(this.owner);
             if (indexOfCharacter === 0) {
                 if (this.allies.length > 1) {
@@ -92,8 +124,6 @@ export default class CharacterController extends StateMachineAI implements Battl
                     this.viewport.follow(this.allies[1]);
                 }
             } else {
-                console.log(this.allies[indexOfCharacter-1]);
-                console.log(this.allies[indexOfCharacter+1]);
                 if (this.allies[indexOfCharacter-1]?.ai && this.allies[indexOfCharacter+1]?.ai)
                     (this.allies[indexOfCharacter+1].ai as CharacterController).following = (this.allies[indexOfCharacter-1].ai as CharacterController);
             }
@@ -130,4 +160,5 @@ export default class CharacterController extends StateMachineAI implements Battl
 export enum CharacterStates {
     ALLY = "ally",
     PLAYER = "player",
+    RESCUE = "rescue",
 }

@@ -8,20 +8,21 @@ import CharacterController from "../CharacterController";
 import CharacterState from "./CharacterState";
 
 export default class Ally extends CharacterState {
-    private destinationPos: Queue<Vec2>;
-    private destinationRot: Queue<number>;
+    public destinationPos: Queue<Vec2>;
+    public destinationRot: Queue<number>;
     private pollTimer: Timer;
 
-    constructor(parent: CharacterController, owner: AnimatedSprite, private followingDistance: number){
+    constructor(parent: CharacterController, owner: AnimatedSprite, private followingDistance: number, destinationPos?: Queue<Vec2>, destinationRot?: Queue<number>){
         super(parent, owner);
-
         this.pollTimer = new Timer(100);
+        this.destinationPos = destinationPos;
+        this.destinationRot = destinationRot;
     }
     
     onEnter(options: Record<string, any>): void {
         this.forceFollowPosition();
-        this.destinationPos = new Queue(100000);
-        this.destinationRot = new Queue(100000);
+        this.destinationPos = this.destinationPos || new Queue(100000);
+        this.destinationRot = this.destinationRot || new Queue(100000);
     }
 
     handleInput(event: GameEvent): void {
@@ -34,18 +35,20 @@ export default class Ally extends CharacterState {
     }
 
     private forceFollowPosition() {
-        if (this.owner.rotation === 0)
+        if (this.parent.following.owner.rotation === 0) {
             this.owner.position.set(this.parent.following.owner.position.x,
-                                    this.parent.following.owner.position.y + this.followingDistance);
-        else if (this.owner.rotation === Math.PI)
+                this.parent.following.owner.position.y + this.followingDistance);
+        } else if (this.parent.following.owner.rotation === Math.PI) {
             this.owner.position.set(this.parent.following.owner.position.x,
-                                    this.parent.following.owner.position.y - this.followingDistance);
-        else if (this.owner.rotation === Math.PI/2)
-            this.owner.position.set(this.parent.following.owner.position.x - this.followingDistance,
-                                    this.parent.following.owner.position.y);
-        else if (this.owner.rotation === 3*Math.PI/2)
+                this.parent.following.owner.position.y - this.followingDistance);
+        } else if (this.parent.following.owner.rotation === Math.PI/2) {
             this.owner.position.set(this.parent.following.owner.position.x + this.followingDistance,
-                                    this.parent.following.owner.position.y);
+                this.parent.following.owner.position.y);
+        } else if (this.parent.following.owner.rotation === 3*Math.PI/2) {
+            this.owner.position.set(this.parent.following.owner.position.x - this.followingDistance,
+                this.parent.following.owner.position.y);
+        }
+        this.owner.rotation = this.parent.following.owner.rotation;
     }
 
     private crossInflection(rot: number, pos: Vec2, currentPos: Vec2) {
@@ -59,7 +62,6 @@ export default class Ally extends CharacterState {
         // Using weapon
         if(this.pollTimer.isStopped()){
             this.pollTimer.start();
-
             const enemyPos = this.parent.nearestEnemy()?.position;
             if(enemyPos){
                 let dir = enemyPos.clone().sub(this.owner.position).normalize();
