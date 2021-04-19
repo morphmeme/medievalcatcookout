@@ -2,52 +2,52 @@
     "items": [
         {
             "type": "weapon",
-            "weaponType": "pistol", 
+            "weaponType": "ketchup_bottle", 
             "position": [88, 992]
         },
         {
             "type": "weapon",
-            "weaponType": "pistol", 
+            "weaponType": "ketchup_bottle", 
             "position": [104, 992]
         },
         {
             "type": "weapon",
-            "weaponType": "pistol", 
+            "weaponType": "ketchup_bottle", 
             "position": [120, 992]
         },
         {
             "type": "weapon",
-            "weaponType": "pistol", 
+            "weaponType": "ketchup_bottle", 
             "position": [136, 992]
         },
         {
             "type": "weapon",
-            "weaponType": "pistol", 
+            "weaponType": "ketchup_bottle", 
             "position": [152, 992]
         },
         {
             "type": "weapon",
-            "weaponType": "knife", 
+            "weaponType": "spatula", 
             "position": [88, 976]
         },
         {
             "type": "weapon",
-            "weaponType": "knife", 
+            "weaponType": "spatula", 
             "position": [104, 976]
         },
         {
             "type": "weapon",
-            "weaponType": "knife", 
+            "weaponType": "spatula", 
             "position": [120, 976]
         },
         {
             "type": "weapon",
-            "weaponType": "knife", 
+            "weaponType": "spatula", 
             "position": [136, 976]
         },
         {
             "type": "weapon",
-            "weaponType": "knife", 
+            "weaponType": "spatula", 
             "position": [152, 976]
         },
         {
@@ -74,6 +74,31 @@
             "type": "weapon",
             "weaponType": "laser_gun", 
             "position": [152, 960]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "mustard_bottle",
+            "position": [88, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "mustard_bottle",
+            "position": [104, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "mustard_bottle",
+            "position": [120, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "mustard_bottle",
+            "position": [136, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "mustard_bottle",
+            "position": [152, 944]
         }
     ]
 }
