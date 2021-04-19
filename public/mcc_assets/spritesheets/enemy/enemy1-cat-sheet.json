@@ -1,0 +1,66 @@
+{
+    "name": "Cat Enemy 1",
+    "spriteSheetImage": "enemy1-cat-sheet.png",
+    "spriteWidth": 32,
+    "spriteHeight": 32,
+    "columns": 6,
+    "rows": 7,
+    "leftBuffer": 0,
+    "rightBuffer": 0,
+    "topBuffer": 0, 
+    "bottomBuffer": 0, 
+    "animations": [
+        {
+            "name": "IDLE",
+            "repeat": true,
+            "frames": [{"index": 0, "duration": 2}, {"index": 1, "duration": 1},
+                {"index": 2, "duration": 1}, {"index": 3, "duration": 1},
+                {"index": 4, "duration": 1}]
+        },
+    
+        {
+            "name": "WALK_LEFT",
+            "repeat": true,
+            "frames": [{"index": 18, "duration": 2}, {"index": 19, "duration": 1},
+                {"index": 20, "duration": 1}, {"index": 21, "duration": 2}]
+        },
+    
+        {
+            "name": "WALK_RIGHT",
+            "repeat": true,
+            "next": "IDLE",
+            "frames": [{"index": 24, "duration": 2}, {"index": 25, "duration": 1},
+                {"index": 26, "duration": 1}, {"index": 27, "duration": 2}]
+        },
+    
+        {
+            "name": "WALK_FRONT",
+            "repeat": true,
+            "next": "IDLE",
+            "frames": [{"index": 6, "duration": 2}, {"index": 7, "duration": 1},
+                {"index": 8, "duration": 1}, {"index": 9, "duration": 2}]
+        },
+    
+        {
+            "name": "WALK_BACK",
+            "repeat": true,
+            "frames": [{"index": 12, "duration": 2}, {"index": 13, "duration": 1},
+                {"index": 14, "duration": 1}, {"index": 15, "duration": 2}]
+        },
+        {
+            "name": "HURT",
+            "repeat": false,
+            "next":"IDLE",
+            "frames": [{"index": 30, "duration": 1}, {"index": 31, "duration": 1},
+                {"index": 32, "duration": 2}, {"index": 33, "duration": 1},
+                {"index": 34, "duration": 2}]
+        },
+        {
+            "name": "DOWNED",
+            "repeat": false,
+            "frames": [{"index": 36, "duration": 2}, {"index": 37, "duration": 2},
+                {"index": 38, "duration": 1}, {"index": 39, "duration": 1},
+                {"index": 40, "duration": 1}, {"index": 41, "duration": 4}]
+        }
+    ]
+    }
