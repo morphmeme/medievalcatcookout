@@ -27,6 +27,7 @@ import CharacterController from "../AI/CharacterController";
 import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
+import GameWon from "./GameWon";
 
 type HpBarData = {
     lastHp: number,
@@ -282,7 +283,7 @@ export default class Level1 extends Scene {
     updateScene(deltaT: number): void {
         // Win Condition: Only temporary for benchmark1
         if (this.allies[0]?.position.y < 0) {
-            this.sceneManager.changeToScene(GameOver);
+            this.sceneManager.changeToScene(GameWon);
         }
         if (this.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
