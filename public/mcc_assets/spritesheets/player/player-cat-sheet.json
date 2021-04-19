@@ -4,7 +4,7 @@
     "spriteWidth": 32,
     "spriteHeight": 32,
     "columns": 6,
-    "rows": 7,
+    "rows": 8,
     "leftBuffer": 0,
     "rightBuffer": 0,
     "topBuffer": 0, 
@@ -61,6 +61,15 @@
             "frames": [{"index": 36, "duration":15}, {"index": 37, "duration": 15},
                 {"index": 38, "duration": 10}, {"index": 39, "duration": 10},
                 {"index": 40, "duration": 10}, {"index": 41, "duration": 30}]
+        },
+        {
+            "name": "HELP",
+            "repeat": true,
+            "frames": [{ "index": 42, "duration": 15 },
+                { "index": 43, "duration": 10},
+                { "index": 44, "duration": 10},
+                { "index": 45, "duration": 10 },
+                { "index": 46, "duration": 10}]
         }
     ]
     }

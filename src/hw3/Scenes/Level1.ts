@@ -512,7 +512,7 @@ export default class Level1 extends Scene {
                     allies: this.allies,
                     viewport: this.viewport,
                 });
-            allySprite.animation.play("IDLE");
+            allySprite.animation.play("HELP");
             allySprite.setGroup("player");
             allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
