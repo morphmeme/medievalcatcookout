@@ -65,6 +65,7 @@ export default class Ally extends CharacterState {
             const enemyPos = this.parent.nearestEnemy()?.position;
             if(enemyPos){
                 let dir = enemyPos.clone().sub(this.owner.position).normalize();
+                dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
                 const weapon = this.parent.inventory.getWeapon(this.owner);
                 weapon?.use(this.owner, "player", dir)
             }

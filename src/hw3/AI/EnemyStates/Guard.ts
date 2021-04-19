@@ -3,7 +3,7 @@ import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
 import NavigationPath from "../../../Wolfie2D/Pathfinding/NavigationPath";
 import { Events, Names } from "../../Constants";
-import EnemyAI, { EnemyStates } from "../EnemyAI";
+import EnemyAI, { Attacks, EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
 
 export default class Guard extends EnemyState {
@@ -57,9 +57,13 @@ export default class Guard extends EnemyState {
             }
         }
 
-        // if(this.parent.getPlayerPosition() !== null){
-        //     this.finished(EnemyStates.ATTACKING);
-        // }
+        if(this.parent.getPlayerPosition() !== null){
+            if (this.parent.attack === Attacks.charge) {
+                this.finished(EnemyStates.CHARGING);
+            } else {
+                this.finished(EnemyStates.ATTACKING);
+            }
+        }
     }
 
     onExit(): Record<string, any> {

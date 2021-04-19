@@ -12,6 +12,7 @@ import Attack from "./EnemyStates/Attack";
 import Guard from "./EnemyStates/Guard";
 import Patrol from "./EnemyStates/Patrol";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
+import Charge from "./EnemyStates/Charge";
 
 export default class EnemyAI extends StateMachineAI implements BattlerAI {
     /** The owner of this AI */
@@ -22,16 +23,19 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     maxHealth: number;
 
     /** The default movement speed of this AI */
-    speed: number = 20;
+    speed: number;
 
     /** The weapon this AI has */
     weapon: Weapon;
 
     /** A reference to the player object */
     allies: Array<GameNode>;
+    attack: string;
 
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
+        this.attack = options.attack;
+        this.speed = options.speed || 20;
 
         if(options.defaultMode === "guard"){
             // Guard mode
@@ -42,6 +46,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         }
 
         this.addState(EnemyStates.ALERT, new Alert(this, owner));
+        this.addState(EnemyStates.CHARGING, new Charge(this, owner));
         this.addState(EnemyStates.ATTACKING, new Attack(this, owner));
 
         this.health = options.health;
@@ -68,6 +73,9 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         this.health -= damage;
     
         if(this.health <= 0){
+            // Drop weapon
+            this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
+            
             this.owner.setAIActive(false, {});
             this.owner.isCollidable = false;
             this.owner.visible = false;
@@ -81,14 +89,26 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         }
     }
 
+    getClosestAlly() {
+        let closest = null;
+        let closestDistance = Number.MAX_VALUE;
+        for (const ally of this.allies) {
+            const dist = ally.position.distanceSqTo(this.owner.position);
+            if (dist < closestDistance) {
+                closest = ally;
+                closestDistance = dist;
+            }
+        }
+        return closest;
+    }
+
 
     getPlayerPosition(): Vec2 {
-        // Attack first of snake TODO: change?
-        if (this.allies[0] === null || this.allies[0] === undefined) {
-            console.log(this.allies.toString());
+        const attacking = this.getClosestAlly();
+        if (attacking === null) {
             return null;
         }
-        let pos = this.allies[0].position;
+        let pos = attacking.position;
         let start = this.owner.position.clone();
 
         let walls = <OrthogonalTilemap> this.owner.getScene().getLayer("Wall").getItems()[0];
@@ -102,5 +122,11 @@ export enum EnemyStates {
     DEFAULT = "default",
     ALERT = "alert",
     ATTACKING = "attacking",
-    PREVIOUS = "previous"
+    PREVIOUS = "previous",
+    CHARGING = "charging",
+}
+
+export enum Attacks {
+    charge = "charge",
+    attack = "attack",
 }
