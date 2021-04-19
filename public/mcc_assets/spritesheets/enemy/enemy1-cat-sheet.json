@@ -13,54 +13,54 @@
         {
             "name": "IDLE",
             "repeat": true,
-            "frames": [{"index": 0, "duration": 2}, {"index": 1, "duration": 1},
-                {"index": 2, "duration": 1}, {"index": 3, "duration": 1},
-                {"index": 4, "duration": 1}]
+            "frames": [{"index": 0, "duration": 15}, {"index": 1, "duration": 10},
+                {"index": 2, "duration": 10}, {"index": 3, "duration": 10},
+                {"index": 4, "duration": 10}]
         },
     
         {
             "name": "WALK_LEFT",
             "repeat": true,
-            "frames": [{"index": 18, "duration": 2}, {"index": 19, "duration": 1},
-                {"index": 20, "duration": 1}, {"index": 21, "duration": 2}]
+            "frames": [{"index": 18, "duration": 15}, {"index": 19, "duration": 10},
+                {"index": 20, "duration": 10}, {"index": 21, "duration": 15}]
         },
     
         {
             "name": "WALK_RIGHT",
             "repeat": true,
             "next": "IDLE",
-            "frames": [{"index": 24, "duration": 2}, {"index": 25, "duration": 1},
-                {"index": 26, "duration": 1}, {"index": 27, "duration": 2}]
+            "frames": [{"index": 24, "duration": 15}, {"index": 25, "duration": 10},
+                {"index": 26, "duration": 10}, {"index": 27, "duration": 15}]
         },
     
         {
             "name": "WALK_FRONT",
             "repeat": true,
             "next": "IDLE",
-            "frames": [{"index": 6, "duration": 2}, {"index": 7, "duration": 1},
-                {"index": 8, "duration": 1}, {"index": 9, "duration": 2}]
+            "frames": [{"index": 6, "duration": 15}, {"index": 7, "duration": 10},
+                {"index": 8, "duration": 10}, {"index": 9, "duration": 15}]
         },
     
         {
             "name": "WALK_BACK",
             "repeat": true,
-            "frames": [{"index": 12, "duration": 2}, {"index": 13, "duration": 1},
-                {"index": 14, "duration": 1}, {"index": 15, "duration": 2}]
+            "frames": [{"index": 12, "duration": 15}, {"index": 13, "duration": 10},
+                {"index": 14, "duration": 10}, {"index": 15, "duration": 15}]
         },
         {
             "name": "HURT",
             "repeat": false,
             "next":"IDLE",
-            "frames": [{"index": 30, "duration": 1}, {"index": 31, "duration": 1},
-                {"index": 32, "duration": 2}, {"index": 33, "duration": 1},
-                {"index": 34, "duration": 2}]
+            "frames": [{"index": 30, "duration": 10}, {"index": 31, "duration": 10},
+                {"index": 32, "duration": 15}, {"index": 33, "duration": 10},
+                {"index": 34, "duration": 15}]
         },
         {
             "name": "DOWNED",
             "repeat": false,
-            "frames": [{"index": 36, "duration": 2}, {"index": 37, "duration": 2},
-                {"index": 38, "duration": 1}, {"index": 39, "duration": 1},
-                {"index": 40, "duration": 1}, {"index": 41, "duration": 4}]
+            "frames": [{"index": 36, "duration":15}, {"index": 37, "duration": 15},
+                {"index": 38, "duration": 10}, {"index": 39, "duration": 10},
+                {"index": 40, "duration": 10}, {"index": 41, "duration": 30}]
         }
     ]
     }
