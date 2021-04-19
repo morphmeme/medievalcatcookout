@@ -70,11 +70,6 @@ export default class Player extends CharacterState {
             // If there is an item in the current slot, use it
             if(item){
                 item?.use(this.owner, "player", lookDirection);
-
-                if(item instanceof Healthpack){
-                    // Destroy the used healthpack
-                    this.parent.inventory.removeItem();
-                }
             }
         }
     }

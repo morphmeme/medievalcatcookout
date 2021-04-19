@@ -69,7 +69,6 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     }
 
     damage(damage: number): void {
-        console.log("Took damage");
         this.health -= damage;
     
         if(this.health <= 0){

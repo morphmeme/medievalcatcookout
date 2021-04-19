@@ -482,7 +482,7 @@ export default class Level1 extends Scene {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
         player.position.set(28*32, 155*32);
-        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
         player.addAI(CharacterController,
             {
                 speed: 100,
