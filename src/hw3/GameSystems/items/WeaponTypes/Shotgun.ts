@@ -10,8 +10,9 @@ import Color from "../../../../Wolfie2D/Utils/Color";
 import { EaseFunctionType } from "../../../../Wolfie2D/Utils/EaseFunctions";
 import WeaponType from "./WeaponType";
 
-export default class LaserGun extends WeaponType {
+export default class Shotgun extends WeaponType {
     line: Line;
+    line2: Line;
     color: Color;
 
     initialize(options: Record<string, any>): void {
@@ -25,8 +26,17 @@ export default class LaserGun extends WeaponType {
 
     doAnimation(scene: Scene, shooter: GameNode, direction: Vec2): void {
         let start = shooter.position.clone();
-        let end = shooter.position.clone().add(direction.scaled(900));
-        let delta = end.clone().sub(start);
+        let end1 = shooter.position.clone().add(direction.scaled(900));
+        let end2 = shooter.position.clone().add(direction.scaled(900).rotateCCW(0.2));
+        let end3 = shooter.position.clone().add(direction.scaled(900));
+        console.log(end1.x, + ", " + end1.y);
+        console.log(end2.x + ", " + end2.y);
+        console.log(end3.x + ", " + end3.y);
+
+        let ends: Vec2[] = [end1, end2, end3];
+        
+        let end = end1;
+        let delta = end1.clone().sub(start);
 
         // Iterate through the tilemap region until we find a collision
         let minX = Math.min(start.x, end.x);
@@ -38,7 +48,7 @@ export default class LaserGun extends WeaponType {
         let walls = <OrthogonalTilemap>shooter.getScene().getLayer("Wall").getItems()[0];
 
         let minIndex = walls.getColRowAt(new Vec2(minX, minY));
-		let maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
+        let maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
 
         let tileSize = walls.getTileSize();
 
@@ -59,7 +69,6 @@ export default class LaserGun extends WeaponType {
                 }
             }
         }
-
         if (this.line) {
             this.line.destroy();
         }
@@ -81,6 +90,59 @@ export default class LaserGun extends WeaponType {
         this.line.start = start;
         this.line.end = end;
         this.line.tweens.play("fade");
+
+        delta = end2.clone().sub(start);
+        end = end2;
+        minX = Math.min(start.x, end.x);
+        maxX = Math.max(start.x, end.x);
+        minY = Math.min(start.y, end.y);
+        maxY = Math.max(start.y, end.y);
+
+        // Get the wall tilemap
+        walls = <OrthogonalTilemap>shooter.getScene().getLayer("Wall").getItems()[0];
+
+        minIndex = walls.getColRowAt(new Vec2(minX, minY));
+        maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
+
+        tileSize = walls.getTileSize();
+
+        for(let col = minIndex.x; col <= maxIndex.x; col++){
+            for(let row = minIndex.y; row <= maxIndex.y; row++){
+                if(walls.isTileCollidable(col, row)){
+                    // Get the position of this tile
+                    let tilePos = new Vec2(col * tileSize.x + tileSize.x/2, row * tileSize.y + tileSize.y/2);
+
+                    // Create a collider for this tile
+                    let collider = new AABB(tilePos, tileSize.scaled(1/2));
+
+                    let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
+
+                    if(hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(end)){
+                        end = hit.pos;
+                    }
+                }
+            }
+        }
+        if (this.line2) {
+            this.line2.destroy();
+        }
+        this.line2 = <Line> scene.add.graphic(GraphicType.LINE, "primary", {start, end});
+        this.line2.color = this.color;
+        this.line2.tweens.add("fade", {
+            startDelay: 0,
+            duration: 300,
+            effects: [
+                {
+                    property: TweenableProperties.alpha,
+                    start: 1,
+                    end: 0,
+                    ease: EaseFunctionType.OUT_SINE
+                }
+            ]
+        });
+        this.line2.end = end;
+        //this.line2.tweens.play("fade");
+    
     }
 
     hits(node: GameNode): boolean {

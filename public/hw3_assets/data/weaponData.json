@@ -1,5 +1,5 @@
 {
-    "numWeapons": 5,
+    "numWeapons": 6,
     "weapons": [
         {
             "weaponType": "stab",
@@ -50,6 +50,16 @@
             "cooldown": 20,
             "useVolume": 320,
             "color": "#00FF00"
+        },
+        {
+            "weaponType": "shotGun",
+            "name": "salt_gun",
+            "displayName": "SaltGun",
+            "spriteKey": "saltgun",
+            "damage": 5,
+            "cooldown": 1000,
+            "useVolume": 320,
+            "color": "#000000"
         }
     ]
 }

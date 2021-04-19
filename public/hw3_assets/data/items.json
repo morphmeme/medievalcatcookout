@@ -99,6 +99,31 @@
             "type": "weapon",
             "weaponType": "mustard_bottle",
             "position": [152, 944]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun",
+            "position": [88, 928]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun",
+            "position": [104, 928]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun",
+            "position": [120, 928]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun",
+            "position": [136, 928]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun",
+            "position": [152, 928]
         }
     ]
 }
