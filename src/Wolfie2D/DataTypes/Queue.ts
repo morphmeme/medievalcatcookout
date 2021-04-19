@@ -19,6 +19,15 @@ export default class Queue<T> implements Collection {
     /** The current number of items in the queue */
     private size: number;
 
+    clone(): Queue<T> {
+        const queue: Queue<T> = new Queue(this.MAX_ELEMENTS);
+        queue.q = this.q.slice(0);
+        queue.head = this.head;
+        queue.tail = this.tail;
+        queue.size = this.size;
+        return queue;
+    }
+
     /**
      * Constructs a new queue
      * @param maxElements The maximum size of the stack

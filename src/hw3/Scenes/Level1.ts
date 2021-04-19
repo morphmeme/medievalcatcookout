@@ -30,6 +30,12 @@ import { drawProgressBar } from "../Util";
 import StateMachineAI from "../../Wolfie2D/AI/StateMachineAI";
 import Collision from "../AI/CommonStates/Collision";
 
+type HpBarData = {
+    lastHp: number,
+    bars: Graphic[],
+    character: AnimatedSprite,
+}
+
 export default class Level1 extends Scene {
     // The players
     private allies: Array<AnimatedSprite>;
@@ -50,12 +56,20 @@ export default class Level1 extends Scene {
     private battleManager: BattleManager;
 
     // Characters healths
-    private hpBars: Array<Graphic>;
+    private hpBars: Map<number, HpBarData>;
     private hpBarUpdateTimer: Timer;
     private weaponTypeMap: Map<string, any>;
 
     private zoomLevel: number;
     private inventory: InventoryManager;
+
+    // coins
+    protected static coinCount: number = 0;
+    protected coinCountLabel: Label;
+
+    // timer
+    protected timer: number = 0;
+    protected timerLabel: Label;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -84,6 +98,8 @@ export default class Level1 extends Scene {
         this.load.image("knife", "hw3_assets/sprites/knife.png");
         this.load.image("lasergun", "hw3_assets/sprites/lasergun.png");
         this.load.image("pistol", "hw3_assets/sprites/pistol.png");
+
+        this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
 
     /**
@@ -96,18 +112,55 @@ export default class Level1 extends Scene {
             Events.ENEMY_COLLIDES_PLAYER,
             Events.PLAYER_COLLIDES_ITEM,
             Events.PLAYER_COLLIDES_PLAYER,
-            Events.PLAYER_COLLIDES_GROUND
+            Events.PLAYER_COLLIDES_GROUND,
+            Events.PLAYER_COLLIDES_RESCUE,
+            Events.PLAYER_HIT_COIN,
         ]);
     }
 
     private displayHp() {
+        for (const [id, data] of this.hpBars.entries()) {
+            if (!data?.character?.ai) {
+                data.bars.forEach(bar => {
+                    bar.destroy();
+                })
+                this.hpBars.delete(id);
+            }
+        }
         return [...this.allies, ...this.enemies].map(character => {
             if (character?.ai && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
-                return drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                if (this.hpBars.has(character.id)) {
+                    const existingHpBarData = this.hpBars.get(character.id);
+                    if (existingHpBarData.lastHp != health) {
+                        const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                        existingHpBarData.bars.forEach(bar => {
+                            bar.destroy();
+                        })
+                        this.hpBars.set(character.id, {
+                            lastHp: health,
+                            bars,
+                            character,
+                        })
+                    } else {
+                        // Move bars instead of redrawing
+                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, -10));
+                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, -10)
+                                                                                       .inc(-(12 - 12 * (health/maxHealth)) / 2, 0));
+                        existingHpBarData.bars[0].size.copy(new Vec2(12 * (health/maxHealth), 1));
+                    }
+                } else {
+                    const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                    this.hpBars.set(character.id, {
+                        lastHp: health,
+                        bars,
+                        character,
+                    })
+                }
+                
             }
-            return [];
-        }).flat();
+            return {id: null, bars: null};
+        });
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -137,7 +190,9 @@ export default class Level1 extends Scene {
 
     startScene(){
         this.zoomLevel = 4;
-        this.hpBarUpdateTimer = new Timer(10);
+        this.hpBarUpdateTimer = new Timer(15);
+        this.hpBars = new Map();
+        
         // Add in the tilemap
         let tilemapLayers = this.add.tilemap("level");
 
@@ -158,14 +213,13 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        this.inventory = new InventoryManager(this, 60, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
+        this.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
 
         this.allies = new Array();
         // Create the player
         this.initializePlayer(this.inventory);
-
-        // Create allies
-        this.initializeAllies(this.inventory)
+        this.initializeAllies(this.inventory);
+        this.initializeRescues(this.inventory);
 
         // Make the viewport follow the player
         this.viewport.follow(this.allies[0]);
@@ -192,6 +246,26 @@ export default class Level1 extends Scene {
 
         // Add a UI for health
         this.addLayer("health", 200);
+
+        // UI layer
+        this.addUILayer("UI");
+        const viewportHalfSize = this.viewport.getHalfSize();
+        const width = viewportHalfSize.x * 2 * this.zoomLevel;
+        const height = viewportHalfSize.y * 2 * this.zoomLevel;
+        // coin label TODO coin image
+        this.coinCountLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(width / 8, height / 20), text: `Coins: ${Level1.coinCount}`});
+        this.coinCountLabel.textColor = Color.WHITE
+        this.coinCountLabel.font = "PixelSimple";
+
+        // timer label
+        this.timerLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(width / 2, height / 20), text: `00:00:00`});
+        this.timerLabel.textColor = Color.WHITE
+        this.timerLabel.font = "PixelSimple";
+
+        // Placeholder for image
+        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(7 * width / 8, height / 20), text: `STAGE 1-1 Burger Kat`});
+        stageNameLabel.textColor = Color.WHITE
+        stageNameLabel.font = "PixelSimple";
     }
 
     updateScene(deltaT: number): void {
@@ -204,6 +278,17 @@ export default class Level1 extends Scene {
             switch(event.type){
                 case Events.HEALTHPACK_SPAWN: {
                     this.createHealthpack(event.data.get("position"));
+                    break;
+                }
+                case Events.PLAYER_COLLIDES_RESCUE: {
+                    if (this.allies.length < 4) {
+                        let node = this.sceneGraph.getNode(event.data.get("other"));
+                        (node?.ai as CharacterController).rescued(this.allies[this.allies.length - 1].ai as CharacterController, 22);
+                        (node?.ai as CharacterController).setEnemies(this.enemies);
+                        this.inventory.addCharacter(node);
+                        this.allies.push(node as AnimatedSprite);
+                    }
+                    
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ENEMY:
@@ -247,20 +332,37 @@ export default class Level1 extends Scene {
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     const item = this.items.get(other);
                     (node?.ai as CharacterController)?.addToInventory(item);
+                    break;
+                }
+                case Events.PLAYER_HIT_COIN:
+                {
+                    // Hit a coin
+                    let coin = this.sceneGraph.getNode(event.data.get("other"));
+                    // Remove coin
+                    coin.destroy();
+
+                    // Increment our number of coins
+                    this.incPlayerCoins(1);
+
+                    // Play a coin sound
+                    // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "coin", loop: false, holdReference: false});
+                    break;
                 }
                 default: {
 
                 }
             }
         }
+        // Update hp bars every x time.
         if (this.hpBarUpdateTimer.isStopped()) {
-            this.hpBarUpdateTimer.start();
-            if (this.hpBars) {
-                this.hpBars.forEach(hpBar => hpBar?.destroy());
-            }
-            this.hpBars = this.displayHp();
+            this.displayHp();
         }
 
+        if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT)) {
+            this.updateTimerLabel(deltaT);
+        }
+        this.timer += deltaT;
+        
         // Debug mode graph
         // if(Input.isKeyJustPressed("g")){
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
@@ -399,7 +501,7 @@ export default class Level1 extends Scene {
     }
 
     initializeAllies(inventory: InventoryManager): void {
-        for (const i of [0,1,2]) {
+        for (const i of [0,1]) {
             const allySprite = this.add.animatedSprite("player", "primary");
             allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
             allySprite.addAI(CharacterController,
@@ -419,6 +521,25 @@ export default class Level1 extends Scene {
             inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
+    }
+
+    initializeRescues(inventory: InventoryManager): void {
+        const allySprite = this.add.animatedSprite("player", "primary");
+        allySprite.position.set(16*16, 62*16);
+        allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        allySprite.addAI(CharacterController,
+            {
+                speed: 0,
+                inventory,
+                allies: this.allies,
+                viewport: this.viewport,
+                rescue: true,
+            });
+        allySprite.animation.play("IDLE");
+        allySprite.setGroup("rescue");
+        allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+        allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+        allySprite.setTrigger("player", Events.PLAYER_COLLIDES_RESCUE, null);
     }
 
     /**
@@ -519,5 +640,21 @@ export default class Level1 extends Scene {
         this.allies.forEach(character => {
             (character.ai as CharacterController).setEnemies(this.enemies);
         })
+    }
+
+    /**
+     * Increments the number of coins the player has
+     * @param amt The amount to add the the number of coins
+     */
+    protected incPlayerCoins(amt: number): void {
+        Level1.coinCount += amt;
+        this.coinCountLabel.text = "Coins: " + Level1.coinCount;
+    }
+
+    protected updateTimerLabel(deltaT: number) {
+        const time_ms = Math.floor(this.timer + deltaT);
+        const date = new Date(0);
+        date.setSeconds(time_ms);
+        this.timerLabel.text = `${date.toISOString().substr(11, 8)}`;
     }
 }
