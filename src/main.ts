@@ -1,9 +1,7 @@
 import Game from "./Wolfie2D/Loop/Game";
-import Level1 from "./hw3/Scenes/Level1";
 import RegistryManager from "./Wolfie2D/Registry/RegistryManager";
 import WeaponTemplateRegistry from "./hw3/Registry/WeaponRegistry";
-import WeaponTypeRegistry from "./hw3/Registry/WeaponTypeRegistry";
-import MainMenu from "./hw3/Scenes/MainMenu";
+import Splash from "./hw3/Scenes/Splash";
 
 // The main function is your entrypoint into Wolfie2D. Specify your first scene and any options here.
 (function main(){
@@ -36,7 +34,7 @@ import MainMenu from "./hw3/Scenes/MainMenu";
     const game = new Game(options);
 
     // Start our game
-    game.start(MainMenu, {});
+    game.start(Splash, {});
 })();
 
 function runTests(){};

@@ -45,12 +45,12 @@
                  "value":"ground"
                 }, 
                 {
-                 "name":"HasPhysics",
+                 "name":"IsTrigger",
                  "type":"bool",
                  "value":true
                 }, 
                 {
-                 "name":"IsTrigger",
+                 "name":"HasPhysics",
                  "type":"bool",
                  "value":true
                 }],
@@ -59,293 +59,24 @@
          "width":64,
          "x":0,
          "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":6,
-         "name":"Coins",
-         "objects":[
-                {
-                 "gid":7,
-                 "height":16,
-                 "id":98,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"Group",
-                         "type":"string",
-                         "value":"coin"
-                        }, 
-                        {
-                         "name":"HasPhysics",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"IsCollidable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"IsTrigger",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"TriggerGroup",
-                         "type":"string",
-                         "value":"player"
-                        }, 
-                        {
-                         "name":"TriggerOnEnter",
-                         "type":"string",
-                         "value":"PlayerHitCoin"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":368.181818181818,
-                 "y":912
-                }, 
-                {
-                 "gid":7,
-                 "height":16,
-                 "id":99,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"Group",
-                         "type":"string",
-                         "value":"coin"
-                        }, 
-                        {
-                         "name":"HasPhysics",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"IsCollidable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"IsTrigger",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"TriggerGroup",
-                         "type":"string",
-                         "value":"player"
-                        }, 
-                        {
-                         "name":"TriggerOnEnter",
-                         "type":"string",
-                         "value":"PlayerHitCoin"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":353.181818181818,
-                 "y":928
-                }, 
-                {
-                 "gid":7,
-                 "height":16,
-                 "id":100,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"Group",
-                         "type":"string",
-                         "value":"coin"
-                        }, 
-                        {
-                         "name":"HasPhysics",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"IsCollidable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"IsTrigger",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"TriggerGroup",
-                         "type":"string",
-                         "value":"player"
-                        }, 
-                        {
-                         "name":"TriggerOnEnter",
-                         "type":"string",
-                         "value":"PlayerHitCoin"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":368.681818181818,
-                 "y":945.5
-                }, 
-                {
-                 "gid":7,
-                 "height":16,
-                 "id":101,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"Group",
-                         "type":"string",
-                         "value":"coin"
-                        }, 
-                        {
-                         "name":"HasPhysics",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"IsCollidable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"IsTrigger",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"TriggerGroup",
-                         "type":"string",
-                         "value":"player"
-                        }, 
-                        {
-                         "name":"TriggerOnEnter",
-                         "type":"string",
-                         "value":"PlayerHitCoin"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":400.75,
-                 "y":912.75
-                }, 
-                {
-                 "gid":7,
-                 "height":16,
-                 "id":102,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"Group",
-                         "type":"string",
-                         "value":"coin"
-                        }, 
-                        {
-                         "name":"HasPhysics",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"IsCollidable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"IsTrigger",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"TriggerGroup",
-                         "type":"string",
-                         "value":"player"
-                        }, 
-                        {
-                         "name":"TriggerOnEnter",
-                         "type":"string",
-                         "value":"PlayerHitCoin"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":385.75,
-                 "y":928.75
-                }, 
-                {
-                 "gid":7,
-                 "height":16,
-                 "id":103,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"Group",
-                         "type":"string",
-                         "value":"coin"
-                        }, 
-                        {
-                         "name":"HasPhysics",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"IsCollidable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"IsTrigger",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"TriggerGroup",
-                         "type":"string",
-                         "value":"player"
-                        }, 
-                        {
-                         "name":"TriggerOnEnter",
-                         "type":"string",
-                         "value":"PlayerHitCoin"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":401.25,
-                 "y":946.25
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":104,
+ "nextlayerid":5,
+ "nextobjectid":92,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.3",
  "tileheight":16,
  "tilesets":[
         {
-         "columns":7,
+         "columns":6,
          "firstgid":1,
          "image":"alex-feng-hw3.png",
          "imageheight":16,
-         "imagewidth":112,
+         "imagewidth":96,
          "margin":0,
          "name":"top-down-hw3",
          "spacing":0,
-         "tilecount":7,
+         "tilecount":6,
          "tileheight":16,
          "tilewidth":16
         }],

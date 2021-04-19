@@ -2,7 +2,8 @@ import Registry from "../../Wolfie2D/Registry/Registries/Registry";
 import ResourceManager from "../../Wolfie2D/ResourceManager/ResourceManager";
 import LaserGun from "../GameSystems/items/WeaponTypes/LaserGun";
 import SemiAutoGun from "../GameSystems/items/WeaponTypes/SemiAutoGun";
-import Slice from "../GameSystems/items/WeaponTypes/Slice";
+import ShotGun from "../GameSystems/items/WeaponTypes/Shotgun";
+import Stab from "../GameSystems/items/WeaponTypes/Stab";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 
 export default class WeaponTemplateRegistry extends Registry<WeaponConstructor> {
@@ -11,18 +12,19 @@ export default class WeaponTemplateRegistry extends Registry<WeaponConstructor> 
         const rm = ResourceManager.getInstance();
 
         // Load sprites
-        rm.image("pistol", "hw3_assets/sprites/pistol.png");
-        rm.image("knife", "hw3_assets/sprites/knife.png");
+        rm.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
+        rm.image("spatula", "hw3_assets/sprites/spatula.png");
         rm.image("lasergun", "hw3_assets/sprites/lasergun.png");
-
+        rm.image("mustardbottle", "hw3_assets/sprites/mustard.png");
+        rm.image("saltgun", "hw3_assets/sprites/salt.png");
         // Load spritesheets
-        rm.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
-
+        rm.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         // Register default types
-        this.registerItem("slice", Slice);
-
+        this.registerItem("stab", Stab);
         this.registerItem("semiAutoGun", SemiAutoGun);
         this.registerItem("laserGun", LaserGun);
+        this.registerItem("shotGun", ShotGun);
+        
     }
 
     // We don't need this for this assignment

@@ -74,9 +74,9 @@ export default class Level1 extends Scene {
         this.load.spritesheet("player", "hw3_assets/spritesheets/player.json");
         this.load.spritesheet("enemy", "hw3_assets/spritesheets/enemy.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
-
+        this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         // Load the tilemap
-        this.load.tilemap("level", "hw3_assets/tilemaps/alex-feng-hw3.json");
+        this.load.tilemap("level", "hw3_assets/tilemaps/testmap.json");
 
         // Load the scene info
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
@@ -93,10 +93,13 @@ export default class Level1 extends Scene {
         // Load the healthpack sprite
         this.load.image("healthpack", "hw3_assets/sprites/healthpack.png");
         this.load.image("inventorySlot", "hw3_assets/sprites/inventory.png");
-        this.load.image("knife", "hw3_assets/sprites/knife.png");
+        this.load.image("spatula", "hw3_assets/sprites/spatula.png");
         this.load.image("lasergun", "hw3_assets/sprites/lasergun.png");
         this.load.image("pistol", "hw3_assets/sprites/pistol.png");
-
+        this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
+        this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
+        this.load.image("saltgun", "hw3_assets/sprites/salt.png");
+        
         this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
 
@@ -462,7 +465,7 @@ export default class Level1 extends Scene {
     initializePlayer(inventory: InventoryManager): void {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
-        player.position.set(2*16, 62*16);
+        player.position.set(28*32, 155*32);
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
         player.addAI(CharacterController,
             {
