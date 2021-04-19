@@ -609,7 +609,8 @@ export default class Level1 extends Scene {
                 guardPosition: data.guardPosition,  // This only matters if the're a guard
                 health: data.health,
                 allies: this.allies,
-                weapon: this.createWeapon("weak_pistol")
+                weapon: this.createWeapon("weak_pistol"),
+                charging: true,
             }
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);

@@ -61,9 +61,13 @@ export default class Patrol extends EnemyState {
             this.currentPath = this.getNextPath();
         }
         // // If the enemy sees the player, start attacking
-        // if(this.parent.getPlayerPosition() !== null){
-        //     this.finished(EnemyStates.ATTACKING);
-        // }
+        if(this.parent.getPlayerPosition() !== null){
+            if (this.parent.charging) {
+                this.finished(EnemyStates.CHARGING);
+            } else {
+                this.finished(EnemyStates.ATTACKING);
+            }
+        }
     }
 
     onExit(): Record<string, any> {

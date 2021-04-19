@@ -49,7 +49,11 @@ export default class Alert extends EnemyState {
         }
 
         if(this.parent.getPlayerPosition() !== null){
-            this.finished(EnemyStates.ATTACKING);
+            if (this.parent.charging) {
+                this.finished(EnemyStates.CHARGING);
+            } else {
+                this.finished(EnemyStates.ATTACKING);
+            }
         }
     }
 

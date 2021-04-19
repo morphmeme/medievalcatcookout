@@ -12,6 +12,7 @@ import Attack from "./EnemyStates/Attack";
 import Guard from "./EnemyStates/Guard";
 import Patrol from "./EnemyStates/Patrol";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
+import Charge from "./EnemyStates/Charge";
 
 export default class EnemyAI extends StateMachineAI implements BattlerAI {
     /** The owner of this AI */
@@ -29,9 +30,11 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
 
     /** A reference to the player object */
     allies: Array<GameNode>;
+    charging: boolean;
 
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
+        this.charging = options.charging;
 
         if(options.defaultMode === "guard"){
             // Guard mode
@@ -42,6 +45,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         }
 
         this.addState(EnemyStates.ALERT, new Alert(this, owner));
+        this.addState(EnemyStates.CHARGING, new Charge(this, owner));
         this.addState(EnemyStates.ATTACKING, new Attack(this, owner));
 
         this.health = options.health;
@@ -81,14 +85,26 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         }
     }
 
+    getClosestAlly() {
+        let closest = null;
+        let closestDistance = Number.MAX_VALUE;
+        for (const ally of this.allies) {
+            const dist = ally.position.distanceSqTo(this.owner.position);
+            if (dist < closestDistance) {
+                closest = ally;
+                closestDistance = dist;
+            }
+        }
+        return closest;
+    }
+
 
     getPlayerPosition(): Vec2 {
-        // Attack first of snake TODO: change?
-        if (this.allies[0] === null || this.allies[0] === undefined) {
-            console.log(this.allies.toString());
+        const attacking = this.getClosestAlly();
+        if (attacking === null) {
             return null;
         }
-        let pos = this.allies[0].position;
+        let pos = attacking.position;
         let start = this.owner.position.clone();
 
         let walls = <OrthogonalTilemap> this.owner.getScene().getLayer("Wall").getItems()[0];
@@ -102,5 +118,6 @@ export enum EnemyStates {
     DEFAULT = "default",
     ALERT = "alert",
     ATTACKING = "attacking",
-    PREVIOUS = "previous"
+    PREVIOUS = "previous",
+    CHARGING = "charging",
 }
