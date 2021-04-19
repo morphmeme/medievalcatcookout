@@ -55,7 +55,6 @@ export default class Level1 extends Scene {
 
     // Characters healths
     private hpBars: Map<number, HpBarData>;
-    private hpBarUpdateTimer: Timer;
     private weaponTypeMap: Map<string, any>;
 
     private zoomLevel: number;
@@ -116,6 +115,7 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_GROUND,
             Events.PLAYER_COLLIDES_RESCUE,
             Events.PLAYER_HIT_COIN,
+            Events.DROP_WEAPON,
         ]);
     }
 
@@ -191,8 +191,7 @@ export default class Level1 extends Scene {
     }
 
     startScene(){
-        this.zoomLevel = 4;
-        this.hpBarUpdateTimer = new Timer(15);
+        this.zoomLevel = 2;
         this.hpBars = new Map();
         
         // Add in the tilemap
@@ -215,19 +214,19 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        this.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
+        this.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, 4);
 
         this.allies = new Array();
         // Create the player
         this.initializePlayer(this.inventory);
-        this.initializeAllies(this.inventory);
+        // this.initializeAllies(this.inventory);
         this.initializeRescues(this.inventory);
 
         // Make the viewport follow the player
         this.viewport.follow(this.allies[0]);
 
         // Zoom in to a reasonable level
-        this.viewport.enableZoom();
+        // this.viewport.enableZoom();
         this.viewport.setZoomLevel(this.zoomLevel);
 
         // Create the navmesh
@@ -270,7 +269,21 @@ export default class Level1 extends Scene {
         stageNameLabel.font = "PixelSimple";
     }
 
+    dropWeapon(weapon: Weapon, position: Vec2) {
+        if (weapon && position) {
+            weapon.moveSprite(position);
+            weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            weapon.sprite.setGroup("item");
+            weapon.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
+            this.items.set(weapon.sprite, weapon);
+        }
+    }
+
     updateScene(deltaT: number): void {
+        // Win Condition: Only temporary for benchmark1
+        if (this.allies[0]?.position.y < 0) {
+            this.sceneManager.changeToScene(GameOver);
+        }
         if (this.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
         }
@@ -278,8 +291,12 @@ export default class Level1 extends Scene {
             let event = this.receiver.getNextEvent();
 
             switch(event.type){
+                case Events.DROP_WEAPON: {
+                    this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
+                    break;
+                }
                 case Events.HEALTHPACK_SPAWN: {
-                    this.createHealthpack(event.data.get("position"));
+                    // this.createHealthpack(event.data.get("position"));
                     break;
                 }
                 case Events.PLAYER_COLLIDES_RESCUE: {
@@ -333,9 +350,7 @@ export default class Level1 extends Scene {
             }
         }
         // Update hp bars every x time.
-        if (this.hpBarUpdateTimer.isStopped()) {
-            this.displayHp();
-        }
+        this.displayHp();
 
         if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT)) {
             this.updateTimerLabel(deltaT);
@@ -507,22 +522,24 @@ export default class Level1 extends Scene {
     }
 
     initializeRescues(inventory: InventoryManager): void {
-        const allySprite = this.add.animatedSprite("player", "primary");
-        allySprite.position.set(16*16, 62*16);
-        allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-        allySprite.addAI(CharacterController,
-            {
-                speed: 0,
-                inventory,
-                allies: this.allies,
-                viewport: this.viewport,
-                rescue: true,
-            });
-        allySprite.animation.play("IDLE");
-        allySprite.setGroup("rescue");
-        allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
-        allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
-        allySprite.setTrigger("player", Events.PLAYER_COLLIDES_RESCUE, null);
+        for (const [posX, posY] of [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]]) {
+            const allySprite = this.add.animatedSprite("player", "primary");
+            allySprite.position.set(posX, posY);
+            allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            allySprite.addAI(CharacterController,
+                {
+                    speed: 0,
+                    inventory,
+                    allies: this.allies,
+                    viewport: this.viewport,
+                    rescue: true,
+                });
+            allySprite.animation.play("IDLE");
+            allySprite.setGroup("rescue");
+            allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+            allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+            allySprite.setTrigger("player", Events.PLAYER_COLLIDES_RESCUE, null);
+        }
     }
 
     /**
@@ -612,8 +629,9 @@ export default class Level1 extends Scene {
                 guardPosition: data.guardPosition,  // This only matters if the're a guard
                 health: data.health,
                 allies: this.allies,
-                weapon: this.createWeapon("weak_pistol"),
-                charging: true,
+                weapon: data.weapon ? this.createWeapon(data.weapon) : null,
+                attack: data.attack,
+                speed: data.speed,
             }
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);

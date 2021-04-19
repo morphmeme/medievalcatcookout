@@ -3,7 +3,7 @@ import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
 import NavigationPath from "../../../Wolfie2D/Pathfinding/NavigationPath";
 import { Events, Names } from "../../Constants";
-import EnemyAI, { EnemyStates } from "../EnemyAI";
+import EnemyAI, { Attacks, EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
 
 export default class Guard extends EnemyState {
@@ -35,13 +35,13 @@ export default class Guard extends EnemyState {
     }
 
     handleInput(event: GameEvent): void {
-        if(event.type === Events.SHOT_FIRED){
-            // Shot was fired. Go check it out if it was close to us
-            if(this.owner.position.distanceTo(event.data.get("position")) < event.data.get("volume")){
-                this.retObj = {target: event.data.get("position")};
-                this.finished(EnemyStates.ALERT);
-            }
-        }
+        // if(event.type === Events.SHOT_FIRED){
+        //     // Shot was fired. Go check it out if it was close to us
+        //     if(this.owner.position.distanceTo(event.data.get("position")) < event.data.get("volume")){
+        //         this.retObj = {target: event.data.get("position")};
+        //         this.finished(EnemyStates.ALERT);
+        //     }
+        // }
     }
 
     update(deltaT: number): void {
@@ -58,7 +58,7 @@ export default class Guard extends EnemyState {
         }
 
         if(this.parent.getPlayerPosition() !== null){
-            if (this.parent.charging) {
+            if (this.parent.attack === Attacks.charge) {
                 this.finished(EnemyStates.CHARGING);
             } else {
                 this.finished(EnemyStates.ATTACKING);

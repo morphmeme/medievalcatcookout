@@ -23,18 +23,19 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     maxHealth: number;
 
     /** The default movement speed of this AI */
-    speed: number = 20;
+    speed: number;
 
     /** The weapon this AI has */
     weapon: Weapon;
 
     /** A reference to the player object */
     allies: Array<GameNode>;
-    charging: boolean;
+    attack: string;
 
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
-        this.charging = options.charging;
+        this.attack = options.attack;
+        this.speed = options.speed || 20;
 
         if(options.defaultMode === "guard"){
             // Guard mode
@@ -72,6 +73,9 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         this.health -= damage;
     
         if(this.health <= 0){
+            // Drop weapon
+            this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
+            
             this.owner.setAIActive(false, {});
             this.owner.isCollidable = false;
             this.owner.visible = false;
@@ -120,4 +124,9 @@ export enum EnemyStates {
     ATTACKING = "attacking",
     PREVIOUS = "previous",
     CHARGING = "charging",
+}
+
+export enum Attacks {
+    charge = "charge",
+    attack = "attack",
 }
