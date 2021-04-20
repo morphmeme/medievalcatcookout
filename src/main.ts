@@ -18,7 +18,7 @@ import Splash from "./hw3/Scenes/Splash";
             {name: "left", keys: ["a"]},
             {name: "right", keys: ["d"]},
             {name: "inventory", keys: ["e"]},
-            {name: "pauseMenu", keys: ["p"]}
+            {name: "pauseMenu", keys: ["p", "escape"]}
         ],
         useWebGL: false,                        // Tell the game we want to use webgl
         showDebug: false                       // Whether to show debug messages. You can change this to true if you want
