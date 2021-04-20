@@ -487,7 +487,7 @@ export default class Level1 extends Scene {
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
         player.addAI(CharacterController,
             {
-                speed: 400,
+                speed: 100,
                 inventory,
                 allies: this.allies,
                 viewport: this.viewport,
