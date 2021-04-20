@@ -77,6 +77,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
             // Drop weapon
             this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
             
+            this.owner.animation.override("DOWNED", false);
             this.owner.setAIActive(false, {});
             this.owner.isCollidable = false;
             this.owner.visible = false;

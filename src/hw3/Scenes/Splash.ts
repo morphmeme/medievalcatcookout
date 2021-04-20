@@ -19,7 +19,7 @@ export default class Splash extends Scene {
     private levels: Array<[string, Vec2, new (viewport: Viewport, sceneManager: SceneManager, renderingManager: RenderingManager, options: Record<string, any>) => Scene]>
 
     loadScene(){
-        this.load.image("splash", "hw3_assets/static_images/splash.png")
+        this.load.image("splash", "mcc_assets/static_images/catsplash.png")
     }
 
     startScene(){

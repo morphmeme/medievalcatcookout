@@ -181,13 +181,17 @@ export default class Level1 extends Scene {
             cardinalRad0 == 3 && cardinalRad1 == 1) {
             (character1.ai as BattlerAI).damage(1);
             (character0.ai as BattlerAI).damage(1);
+            character0.animation.override("HURT");
+            character1.animation.override("HURT");
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
             (character1.ai as BattlerAI).damage(1);
+            character1.animation.override("HURT");
         } else {
             (character0.ai as BattlerAI).damage(1);
+            character0.animation.override("HURT");
         }
     }
 

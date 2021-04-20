@@ -19,14 +19,20 @@ export default class AnimationManager {
     /** The name of the current animation of this sprite */
     protected currentAnimation: string;
 
+    /** The previously played animation  */
+    protected previousAnimation: string;
+
     /** The current frame of this animation */
     protected currentFrame: number;
-
+    
     /** The progress of the current animation through the current frame */
     protected frameProgress: number;
 
     /** Whether the current animation is looping or not */
     protected loop: boolean;
+
+    /** If the current animation is overriding others */
+    protected overriding: boolean;
 
     /** The map of animations */
     protected animations: Map<AnimationData>;
@@ -139,6 +145,7 @@ export default class AnimationManager {
     protected endCurrentAnimation(): void {
         this.currentFrame = 0;
         this.animationState = AnimationState.STOPPED;
+        this.overriding = false;
 
         if(this.onEndEvent !== null){
             this.emitter.fireEvent(this.onEndEvent, {owner: this.owner.id, animation: this.currentAnimation});
@@ -169,6 +176,63 @@ export default class AnimationManager {
      * @param onEnd The name of an event to send when this animation naturally stops playing. This only matters if loop is false.
      */
     play(animation: string, loop?: boolean, onEnd?: string): void {
+        if(!this.overriding){
+            this.currentAnimation = animation;
+            this.currentFrame = 0;
+            this.frameProgress = 0;
+            this.animationState = AnimationState.PLAYING;
+
+            // If loop arg was provided, use that
+            if(loop !== undefined){
+                this.loop = loop;
+            } else {
+                // Otherwise, use what the json file specified
+                this.loop = this.animations.get(animation).repeat;
+            }
+
+            if(onEnd !== undefined){
+                this.onEndEvent = onEnd;
+            } else {
+                this.onEndEvent = null;
+            }
+
+            // Reset pending animation
+            this.pendingAnimation = null;
+        }
+        else{
+            this.queue(animation, loop, onEnd);
+        }
+    }
+
+    /**
+     * Queues a single animation to be played after the current one. Does NOT stack.
+     * Queueing additional animations past 1 will just replace the queued animation
+     * @param animation The animation to queue
+     * @param loop Whether or not the loop the queued animation
+     * @param onEnd The event to fire when the queued animation ends
+     */
+    queue(animation: string, loop: boolean = false, onEnd?: string): void {
+        this.pendingAnimation = animation;
+        this.pendingLoop = loop;
+        if(onEnd !== undefined){
+            this.pendingOnEnd = onEnd;
+        } else {
+            this.pendingOnEnd = null;
+        }
+    }
+    /**
+     * Forces the new animation to play, while another animation would normally be playing.
+     * Once this animation completes, the previous animation will continue.
+     * 
+     * @param animation The animation to be played
+     * @param onEnd The event to fire when the queued animation ends.
+     */
+    override(animation: string, loop: boolean = false, onEnd?: string): void{
+        this.overriding = true;
+        this.pendingAnimation = this.currentAnimation;
+        this.pendingLoop = this.loop;
+        this.pendingOnEnd = this.onEndEvent;
+
         this.currentAnimation = animation;
         this.currentFrame = 0;
         this.frameProgress = 0;
@@ -186,26 +250,6 @@ export default class AnimationManager {
             this.onEndEvent = onEnd;
         } else {
             this.onEndEvent = null;
-        }
-
-        // Reset pending animation
-        this.pendingAnimation = null;
-    }
-
-    /**
-     * Queues a single animation to be played after the current one. Does NOT stack.
-     * Queueing additional animations past 1 will just replace the queued animation
-     * @param animation The animation to queue
-     * @param loop Whether or not the loop the queued animation
-     * @param onEnd The event to fire when the queued animation ends
-     */
-    queue(animation: string, loop: boolean = false, onEnd?: string): void {
-        this.pendingAnimation = animation;
-        this.pendingLoop = loop;
-        if(onEnd !== undefined){
-            this.pendingOnEnd = onEnd;
-        } else {
-            this.pendingOnEnd = null;
         }
     }
 
