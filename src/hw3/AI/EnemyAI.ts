@@ -104,8 +104,8 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
                 // Spawn a healthpack
                 this.emitter.fireEvent(Events.HEALTHPACK_SPAWN, {position: this.owner.position});
             }
-            this.owner.animation.forcePlay("DOWNED", false, Events.CHARACTER_DEATH);
-            
+            this.owner.destroy();
+            // this.owner.animation.forcePlay("DOWNED", false, Events.CHARACTER_DEATH);
         }
     }
 
