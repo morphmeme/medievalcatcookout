@@ -49,6 +49,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     }
 
     private viewport: Viewport;
+    public rotation: number = 0;
 
     destroy() {
         // Get rid of our reference to the owner

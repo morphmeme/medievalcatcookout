@@ -31,6 +31,7 @@ import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
 import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
+import MainMenu from "./MainMenu";
 
 type HpBarData = {
     lastHp: number,
@@ -59,7 +60,6 @@ export default class Level1 extends Scene {
 
     // Characters healths
     private hpBars: Map<number, HpBarData>;
-    private hpBarUpdateTimer: Timer;
     private weaponTypeMap: Map<string, any>;
 
     private zoomLevel: number;
@@ -79,10 +79,11 @@ export default class Level1 extends Scene {
 
     loadScene(){
         // Load the player and enemy spritesheets
-        this.load.spritesheet("player", "hw3_assets/spritesheets/player.json");
-        this.load.spritesheet("enemy", "hw3_assets/spritesheets/enemy.json");
+        this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
+        this.load.spritesheet("enemy", "mcc_assets/spritesheets/enemy/enemy1-cat-sheet.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
-
+        this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
+        this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         // Load the tilemap
         this.load.tilemap("level", "hw3_assets/tilemaps/testmap.json");
 
@@ -101,10 +102,13 @@ export default class Level1 extends Scene {
         // Load the healthpack sprite
         this.load.image("healthpack", "hw3_assets/sprites/healthpack.png");
         this.load.image("inventorySlot", "hw3_assets/sprites/inventory.png");
-        this.load.image("knife", "hw3_assets/sprites/knife.png");
+        this.load.image("spatula", "hw3_assets/sprites/spatula.png");
         this.load.image("lasergun", "hw3_assets/sprites/lasergun.png");
         this.load.image("pistol", "hw3_assets/sprites/pistol.png");
-
+        this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
+        this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
+        this.load.image("saltgun", "hw3_assets/sprites/salt.png");
+        
         this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
 
@@ -121,7 +125,9 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_GROUND,
             Events.PLAYER_COLLIDES_RESCUE,
             Events.PLAYER_HIT_COIN,
-            Events.PLAYER_LEVEL_END
+            Events.PLAYER_LEVEL_END,
+            Events.DROP_WEAPON,
+            Events.DROP_COIN,
         ]);
     }
 
@@ -140,7 +146,7 @@ export default class Level1 extends Scene {
                 if (this.hpBars.has(character.id)) {
                     const existingHpBarData = this.hpBars.get(character.id);
                     if (existingHpBarData.lastHp != health) {
-                        const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                        const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -20), "health");
                         existingHpBarData.bars.forEach(bar => {
                             bar.destroy();
                         })
@@ -151,13 +157,13 @@ export default class Level1 extends Scene {
                         })
                     } else {
                         // Move bars instead of redrawing
-                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, -10));
-                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, -10)
+                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, -20));
+                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, -20)
                                                                                        .inc(-(12 - 12 * (health/maxHealth)) / 2, 0));
                         existingHpBarData.bars[0].size.copy(new Vec2(12 * (health/maxHealth), 1));
                     }
                 } else {
-                    const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -10), "health");
+                    const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -20), "health");
                     this.hpBars.set(character.id, {
                         lastHp: health,
                         bars,
@@ -176,8 +182,8 @@ export default class Level1 extends Scene {
             return;
         }
         const direction_0to1 = character0.position.dirTo(character1.position);
-        const cardinalRad0 = MathUtils.radiansToCardinal(character0.rotation);
-        const cardinalRad1 = MathUtils.radiansToCardinal(character1.rotation);
+        const cardinalRad0 = MathUtils.radiansToCardinal((character0.ai as BattlerAI).rotation);
+        const cardinalRad1 = MathUtils.radiansToCardinal((character1.ai as BattlerAI).rotation);
         const up_0to1 = direction_0to1.dot(Vec2.DOWN) > 0.5;
         const down_0to1 = direction_0to1.dot(Vec2.UP) > 0.5;
         const left_0to1 = direction_0to1.dot(Vec2.RIGHT) > 0.5;
@@ -197,8 +203,7 @@ export default class Level1 extends Scene {
     }
 
     startScene(){
-        this.zoomLevel = 4;
-        this.hpBarUpdateTimer = new Timer(15);
+        this.zoomLevel = 2;
         this.hpBars = new Map();
         
         // Add in the tilemap
@@ -221,19 +226,19 @@ export default class Level1 extends Scene {
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
 
-        this.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, this.zoomLevel);
+        this.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, 4);
 
         this.allies = new Array();
         // Create the player
         this.initializePlayer(this.inventory);
-        this.initializeAllies(this.inventory);
+        // this.initializeAllies(this.inventory);
         this.initializeRescues(this.inventory);
 
         // Make the viewport follow the player
         this.viewport.follow(this.allies[0]);
 
         // Zoom in to a reasonable level
-        this.viewport.enableZoom();
+        // this.viewport.enableZoom();
         this.viewport.setZoomLevel(this.zoomLevel);
 
         // Create the navmesh
@@ -254,6 +259,12 @@ export default class Level1 extends Scene {
 
         // Add a UI for health
         this.addLayer("health", 200);
+
+        // Add a UI for pause
+        const pauseLayer = this.addUILayer("pauseLayer");
+        pauseLayer.setHidden(true);
+        this.drawControlScreen();
+        this.drawPauseLayer();
 
         // UI layer
         this.addUILayer("UI");
@@ -280,7 +291,27 @@ export default class Level1 extends Scene {
         this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
     }
 
+    dropWeapon(weapon: Weapon, position: Vec2) {
+        if (weapon && position) {
+            weapon.moveSprite(position);
+            weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            weapon.sprite.setGroup("item");
+            weapon.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
+            this.items.set(weapon.sprite, weapon);
+        }
+    }
+
+    dropCoin(position: Vec2) {
+        const coin = this.add.animatedSprite("coin", "primary");
+        coin.position.copy(position);
+        coin.animation.play("spinning");
+        coin.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        coin.setGroup("coin");
+        coin.setTrigger("player", Events.PLAYER_HIT_COIN, null);
+    }
+
     updateScene(deltaT: number): void {
+        // Win Condition: Only temporary for benchmark1
         if (this.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
         }
@@ -288,8 +319,15 @@ export default class Level1 extends Scene {
             let event = this.receiver.getNextEvent();
 
             switch(event.type){
+                case Events.DROP_COIN: {
+                    this.dropCoin(event.data.get("position"));
+                }
+                case Events.DROP_WEAPON: {
+                    this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
+                    break;
+                }
                 case Events.HEALTHPACK_SPAWN: {
-                    this.createHealthpack(event.data.get("position"));
+                    // this.createHealthpack(event.data.get("position"));
                     break;
                 }
                 case Events.PLAYER_COLLIDES_RESCUE: {
@@ -308,7 +346,7 @@ export default class Level1 extends Scene {
                 case Events.PLAYER_COLLIDES_PLAYER: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
-                    this.handleCharacterCollision(<AnimatedSprite>node, <AnimatedSprite>other);
+                    this.handleCharacterCollision(node as AnimatedSprite, other as AnimatedSprite);
                     break;
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
@@ -351,9 +389,7 @@ export default class Level1 extends Scene {
             }
         }
         // Update hp bars every x time.
-        if (this.hpBarUpdateTimer.isStopped()) {
-            this.displayHp();
-        }
+        this.displayHp();
 
         if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT) && this.timerStopped == false) {
             this.updateTimerLabel(deltaT);
@@ -365,32 +401,112 @@ export default class Level1 extends Scene {
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
         if(Input.isJustPressed("inventory")){
+            this.toggleInventory();
             this.togglePause();
             this.inventory.updateHpBars();
+        }
+        if (Input.isJustPressed("pauseMenu")) {
+            this.togglePause();
+        }
+    }
+
+    drawControlScreen() {
+        /* ########## CONTROLS SCREEN ########## */
+        const center = this.viewport.getCenter();
+        const vpHalfSize = this.viewport.getHalfSize();
+        const controls = this.addUILayer("controls");
+        controls.setHidden(true);
+
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        pauseBg.color = Color.BLACK;
+
+        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 200), text: "Controls"});
+        controlsHeader.textColor = Color.WHITE;
+
+        const controlsText1 = "WASD to move";
+        const controlsText2 = "E to open inventory";
+        const controlsText3 = "ESC or P to pause";
+ 
+        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
+        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
+        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText3});
+      
+
+        controlsLine1.textColor = Color.WHITE;
+        controlsLine2.textColor = Color.WHITE;
+        controlsLine3.textColor = Color.WHITE;
+
+
+        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
+        controlsBack.size.set(200, 50);
+        controlsBack.borderWidth = 2;
+        controlsBack.borderColor = Color.WHITE;
+        controlsBack.backgroundColor = Color.TRANSPARENT;
+        controlsBack.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+            this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
+        }
+    }
+
+    drawPauseLayer() {
+        const center = this.viewport.getCenter();
+        const vpHalfSize = this.viewport.getHalfSize();
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "pauseLayer", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        pauseBg.color = Color.BLACK;
+
+        const play = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y - 100), text: "Resume"});
+        play.size.set(200, 50);
+        play.borderWidth = 2;
+        play.borderColor = Color.WHITE;
+        play.backgroundColor = Color.TRANSPARENT;
+        play.onClick = () => {
+            this.togglePause();
+        }
+
+        // Add control button
+        const controls = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y), text: "Controls"});
+        controls.size.set(200, 50);
+        controls.borderWidth = 2;
+        controls.borderColor = Color.WHITE;
+        controls.backgroundColor = Color.TRANSPARENT;
+        controls.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+            this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
+        }
+        
+        // Add control button
+        const endGame = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y + 100), text: "Main Menu"});
+        endGame.size.set(200, 50);
+        endGame.borderWidth = 2;
+        endGame.borderColor = Color.WHITE;
+        endGame.backgroundColor = Color.TRANSPARENT;
+        endGame.onClick = () => {
+            this.viewport.setZoomLevel(1);
+            this.sceneManager.changeToScene(MainMenu);
         }
     }
 
     togglePause() {
+        this.getLayer("primary").toggle();
+        this.getLayer("health").toggle();
+        this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+        this.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
+        
+    }
+
+    toggleInventory() {
         this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
         this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
         this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
         this.getLayer("inv_bg").setHidden(!this.getLayer("inv_portrait").isHidden())
         this.getLayer("inv_portrait").setHidden(!this.getLayer("inv_portrait").isHidden())
-        
-        this.getLayer("primary").toggle();
-        this.getLayer("health").toggle();
-        this.allies.forEach(ally => ally.togglePhysics());
-        this.enemies.forEach(enemy => enemy.togglePhysics());
         if (this.viewport.getZoomLevel() !== 4) {
             this.zoomLevel = this.viewport.getZoomLevel();
             this.viewport.setZoomLevel(4);
         } else {
             this.viewport.setZoomLevel(this.zoomLevel);
         }
-    }
-
-    toggleInventory() {
-
     }
 
     /**
@@ -484,7 +600,7 @@ export default class Level1 extends Scene {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
         player.position.set(28*32, 155*32);
-        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
         player.addAI(CharacterController,
             {
                 speed: 100,
@@ -497,6 +613,7 @@ export default class Level1 extends Scene {
         player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+        player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
         inventory.addCharacter(player);
         this.allies.push(player);
     }
@@ -519,28 +636,31 @@ export default class Level1 extends Scene {
             allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+            allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
             inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
     }
 
     initializeRescues(inventory: InventoryManager): void {
-        const allySprite = this.add.animatedSprite("player", "primary");
-        allySprite.position.set(16*16, 62*16);
-        allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-        allySprite.addAI(CharacterController,
-            {
-                speed: 0,
-                inventory,
-                allies: this.allies,
-                viewport: this.viewport,
-                rescue: true,
-            });
-        allySprite.animation.play("IDLE");
-        allySprite.setGroup("rescue");
-        allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
-        allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
-        allySprite.setTrigger("player", Events.PLAYER_COLLIDES_RESCUE, null);
+        for (const [posX, posY] of [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]]) {
+            const allySprite = this.add.animatedSprite("player", "primary");
+            allySprite.position.set(posX, posY);
+            allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            allySprite.addAI(CharacterController,
+                {
+                    speed: 0,
+                    inventory,
+                    allies: this.allies,
+                    viewport: this.viewport,
+                    rescue: true,
+                });
+            allySprite.animation.play("HELP");
+            allySprite.setGroup("rescue");
+            allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
+            allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+            allySprite.setTrigger("player", Events.PLAYER_COLLIDES_RESCUE, null);
+        }
     }
 
     /**
@@ -630,7 +750,9 @@ export default class Level1 extends Scene {
                 guardPosition: data.guardPosition,  // This only matters if the're a guard
                 health: data.health,
                 allies: this.allies,
-                weapon: this.createWeapon("weak_pistol")
+                weapon: data.weapon ? this.createWeapon(data.weapon) : null,
+                attack: data.attack,
+                speed: data.speed,
             }
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);

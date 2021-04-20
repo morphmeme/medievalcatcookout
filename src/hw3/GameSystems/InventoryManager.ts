@@ -40,7 +40,6 @@ export default class InventoryManager {
 
     private slotSize: Vec2;
     private padding: number;
-    private lastSlot: number;
     private viewPortWidth: number;
     private margin: number;
     private slotsCount: number;
@@ -57,7 +56,6 @@ export default class InventoryManager {
         this.inventoryClickSlots = new Array(size);
         this.padding = padding;
         this.position = position;
-        this.lastSlot = 0;
         this.margin = 120;
         this.currentlyMoving = null;
         this.inventoryStart = 0;
@@ -111,7 +109,6 @@ export default class InventoryManager {
             slotClick.visible = false;
             slotClick.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)))
             slotClick.setGroup("item");
-            slotClick.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
             slotClick.onClick = () => {
                 this.slotOnClick(i);
             }
@@ -126,6 +123,7 @@ export default class InventoryManager {
 
     slotOnClick(i: number) {
         // If item is currently selected
+        console.log(this.items);
         if (this.currentlyMoving?.[0]) {
             // If there already exists an item on this slot
             if (this.items[i]) {
@@ -172,6 +170,7 @@ export default class InventoryManager {
         for (let i = this.slotsCount-1; i >= startIdx+1; i--) {
             this.moveSlotSprites(i, this.getSlotPosition(i-1));
             this.items[i] = this.items[i-1];
+            this.items[i-1] = null;
         }
     }
 
@@ -212,7 +211,7 @@ export default class InventoryManager {
         characterImg.position.set(centerOfPortait.x - width / 4, centerOfPortait.y);
         
         // Character hp
-        this.updateHpBar(character, centerOfPortait.clone().inc(0, -10));
+        this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
 
         // Character Name
         this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
@@ -221,7 +220,7 @@ export default class InventoryManager {
         this.createInventorySlots(this.slotsCount, this.slotsCount+1);
         this.slotsCount += 1;
         this.moveTailSlots(i);
-        this.moveSlotSprites(i, centerOfPortait);
+        this.moveSlotSprites(i, centerOfPortait.clone().inc(10, 0));
     }
 
     getWeapon(character: AnimatedSprite): any {
@@ -251,25 +250,37 @@ export default class InventoryManager {
      * Adds an item to the currently selected slot
      */
     addItem(item: Item): boolean {
-        if (this.items[this.lastSlot]) {
-            this.removeItem();
+        // addItem might happen twice in a row? TODO: better way to fix this
+        for (const other of this.items) {
+            if (other && other.sprite.id == item.sprite.id) {
+                return;
+            }
         }
-        this.items[this.lastSlot] = item;
+        let firstSlotAvailable = this.items.length-1;
+        for (let i = this.inventoryStart; i < this.items.length; i++) {
+            if (!this.items[i]) {
+                firstSlotAvailable = i;
+                break;
+            }
+        }
+        if (this.items[firstSlotAvailable]) {
+            this.removeItem(firstSlotAvailable);
+        }
+        this.items[firstSlotAvailable] = item;
             
         // Update the gui
-        item.moveSprite(this.getSlotPosition(this.lastSlot), LayerNames.ITEM_LAYER);
+        item.moveSprite(this.getSlotPosition(firstSlotAvailable), LayerNames.ITEM_LAYER);
 
-        this.lastSlot = Math.min(this.items.length - 1, this.lastSlot + 1);
         return true;
     }
 
     /**
      * Removes and returns an item from the the currently selected slot, if possible
      */
-    removeItem(): Item {
-        let item = this.items[this.lastSlot];
+    removeItem(i: number): Item {
+        let item = this.items[i];
 
-        this.items[this.lastSlot] = null;
+        this.items[i] = null;
 
         if(item){
             item.sprite.destroy();

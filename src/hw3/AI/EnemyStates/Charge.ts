@@ -8,9 +8,7 @@ import Timer from "../../../Wolfie2D/Timing/Timer";
 import EnemyAI, { EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
 
-export default class Attack extends EnemyState {
-    // Timers for managing this state
-    pollTimer: Timer;
+export default class Charge extends EnemyState {
     exitTimer: Timer;
 
     // The current known position of the player
@@ -25,9 +23,6 @@ export default class Attack extends EnemyState {
     constructor(parent: EnemyAI, owner: AnimatedSprite){
         super(parent, owner);
 
-        // Regularly update the player location
-        this.pollTimer = new Timer(100);
-
         this.exitTimer = new Timer(1000);
     }
 
@@ -41,16 +36,11 @@ export default class Attack extends EnemyState {
     handleInput(event: GameEvent): void {}
 
     update(deltaT: number): void {
-        if(this.pollTimer.isStopped()){
-            // Restart the timer
-            this.pollTimer.start();
+        this.playerPos = this.parent.getPlayerPosition();
 
-            this.playerPos = this.parent.getPlayerPosition();
-
-            if(this.playerPos !== null){
-                // If we see a new player position, update the last position
-                this.lastPlayerPos = this.playerPos;
-            }
+        if(this.playerPos !== null){
+            // If we see a new player position, update the last position
+            this.lastPlayerPos = this.playerPos;
         }
 
         if(this.playerPos !== null){
@@ -58,14 +48,10 @@ export default class Attack extends EnemyState {
             this.exitTimer.start();
 
             // Fire at player
-            let dir = this.playerPos.clone().sub(this.owner.position).normalize();
-            dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
-            if(this.parent.weapon.use(this.owner, "enemy", dir)){
-                // If we fired, face that direction
-                this.parent.rotation = Vec2.UP.angleToCCW(dir);
-                this.parent.setMovingAnimation();
-            }
-
+            const dir = this.owner.position.dirTo(this.playerPos);
+            this.owner.move(dir.normalized().scale(3 * this.parent.speed * deltaT));
+            this.parent.rotation = Vec2.UP.angleToCCW(dir);
+            this.parent.setMovingAnimation();
         }
 
         if(this.exitTimer.isStopped()){

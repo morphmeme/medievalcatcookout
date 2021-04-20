@@ -35,20 +35,20 @@ export default class Ally extends CharacterState {
     }
 
     private forceFollowPosition() {
-        if (this.parent.following.owner.rotation === 0) {
+        if (this.parent.following.rotation === 0) {
             this.owner.position.set(this.parent.following.owner.position.x,
                 this.parent.following.owner.position.y + this.followingDistance);
-        } else if (this.parent.following.owner.rotation === Math.PI) {
+        } else if (this.parent.following.rotation === Math.PI) {
             this.owner.position.set(this.parent.following.owner.position.x,
                 this.parent.following.owner.position.y - this.followingDistance);
-        } else if (this.parent.following.owner.rotation === Math.PI/2) {
+        } else if (this.parent.following.rotation === Math.PI/2) {
             this.owner.position.set(this.parent.following.owner.position.x + this.followingDistance,
                 this.parent.following.owner.position.y);
-        } else if (this.parent.following.owner.rotation === 3*Math.PI/2) {
+        } else if (this.parent.following.rotation === 3*Math.PI/2) {
             this.owner.position.set(this.parent.following.owner.position.x - this.followingDistance,
                 this.parent.following.owner.position.y);
         }
-        this.owner.rotation = this.parent.following.owner.rotation;
+        this.parent.rotation = this.parent.following.rotation;
     }
 
     private crossInflection(rot: number, pos: Vec2, currentPos: Vec2) {
@@ -65,6 +65,7 @@ export default class Ally extends CharacterState {
             const enemyPos = this.parent.nearestEnemy()?.position;
             if(enemyPos){
                 let dir = enemyPos.clone().sub(this.owner.position).normalize();
+                dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
                 const weapon = this.parent.inventory.getWeapon(this.owner);
                 weapon?.use(this.owner, "player", dir)
             }
@@ -87,18 +88,34 @@ export default class Ally extends CharacterState {
             let dist = this.owner.position.dirTo(pos).normalized().scale(this.parent.speed * deltaT);
             const futurePos = this.owner.position.clone().add(dist);
             // If the future position would cross the inflection point, then move at a lower speed to reach exactly at the point
-            if (this.crossInflection(this.owner.rotation, pos, futurePos)) {
+            if (this.crossInflection(this.parent.rotation, pos, futurePos)) {
                 dist = pos.clone().sub(this.owner.position);
                 this.destinationPos.dequeue();
                 const rot = this.destinationRot.dequeue();
-                this.owner.rotation = rot;
+                this.parent.rotation = rot;
             }
             this.owner.move(dist)
-            this.owner.animation.playIfNotAlready("WALK", true);
+            if (this.parent.rotation === 0)
+                this.owner.animation.playIfNotAlready("WALK_BACK", true);
+            else if (this.parent.rotation === Math.PI) {
+                this.owner.animation.playIfNotAlready("WALK_FRONT", true);
+            } else if (this.parent.rotation === Math.PI/2) {
+                this.owner.animation.playIfNotAlready("WALK_LEFT", true);
+            } else if (this.parent.rotation === 3*Math.PI/2) {
+                this.owner.animation.playIfNotAlready("WALK_RIGHT", true);
+            }
         } else if (!this.parent.direction.isZero()
             ) {
             this.owner.move(this.owner.position.dirTo(this.parent.following.owner.position).normalized().scale(this.parent.speed * deltaT));
-            this.owner.animation.playIfNotAlready("WALK", true);
+            if (this.parent.rotation === 0)
+                this.owner.animation.playIfNotAlready("WALK_BACK", true);
+            else if (this.parent.rotation === Math.PI) {
+                this.owner.animation.playIfNotAlready("WALK_FRONT", true);
+            } else if (this.parent.rotation === Math.PI/2) {
+                this.owner.animation.playIfNotAlready("WALK_LEFT", true);
+            } else if (this.parent.rotation === 3*Math.PI/2) {
+                this.owner.animation.playIfNotAlready("WALK_RIGHT", true);
+            }
         } else {
             this.owner.animation.playIfNotAlready("IDLE", true);
         }

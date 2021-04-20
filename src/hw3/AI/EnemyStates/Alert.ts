@@ -1,10 +1,11 @@
 import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
+import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import NavigationPath from "../../../Wolfie2D/Pathfinding/NavigationPath";
 import Timer from "../../../Wolfie2D/Timing/Timer";
 import { Names } from "../../Constants";
-import EnemyAI, { EnemyStates } from "../EnemyAI";
+import EnemyAI, { Attacks, EnemyStates } from "../EnemyAI";
 import EnemyState from "./EnemyState";
 
 /** When an enemy hears a gunshot, it will rush to the location of the gunshot */
@@ -15,7 +16,7 @@ export default class Alert extends EnemyState {
     /** A timer to tell us how long to be alerted for */
     private alertTimer: Timer;
 
-    constructor(parent: EnemyAI, owner: GameNode){
+    constructor(parent: EnemyAI, owner: AnimatedSprite){
         super(parent, owner);
 
         this.alertTimer = new Timer(10000);
@@ -45,11 +46,16 @@ export default class Alert extends EnemyState {
         }
         if(!this.path.isDone()){
             this.owner.moveOnPath(this.parent.speed * deltaT, this.path);
-            this.owner.rotation = Vec2.UP.angleToCCW(this.path.getMoveDirection(this.owner));
+            this.parent.rotation = Vec2.UP.angleToCCW(this.path.getMoveDirection(this.owner));
+            this.parent.setMovingAnimation();
         }
 
         if(this.parent.getPlayerPosition() !== null){
-            this.finished(EnemyStates.ATTACKING);
+            if (this.parent.attack === Attacks.charge) {
+                this.finished(EnemyStates.CHARGING);
+            } else {
+                this.finished(EnemyStates.ATTACKING);
+            }
         }
     }
 

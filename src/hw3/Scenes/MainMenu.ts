@@ -81,22 +81,16 @@ export default class MainMenu extends Scene {
         controlsHeader.textColor = Color.WHITE;
 
         const controlsText1 = "WASD to move";
-        const controlsText2 = "Q to drop an item";
-        const controlsText3 = "E to pick up an item";
-        const controlsText4 = "Click to use current item";
-        const controlsText5 = "1&2 to change items";
-
-        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 100), text: controlsText1});
-        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText2});
-        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText3});
-        const controlsLine4 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText4});
-        const controlsLine5 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 100), text: controlsText5});
+        const controlsText2 = "E to open inventory";
+        const controlsText3 = "ESC or P to pause";
+ 
+        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
+        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
+        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText3});
 
         controlsLine1.textColor = Color.WHITE;
         controlsLine2.textColor = Color.WHITE;
         controlsLine3.textColor = Color.WHITE;
-        controlsLine4.textColor = Color.WHITE;
-        controlsLine5.textColor = Color.WHITE;
 
         const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 250), text: "Back"});
         controlsBack.size.set(200, 50);
@@ -112,7 +106,7 @@ export default class MainMenu extends Scene {
         const aboutHeader = <Label>this.add.uiElement(UIElementType.LABEL, "about", {position: new Vec2(center.x, center.y - 250), text: "About"});
         aboutHeader.textColor = Color.WHITE;
 
-        const text1 = "This game was created by Alex Feng, Joe Weaver, and Richard McKenna";
+        const text1 = "This game was created by Alex Feng, Alex Lau & Dmitri Santiago";
         const text2 = "using the Wolfie2D game engine, a TypeScript game engine created by";
         const text3 = "Joe Weaver and Richard McKenna.";
 

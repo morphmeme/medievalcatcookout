@@ -79,7 +79,7 @@ export default abstract class UIElement extends CanvasNode {
 
 		// See of this object was just clicked
 		if(Input.isMouseJustPressed()){
-			let clickPos = Input.getMousePressPosition();
+			let clickPos = Input.getMousePressPositionUI();
 			if(this.contains(clickPos.x, clickPos.y) && this.visible && !this.layer.isHidden()){
 				this.isClicked = true;
 
