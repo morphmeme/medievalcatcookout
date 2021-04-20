@@ -379,10 +379,13 @@ export default class Level1 extends Scene {
                     // Hit a coin
                     let coin = this.sceneGraph.getNode(event.data.get("other"));
                     // Remove coin
-                    coin.destroy();
+                    if (coin) {
+                        coin.destroy();
 
-                    // Increment our number of coins
-                    this.incPlayerCoins(1);
+                        // Increment our number of coins
+                        this.incPlayerCoins(1);
+                    }
+                    
 
                     // Play a coin sound
                     // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "coin", loop: false, holdReference: false});

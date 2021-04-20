@@ -92,7 +92,6 @@ export default class Input {
 
 			if(event.type === GameEventType.KEY_DOWN){
 				let key = event.data.get("key");
-				console.log(key);
 				// Handle space bar
 				if(key === " "){
 					key = "space";
