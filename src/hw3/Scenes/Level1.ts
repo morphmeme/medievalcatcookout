@@ -411,7 +411,7 @@ export default class Level1 extends Scene {
 
         const controlsText1 = "WASD to move";
         const controlsText2 = "E to open inventory";
-        const controlsText3 = "P to pause";
+        const controlsText3 = "ESC or P to pause";
  
         const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
         const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
