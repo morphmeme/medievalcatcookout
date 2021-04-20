@@ -127,7 +127,8 @@ export default class Level1 extends Scene {
             Events.PLAYER_HIT_COIN,
             Events.PLAYER_LEVEL_END,
             Events.DROP_WEAPON,
-            Events.DROP_COIN,
+            Events.CHARACTER_DEATH,
+            Events.DROP_COIN
         ]);
     }
 
@@ -192,13 +193,17 @@ export default class Level1 extends Scene {
             cardinalRad0 == 3 && cardinalRad1 == 1) {
             (character1.ai as BattlerAI).damage(1);
             (character0.ai as BattlerAI).damage(1);
+            character0.animation.override("HURT");
+            character1.animation.override("HURT");
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
             (character1.ai as BattlerAI).damage(1);
+            character1.animation.override("HURT");
         } else {
             (character0.ai as BattlerAI).damage(1);
+            character0.animation.override("HURT");
         }
     }
 
@@ -359,6 +364,14 @@ export default class Level1 extends Scene {
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     const item = this.items.get(other);
                     (node?.ai as CharacterController)?.addToInventory(item);
+                    break;
+                }
+                case Events.CHARACTER_DEATH:{
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    node.setAIActive(false, {});
+                    node.visible = false;
+                    node.disablePhysics();
+                    node.destroy();
                     break;
                 }
                 case Events.PLAYER_HIT_COIN:
