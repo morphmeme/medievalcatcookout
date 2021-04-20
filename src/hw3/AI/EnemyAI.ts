@@ -89,9 +89,6 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     
         if(this.health <= 0){
             // Drop weapon
-<<<<<<< HEAD
-            this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
-=======
             if (Math.random() < 0.5) {
                 this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
             } else {
@@ -103,7 +100,6 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
             this.owner.visible = false;
             this.owner.disablePhysics();
             
->>>>>>> 732b9156ca5dd31eb5ad326501b860f36a094a96
             if(Math.random() < 0.2){
                 // Spawn a healthpack
                 this.emitter.fireEvent(Events.HEALTHPACK_SPAWN, {position: this.owner.position});

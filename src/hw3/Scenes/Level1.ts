@@ -127,11 +127,8 @@ export default class Level1 extends Scene {
             Events.PLAYER_HIT_COIN,
             Events.PLAYER_LEVEL_END,
             Events.DROP_WEAPON,
-<<<<<<< HEAD
-            Events.CHARACTER_DEATH
-=======
-            Events.DROP_COIN,
->>>>>>> 732b9156ca5dd31eb5ad326501b860f36a094a96
+            Events.CHARACTER_DEATH,
+            Events.DROP_COIN
         ]);
     }
 
