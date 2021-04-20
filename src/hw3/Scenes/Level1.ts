@@ -75,6 +75,7 @@ export default class Level1 extends Scene {
         this.load.spritesheet("enemy", "mcc_assets/spritesheets/enemy/enemy1-cat-sheet.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
+        this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         // Load the tilemap
         this.load.tilemap("level", "hw3_assets/tilemaps/testmap.json");
 
@@ -117,6 +118,7 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_RESCUE,
             Events.PLAYER_HIT_COIN,
             Events.DROP_WEAPON,
+            Events.DROP_COIN,
         ]);
     }
 
@@ -280,6 +282,16 @@ export default class Level1 extends Scene {
         }
     }
 
+    dropCoin(position: Vec2) {
+        console.log("Whatttt");
+        const coin = this.add.animatedSprite("coin", "primary");
+        coin.position.copy(position);
+        coin.animation.play("spinning");
+        coin.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        coin.setGroup("coin");
+        coin.setTrigger("player", Events.PLAYER_HIT_COIN, null);
+    }
+
     updateScene(deltaT: number): void {
         // Win Condition: Only temporary for benchmark1
         if (this.allies[0]?.position.y < 0) {
@@ -292,6 +304,9 @@ export default class Level1 extends Scene {
             let event = this.receiver.getNextEvent();
 
             switch(event.type){
+                case Events.DROP_COIN: {
+                    this.dropCoin(event.data.get("position"));
+                }
                 case Events.DROP_WEAPON: {
                     this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
                     break;
@@ -495,6 +510,7 @@ export default class Level1 extends Scene {
         player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+        player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
         inventory.addCharacter(player);
         this.allies.push(player);
     }
@@ -517,6 +533,7 @@ export default class Level1 extends Scene {
             allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+            allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
             inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
