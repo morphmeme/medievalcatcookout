@@ -296,6 +296,14 @@ export default class Input {
 	}
 
 	/**
+	 * Gets the position of the last mouse press
+	 * @returns The mouse position stored as a Vec2
+	 */
+	 static getMousePressPositionUI(): Vec2 {
+		return Input.mousePressPosition;
+	}
+
+	/**
 	 * Gets the position of the last mouse press in the game world,
 	 * taking into consideration the scrolling of the viewport
 	 * @returns The mouse position stored as a Vec2

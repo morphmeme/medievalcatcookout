@@ -28,6 +28,8 @@ import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
 import GameWon from "./GameWon";
+import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
+import MainMenu from "./MainMenu";
 
 type HpBarData = {
     lastHp: number,
@@ -68,6 +70,7 @@ export default class Level1 extends Scene {
     // timer
     protected timer: number = 0;
     protected timerLabel: Label;
+    private paused = false;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -251,6 +254,12 @@ export default class Level1 extends Scene {
         // Add a UI for health
         this.addLayer("health", 200);
 
+        // Add a UI for pause
+        const pauseLayer = this.addUILayer("pauseLayer");
+        pauseLayer.setHidden(true);
+        this.drawControlScreen();
+        this.drawPauseLayer();
+
         // UI layer
         this.addUILayer("UI");
         const viewportHalfSize = this.viewport.getHalfSize();
@@ -283,7 +292,6 @@ export default class Level1 extends Scene {
     }
 
     dropCoin(position: Vec2) {
-        console.log("Whatttt");
         const coin = this.add.animatedSprite("coin", "primary");
         coin.position.copy(position);
         coin.animation.play("spinning");
@@ -371,39 +379,117 @@ export default class Level1 extends Scene {
         if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT)) {
             this.updateTimerLabel(deltaT);
         }
-        this.timer += deltaT;
+        if (!this.paused)
+            this.timer += deltaT;
         
         // Debug mode graph
         // if(Input.isKeyJustPressed("g")){
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
         if(Input.isJustPressed("inventory")){
+            this.toggleInventory();
             this.togglePause();
             this.inventory.updateHpBars();
+        }
+        if (Input.isJustPressed("pauseMenu")) {
+            this.togglePause();
+        }
+    }
+
+    drawControlScreen() {
+        /* ########## CONTROLS SCREEN ########## */
+        const center = this.viewport.getCenter();
+        const vpHalfSize = this.viewport.getHalfSize();
+        const controls = this.addUILayer("controls");
+        controls.setHidden(true);
+
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        pauseBg.color = Color.BLACK;
+
+        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 200), text: "Controls"});
+        controlsHeader.textColor = Color.WHITE;
+
+        const controlsText1 = "WASD to move";
+        const controlsText2 = "E to open inventory";
+ 
+        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
+        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
+      
+
+        controlsLine1.textColor = Color.WHITE;
+        controlsLine2.textColor = Color.WHITE;
+
+
+        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
+        controlsBack.size.set(200, 50);
+        controlsBack.borderWidth = 2;
+        controlsBack.borderColor = Color.WHITE;
+        controlsBack.backgroundColor = Color.TRANSPARENT;
+        controlsBack.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+            this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
+        }
+    }
+
+    drawPauseLayer() {
+        const center = this.viewport.getCenter();
+        const vpHalfSize = this.viewport.getHalfSize();
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "pauseLayer", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        pauseBg.color = Color.BLACK;
+
+        const play = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y - 100), text: "Resume"});
+        play.size.set(200, 50);
+        play.borderWidth = 2;
+        play.borderColor = Color.WHITE;
+        play.backgroundColor = Color.TRANSPARENT;
+        play.onClick = () => {
+            this.togglePause();
+        }
+
+        // Add control button
+        const controls = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y), text: "Controls"});
+        controls.size.set(200, 50);
+        controls.borderWidth = 2;
+        controls.borderColor = Color.WHITE;
+        controls.backgroundColor = Color.TRANSPARENT;
+        controls.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+            this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
+        }
+        
+        // Add control button
+        const endGame = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y + 100), text: "Main Menu"});
+        endGame.size.set(200, 50);
+        endGame.borderWidth = 2;
+        endGame.borderColor = Color.WHITE;
+        endGame.backgroundColor = Color.TRANSPARENT;
+        endGame.onClick = () => {
+            this.viewport.setZoomLevel(1);
+            this.sceneManager.changeToScene(MainMenu);
         }
     }
 
     togglePause() {
+        this.getLayer("primary").toggle();
+        this.getLayer("health").toggle();
+        this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+        this.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
+        this.paused = !this.paused;
+    }
+
+    toggleInventory() {
         this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
         this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
         this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
         this.getLayer("inv_bg").setHidden(!this.getLayer("inv_portrait").isHidden())
         this.getLayer("inv_portrait").setHidden(!this.getLayer("inv_portrait").isHidden())
-        
-        this.getLayer("primary").toggle();
-        this.getLayer("health").toggle();
-        this.allies.forEach(ally => ally.togglePhysics());
-        this.enemies.forEach(enemy => enemy.togglePhysics());
         if (this.viewport.getZoomLevel() !== 4) {
             this.zoomLevel = this.viewport.getZoomLevel();
             this.viewport.setZoomLevel(4);
         } else {
             this.viewport.setZoomLevel(this.zoomLevel);
         }
-    }
-
-    toggleInventory() {
-
     }
 
     /**
