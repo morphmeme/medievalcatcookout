@@ -420,6 +420,7 @@ export default class Level1 extends Scene {
 
         controlsLine1.textColor = Color.WHITE;
         controlsLine2.textColor = Color.WHITE;
+        controlsLine3.textColor = Color.WHITE;
 
 
         const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
