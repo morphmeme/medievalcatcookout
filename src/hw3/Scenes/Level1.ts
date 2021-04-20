@@ -27,8 +27,10 @@ import CharacterController from "../AI/CharacterController";
 import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
-import GameWon from "./GameWon";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
+import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
+import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
+import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
 
 type HpBarData = {
@@ -63,6 +65,9 @@ export default class Level1 extends Scene {
     private zoomLevel: number;
     private inventory: InventoryManager;
 
+    // end of level position
+    private levelEndArea: Rect;
+    private levelEndLabel: Label;
     // coins
     protected static coinCount: number = 0;
     protected coinCountLabel: Label;
@@ -70,7 +75,7 @@ export default class Level1 extends Scene {
     // timer
     protected timer: number = 0;
     protected timerLabel: Label;
-    private paused = false;
+    protected timerStopped: boolean = false;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -120,6 +125,7 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_GROUND,
             Events.PLAYER_COLLIDES_RESCUE,
             Events.PLAYER_HIT_COIN,
+            Events.PLAYER_LEVEL_END,
             Events.DROP_WEAPON,
             Events.DROP_COIN,
         ]);
@@ -279,6 +285,10 @@ export default class Level1 extends Scene {
         const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(7 * width / 8, height / 20), text: `STAGE 1-1 Burger Kat`});
         stageNameLabel.textColor = Color.WHITE
         stageNameLabel.font = "PixelSimple";
+
+        // level end
+        this.addUI();
+        this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
     }
 
     dropWeapon(weapon: Weapon, position: Vec2) {
@@ -302,9 +312,6 @@ export default class Level1 extends Scene {
 
     updateScene(deltaT: number): void {
         // Win Condition: Only temporary for benchmark1
-        if (this.allies[0]?.position.y < 0) {
-            this.sceneManager.changeToScene(GameWon);
-        }
         if (this.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
         }
@@ -368,6 +375,14 @@ export default class Level1 extends Scene {
                     // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "coin", loop: false, holdReference: false});
                     break;
                 }
+                case Events.PLAYER_LEVEL_END:
+                    {
+                    this.levelEndLabel.tweens.play("slideIn");
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    node.disablePhysics();
+                    this.updateTimerLabel(0);
+                    this.timerStopped = true;
+                }
                 default: {
 
                 }
@@ -376,11 +391,10 @@ export default class Level1 extends Scene {
         // Update hp bars every x time.
         this.displayHp();
 
-        if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT)) {
+        if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT) && this.timerStopped == false) {
             this.updateTimerLabel(deltaT);
         }
-        if (!this.paused)
-            this.timer += deltaT;
+        this.timer += deltaT;
         
         // Debug mode graph
         // if(Input.isKeyJustPressed("g")){
@@ -478,7 +492,7 @@ export default class Level1 extends Scene {
         this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
         this.allies.forEach(ally => ally.togglePhysics());
         this.enemies.forEach(enemy => enemy.togglePhysics());
-        this.paused = !this.paused;
+        
     }
 
     toggleInventory() {
@@ -765,5 +779,35 @@ export default class Level1 extends Scene {
         const date = new Date(0);
         date.setSeconds(time_ms);
         this.timerLabel.text = `${date.toISOString().substr(11, 8)}`;
+    }
+
+    protected addUI(){
+        this.levelEndLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(-700, 200), text: "Level Complete"});
+        this.levelEndLabel.size.set(1400, 60);
+        this.levelEndLabel.borderRadius = 0;
+        this.levelEndLabel.backgroundColor = new Color(34, 32, 52);
+        this.levelEndLabel.textColor = Color.WHITE;
+        this.levelEndLabel.fontSize = 48;
+        this.levelEndLabel.font = "PixelSimple";
+
+        this.levelEndLabel.tweens.add("slideIn", {
+            startDelay: 0,
+            duration: 1000,
+            effects: [
+                {
+                    property: TweenableProperties.posX,
+                    start: -700,
+                    end: 650,
+                    ease: EaseFunctionType.OUT_SINE
+                }
+            ]
+        });
+    }
+
+    protected addLevelEnd(Tile: Vec2, size: Vec2): void{
+        this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: Tile.add(size.scale(1.0)).scaled(32), size: size.scale(16)});
+        this.levelEndArea.addPhysics(undefined, undefined, false, true);
+        this.levelEndArea.setTrigger("player", Events.PLAYER_LEVEL_END, null);
+        this.levelEndArea.color = new Color(255,0,0,1);
     }
 }
