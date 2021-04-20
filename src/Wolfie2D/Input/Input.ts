@@ -92,6 +92,7 @@ export default class Input {
 
 			if(event.type === GameEventType.KEY_DOWN){
 				let key = event.data.get("key");
+				console.log(key);
 				// Handle space bar
 				if(key === " "){
 					key = "space";
@@ -293,6 +294,14 @@ export default class Input {
 	 */
 	static getMousePressPosition(): Vec2 {
 		return Input.mousePressPosition.scaled(1/this.viewport.getZoomLevel());
+	}
+
+	/**
+	 * Gets the position of the last mouse press
+	 * @returns The mouse position stored as a Vec2
+	 */
+	 static getMousePressPositionUI(): Vec2 {
+		return Input.mousePressPosition;
 	}
 
 	/**

@@ -27,7 +27,11 @@ import CharacterController from "../AI/CharacterController";
 import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
-import GameWon from "./GameWon";
+import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
+import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
+import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
+import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
+import MainMenu from "./MainMenu";
 
 type HpBarData = {
     lastHp: number,
@@ -61,6 +65,9 @@ export default class Level1 extends Scene {
     private zoomLevel: number;
     private inventory: InventoryManager;
 
+    // end of level position
+    private levelEndArea: Rect;
+    private levelEndLabel: Label;
     // coins
     protected static coinCount: number = 0;
     protected coinCountLabel: Label;
@@ -68,6 +75,7 @@ export default class Level1 extends Scene {
     // timer
     protected timer: number = 0;
     protected timerLabel: Label;
+    protected timerStopped: boolean = false;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -75,6 +83,7 @@ export default class Level1 extends Scene {
         this.load.spritesheet("enemy", "mcc_assets/spritesheets/enemy/enemy1-cat-sheet.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
+        this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         // Load the tilemap
         this.load.tilemap("level", "hw3_assets/tilemaps/testmap.json");
 
@@ -116,8 +125,13 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_GROUND,
             Events.PLAYER_COLLIDES_RESCUE,
             Events.PLAYER_HIT_COIN,
+            Events.PLAYER_LEVEL_END,
             Events.DROP_WEAPON,
+<<<<<<< HEAD
             Events.CHARACTER_DEATH
+=======
+            Events.DROP_COIN,
+>>>>>>> 732b9156ca5dd31eb5ad326501b860f36a094a96
         ]);
     }
 
@@ -254,6 +268,12 @@ export default class Level1 extends Scene {
         // Add a UI for health
         this.addLayer("health", 200);
 
+        // Add a UI for pause
+        const pauseLayer = this.addUILayer("pauseLayer");
+        pauseLayer.setHidden(true);
+        this.drawControlScreen();
+        this.drawPauseLayer();
+
         // UI layer
         this.addUILayer("UI");
         const viewportHalfSize = this.viewport.getHalfSize();
@@ -273,6 +293,10 @@ export default class Level1 extends Scene {
         const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(7 * width / 8, height / 20), text: `STAGE 1-1 Burger Kat`});
         stageNameLabel.textColor = Color.WHITE
         stageNameLabel.font = "PixelSimple";
+
+        // level end
+        this.addUI();
+        this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
     }
 
     dropWeapon(weapon: Weapon, position: Vec2) {
@@ -285,11 +309,17 @@ export default class Level1 extends Scene {
         }
     }
 
+    dropCoin(position: Vec2) {
+        const coin = this.add.animatedSprite("coin", "primary");
+        coin.position.copy(position);
+        coin.animation.play("spinning");
+        coin.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        coin.setGroup("coin");
+        coin.setTrigger("player", Events.PLAYER_HIT_COIN, null);
+    }
+
     updateScene(deltaT: number): void {
         // Win Condition: Only temporary for benchmark1
-        if (this.allies[0]?.position.y < 0) {
-            this.sceneManager.changeToScene(GameWon);
-        }
         if (this.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
         }
@@ -297,6 +327,9 @@ export default class Level1 extends Scene {
             let event = this.receiver.getNextEvent();
 
             switch(event.type){
+                case Events.DROP_COIN: {
+                    this.dropCoin(event.data.get("position"));
+                }
                 case Events.DROP_WEAPON: {
                     this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
                     break;
@@ -358,6 +391,14 @@ export default class Level1 extends Scene {
                     // this.emitter.fireEvent(GameEventType.PLAY_SOUND, {key: "coin", loop: false, holdReference: false});
                     break;
                 }
+                case Events.PLAYER_LEVEL_END:
+                    {
+                    this.levelEndLabel.tweens.play("slideIn");
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    node.disablePhysics();
+                    this.updateTimerLabel(0);
+                    this.timerStopped = true;
+                }
                 default: {
 
                 }
@@ -366,7 +407,7 @@ export default class Level1 extends Scene {
         // Update hp bars every x time.
         this.displayHp();
 
-        if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT)) {
+        if (Math.floor(this.timer) !== Math.floor(this.timer + deltaT) && this.timerStopped == false) {
             this.updateTimerLabel(deltaT);
         }
         this.timer += deltaT;
@@ -376,32 +417,112 @@ export default class Level1 extends Scene {
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
         if(Input.isJustPressed("inventory")){
+            this.toggleInventory();
             this.togglePause();
             this.inventory.updateHpBars();
+        }
+        if (Input.isJustPressed("pauseMenu")) {
+            this.togglePause();
+        }
+    }
+
+    drawControlScreen() {
+        /* ########## CONTROLS SCREEN ########## */
+        const center = this.viewport.getCenter();
+        const vpHalfSize = this.viewport.getHalfSize();
+        const controls = this.addUILayer("controls");
+        controls.setHidden(true);
+
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        pauseBg.color = Color.BLACK;
+
+        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 200), text: "Controls"});
+        controlsHeader.textColor = Color.WHITE;
+
+        const controlsText1 = "WASD to move";
+        const controlsText2 = "E to open inventory";
+        const controlsText3 = "ESC or P to pause";
+ 
+        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
+        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
+        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText3});
+      
+
+        controlsLine1.textColor = Color.WHITE;
+        controlsLine2.textColor = Color.WHITE;
+        controlsLine3.textColor = Color.WHITE;
+
+
+        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
+        controlsBack.size.set(200, 50);
+        controlsBack.borderWidth = 2;
+        controlsBack.borderColor = Color.WHITE;
+        controlsBack.backgroundColor = Color.TRANSPARENT;
+        controlsBack.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+            this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
+        }
+    }
+
+    drawPauseLayer() {
+        const center = this.viewport.getCenter();
+        const vpHalfSize = this.viewport.getHalfSize();
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "pauseLayer", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        pauseBg.color = Color.BLACK;
+
+        const play = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y - 100), text: "Resume"});
+        play.size.set(200, 50);
+        play.borderWidth = 2;
+        play.borderColor = Color.WHITE;
+        play.backgroundColor = Color.TRANSPARENT;
+        play.onClick = () => {
+            this.togglePause();
+        }
+
+        // Add control button
+        const controls = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y), text: "Controls"});
+        controls.size.set(200, 50);
+        controls.borderWidth = 2;
+        controls.borderColor = Color.WHITE;
+        controls.backgroundColor = Color.TRANSPARENT;
+        controls.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+            this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
+        }
+        
+        // Add control button
+        const endGame = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y + 100), text: "Main Menu"});
+        endGame.size.set(200, 50);
+        endGame.borderWidth = 2;
+        endGame.borderColor = Color.WHITE;
+        endGame.backgroundColor = Color.TRANSPARENT;
+        endGame.onClick = () => {
+            this.viewport.setZoomLevel(1);
+            this.sceneManager.changeToScene(MainMenu);
         }
     }
 
     togglePause() {
+        this.getLayer("primary").toggle();
+        this.getLayer("health").toggle();
+        this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
+        this.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
+        
+    }
+
+    toggleInventory() {
         this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
         this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
         this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
         this.getLayer("inv_bg").setHidden(!this.getLayer("inv_portrait").isHidden())
         this.getLayer("inv_portrait").setHidden(!this.getLayer("inv_portrait").isHidden())
-        
-        this.getLayer("primary").toggle();
-        this.getLayer("health").toggle();
-        this.allies.forEach(ally => ally.togglePhysics());
-        this.enemies.forEach(enemy => enemy.togglePhysics());
         if (this.viewport.getZoomLevel() !== 4) {
             this.zoomLevel = this.viewport.getZoomLevel();
             this.viewport.setZoomLevel(4);
         } else {
             this.viewport.setZoomLevel(this.zoomLevel);
         }
-    }
-
-    toggleInventory() {
-
     }
 
     /**
@@ -508,6 +629,7 @@ export default class Level1 extends Scene {
         player.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+        player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
         inventory.addCharacter(player);
         this.allies.push(player);
     }
@@ -530,6 +652,7 @@ export default class Level1 extends Scene {
             allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
+            allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
             inventory.addCharacter(allySprite);
             this.allies.push(allySprite);
         }
@@ -672,5 +795,35 @@ export default class Level1 extends Scene {
         const date = new Date(0);
         date.setSeconds(time_ms);
         this.timerLabel.text = `${date.toISOString().substr(11, 8)}`;
+    }
+
+    protected addUI(){
+        this.levelEndLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(-700, 200), text: "Level Complete"});
+        this.levelEndLabel.size.set(1400, 60);
+        this.levelEndLabel.borderRadius = 0;
+        this.levelEndLabel.backgroundColor = new Color(34, 32, 52);
+        this.levelEndLabel.textColor = Color.WHITE;
+        this.levelEndLabel.fontSize = 48;
+        this.levelEndLabel.font = "PixelSimple";
+
+        this.levelEndLabel.tweens.add("slideIn", {
+            startDelay: 0,
+            duration: 1000,
+            effects: [
+                {
+                    property: TweenableProperties.posX,
+                    start: -700,
+                    end: 650,
+                    ease: EaseFunctionType.OUT_SINE
+                }
+            ]
+        });
+    }
+
+    protected addLevelEnd(Tile: Vec2, size: Vec2): void{
+        this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: Tile.add(size.scale(1.0)).scaled(32), size: size.scale(16)});
+        this.levelEndArea.addPhysics(undefined, undefined, false, true);
+        this.levelEndArea.setTrigger("player", Events.PLAYER_LEVEL_END, null);
+        this.levelEndArea.color = new Color(255,0,0,1);
     }
 }
