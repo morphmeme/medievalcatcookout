@@ -82,14 +82,15 @@ export default class MainMenu extends Scene {
 
         const controlsText1 = "WASD to move";
         const controlsText2 = "E to open inventory";
+        const controlsText3 = "P to pause";
  
         const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
         const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
-      
+        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText3});
 
         controlsLine1.textColor = Color.WHITE;
         controlsLine2.textColor = Color.WHITE;
-
+        controlsLine3.textColor = Color.WHITE;
 
         const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 250), text: "Back"});
         controlsBack.size.set(200, 50);
