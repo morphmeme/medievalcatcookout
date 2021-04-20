@@ -12,8 +12,11 @@ import BattlerAI from "./BattlerAI";
 import Ally from "./CharacterStates/Ally";
 import Player from "./CharacterStates/Player";
 import Rescue from "./CharacterStates/Rescue";
+import Timer from "../../Wolfie2D/Timing/Timer";
 
 export default class CharacterController extends StateMachineAI implements BattlerAI {
+
+    invulnerable: boolean;
     // Fields from BattlerAI
     health: number;
     maxHealth: number;
@@ -50,6 +53,7 @@ export default class CharacterController extends StateMachineAI implements Battl
 
     private viewport: Viewport;
     public rotation: number = 0;
+    protected invulTimer: Timer;
 
     destroy() {
         // Get rid of our reference to the owner
@@ -64,6 +68,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
         this.health = 25;
+        this.invulnerable = false;
         this.maxHealth = this.health;
         this.inventory = options.inventory;
         this.allies = options.allies;
@@ -73,6 +78,10 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.following = options.following;
         this.enemies = [];
         this.rescue = options.rescue;
+
+        this.invulTimer = new Timer(300, ()=> {
+            this.invulnerable = false;
+        })
 
         this.receiver.subscribe(Events.PLAYER_ROTATE);
 
@@ -106,7 +115,12 @@ export default class CharacterController extends StateMachineAI implements Battl
     }
 
     damage(damage: number): void {
+        if(this.invulnerable){
+            return;
+        }
         this.health -= damage;
+        this.invulnerable = true;
+        this.invulTimer.start();
         this.health = Math.max(this.health, 0);
         if (this.health === 0) {
             // If it's not part of the snake

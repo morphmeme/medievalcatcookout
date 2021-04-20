@@ -13,11 +13,13 @@ import Guard from "./EnemyStates/Guard";
 import Patrol from "./EnemyStates/Patrol";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import Charge from "./EnemyStates/Charge";
+import Timer from "../../Wolfie2D/Timing/Timer";
 
 export default class EnemyAI extends StateMachineAI implements BattlerAI {
     /** The owner of this AI */
     owner: AnimatedSprite;
 
+    invulnerable: boolean;
     /** The amount of health this entity has */
     health: number;
     maxHealth: number;
@@ -34,10 +36,16 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
 
     rotation: number = 0;
 
+    protected invulTimer: Timer;
+
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
         this.attack = options.attack;
         this.speed = options.speed || 20;
+
+        this.invulTimer = new Timer(300, ()=> {
+            this.invulnerable = false;
+        })
 
         if(options.defaultMode === "guard"){
             // Guard mode
@@ -71,23 +79,23 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     }
 
     damage(damage: number): void {
+        if(this.invulnerable){
+            return;
+        }
         this.health -= damage;
+        this.invulnerable = true;
+        this.invulTimer.start();
+        this.owner.animation.override("HURT", false);
     
         if(this.health <= 0){
             // Drop weapon
             this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
-            
-            this.owner.animation.override("DOWNED", false);
-            this.owner.setAIActive(false, {});
-            this.owner.isCollidable = false;
-            this.owner.visible = false;
-            this.owner.disablePhysics();
-            
             if(Math.random() < 0.2){
                 // Spawn a healthpack
                 this.emitter.fireEvent(Events.HEALTHPACK_SPAWN, {position: this.owner.position});
             }
-            this.owner.destroy();
+            this.owner.animation.forcePlay("DOWNED", false, Events.CHARACTER_DEATH);
+            
         }
     }
 

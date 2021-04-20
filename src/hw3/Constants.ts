@@ -14,4 +14,5 @@ export enum Events {
     PLAYER_ROTATE = "PLAYER_ROTATE",
     PLAYER_HIT_COIN = "PlayerHitCoin",
     DROP_WEAPON = "DROP_WEAPON",
+    CHARACTER_DEATH = "CHARACTER_DEATH"
 }

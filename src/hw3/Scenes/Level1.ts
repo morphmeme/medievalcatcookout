@@ -117,6 +117,7 @@ export default class Level1 extends Scene {
             Events.PLAYER_COLLIDES_RESCUE,
             Events.PLAYER_HIT_COIN,
             Events.DROP_WEAPON,
+            Events.CHARACTER_DEATH
         ]);
     }
 
@@ -333,6 +334,14 @@ export default class Level1 extends Scene {
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     const item = this.items.get(other);
                     (node?.ai as CharacterController)?.addToInventory(item);
+                    break;
+                }
+                case Events.CHARACTER_DEATH:{
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    node.setAIActive(false, {});
+                    node.visible = false;
+                    node.disablePhysics();
+                    node.destroy();
                     break;
                 }
                 case Events.PLAYER_HIT_COIN:

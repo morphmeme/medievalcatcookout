@@ -252,6 +252,34 @@ export default class AnimationManager {
             this.onEndEvent = null;
         }
     }
+    
+    /** Similar to the original "Play", this will end all other animations and clear the queue, and start playing
+     * this animation instead.
+     * 
+     */
+    forcePlay(animation: string, loop: boolean = false, onEnd?: string){
+        this.currentAnimation = animation;
+        this.currentFrame = 0;
+        this.frameProgress = 0;
+        this.animationState = AnimationState.PLAYING;
+
+        // If loop arg was provided, use that
+        if(loop !== undefined){
+            this.loop = loop;
+        } else {
+            // Otherwise, use what the json file specified
+            this.loop = this.animations.get(animation).repeat;
+        }
+
+        if(onEnd !== undefined){
+            this.onEndEvent = onEnd;
+        } else {
+            this.onEndEvent = null;
+        }
+
+        // Reset pending animation
+        this.pendingAnimation = null;
+    }
 
     /** Pauses the current animation */
     pause(): void {
