@@ -88,6 +88,10 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 	}
 
 	destroy(){
+		// If tweens is undefined, already destroyed.
+		if (this.tweens === undefined) {
+			return;
+		}
 		this.tweens.destroy();
 		this.receiver.destroy();
 

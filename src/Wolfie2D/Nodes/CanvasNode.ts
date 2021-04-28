@@ -24,6 +24,13 @@ export default abstract class CanvasNode extends GameNode implements Region {
 	public set onClick(value: Function) {
 		this._onClick = value;
 	}
+	private _keepForNextScene: boolean;
+	public get keepForNextScene(): boolean {
+		return this._keepForNextScene;
+	}
+	public set keepForNextScene(value: boolean) {
+		this._keepForNextScene = value;
+	}
 
 	/** A flag for whether or not the CanvasNode is visible */
 	visible: boolean = true;

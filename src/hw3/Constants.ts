@@ -18,3 +18,18 @@ export enum Events {
     CHARACTER_DEATH = "CHARACTER_DEATH",
     DROP_COIN = "DROP_COIN"
 }
+
+export const LEVEL_OPTIONS = {
+    physics: {
+        groupNames: ["ground", "player", "enemy", "item", "coin", "rescue"],
+        collisions:
+        [
+            [0, 1, 1, 0, 0, 0],
+            [1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0]
+        ]
+    }
+}

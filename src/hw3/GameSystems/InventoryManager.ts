@@ -15,7 +15,9 @@ import BattlerAI from "../AI/BattlerAI";
 import CharacterController from "../AI/CharacterController";
 import { Events } from "../Constants";
 import { drawProgressBar } from "../Util";
+import BattleManager from "./BattleManager";
 import Item from "./items/Item";
+import Weapon from "./items/Weapon";
 
 const LayerNames = {
     SLOT_LAYER: "slots",
@@ -50,8 +52,9 @@ export default class InventoryManager {
     // Partitions some slots for characters
     private characterToInfo: Map<number, CharacterInfo>;
 
-    constructor(private scene: Scene, size: number, private inventorySlot: string, position: Vec2, padding: number, private zoomLevel: number){
-        this.items = new Array(size);
+    constructor(private scene: Scene, size: number, private inventorySlot: string, position: Vec2, padding: number, private zoomLevel: number, items?: Array<Item>, allies?: AnimatedSprite[]){
+        size = items?.length || size;
+        this.items = items || new Array(size);
         this.inventorySlots = new Array(size);
         this.inventoryClickSlots = new Array(size);
         this.padding = padding;
@@ -90,6 +93,40 @@ export default class InventoryManager {
 
         // Create the inventory slots
         this.createInventorySlots(0, size);
+
+        if (allies) {
+            allies.forEach(ally => {
+                this.addCharacter(ally, true);
+            })
+            this.updateItemPositions();
+        }
+    }
+
+    updateItemPositions() {
+        for (let i = 0; i < this.items.length; i++) {
+            if (this.items[i])
+                this.items[i].moveSprite(this.getSlotPosition(i), LayerNames.ITEM_LAYER);
+        }
+    }
+
+    getWeaponsWithNewScene(scene: Scene, battleManager: BattleManager) {
+        const newItems = [];
+        for (let i = 0; i < this.items.length; i++) {
+            const item = this.items[i];
+            if (item instanceof Weapon) {
+                let weaponType = item.type;
+                weaponType
+                let sprite = scene.add.sprite(weaponType.spriteKey, "primary");
+                const weapon = new Weapon(sprite, weaponType, battleManager);
+                weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+                weapon.sprite.setGroup("item");
+                weapon.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
+                newItems.push(weapon);
+            } else {
+                newItems.push(null);
+            }
+        }
+        return newItems;
     }
 
     createInventorySlots(start: number, end: number) {
@@ -110,6 +147,7 @@ export default class InventoryManager {
             slotClick.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)))
             slotClick.setGroup("item");
             slotClick.onClick = () => {
+                console.log(i);
                 this.slotOnClick(i);
             }
             this.inventoryClickSlots[i]= slotClick;
@@ -121,9 +159,17 @@ export default class InventoryManager {
         this.currentlyMoving?.[0]?.moveSprite(Input.getMousePosition(), LayerNames.ITEM_LAYER);
     }
 
+    undoCurrentlyMoving() {
+        if (this.currentlyMoving === null || this.currentlyMoving[0] === null) {
+            return;
+        }
+        this.items[this.currentlyMoving[1]] = this.currentlyMoving[0];
+        this.currentlyMoving[0].moveSprite(this.getSlotPosition(this.currentlyMoving[1]));
+        this.currentlyMoving = null;
+    }
+
     slotOnClick(i: number) {
         // If item is currently selected
-        console.log(this.items);
         if (this.currentlyMoving?.[0]) {
             // If there already exists an item on this slot
             if (this.items[i]) {
@@ -149,10 +195,10 @@ export default class InventoryManager {
         }
     }
 
-    addCharacter(character: GameNode) {
+    addCharacter(character: GameNode, dontMove?: boolean) {
         this.characterToInfo.set(character.id, {character, slotIdxStart: this.inventoryStart, ...this.characterToInfo.get(character.id)});
         // TODO edit player
-        this.drawCharacterPortrait(this.inventoryStart, character, "player");
+        this.drawCharacterPortrait(this.inventoryStart, character, "player", dontMove);
         this.inventoryStart += 1;
     }
 
@@ -166,11 +212,13 @@ export default class InventoryManager {
         this.setSlotPosition(i, pos);
     }
 
-    moveTailSlots(startIdx: number) {
+    moveTailSlots(startIdx: number, dontMove?: boolean) {
         for (let i = this.slotsCount-1; i >= startIdx+1; i--) {
             this.moveSlotSprites(i, this.getSlotPosition(i-1));
-            this.items[i] = this.items[i-1];
-            this.items[i-1] = null;
+            if (!dontMove) {
+                this.items[i] = this.items[i-1];
+                this.items[i-1] = null;
+            }
         }
     }
 
@@ -196,7 +244,7 @@ export default class InventoryManager {
         }
     }
 
-    drawCharacterPortrait(i: number, character: GameNode, spriteImageId: string) {
+    drawCharacterPortrait(i: number, character: GameNode, spriteImageId: string, dontMove?: boolean) {
         const centerOfPortait = this.position.clone().add(new Vec2(i * (this.viewPortWidth / (4*this.zoomLevel)) + 7 * this.padding, 10 * this.padding));
         const width = 60;
         const height = 90;
@@ -217,9 +265,13 @@ export default class InventoryManager {
         this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
 
         // Updates inventory slot positions an add new ones for those that were taken by characters
-        this.createInventorySlots(this.slotsCount, this.slotsCount+1);
-        this.slotsCount += 1;
-        this.moveTailSlots(i);
+        if (!dontMove) {
+            this.createInventorySlots(this.slotsCount, this.slotsCount+1);
+            this.slotsCount += 1;
+        }
+
+        this.moveTailSlots(i, dontMove);
+        // Move to portrait
         this.moveSlotSprites(i, centerOfPortait.clone().inc(10, 0));
     }
 

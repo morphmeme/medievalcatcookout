@@ -1,6 +1,5 @@
 import GameLevel from "./GameLevel";
-import Level2 from "./Level2";
-export default class Level1 extends GameLevel {
+export default class Level2 extends GameLevel {
     loadScene(){
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
@@ -43,7 +42,7 @@ export default class Level1 extends GameLevel {
     startScene(): void {
         super.startScene();
 
-        this.nextLevel = Level2;
+        this.nextLevel = null;
     }
 
     updateScene(deltaT: number): void {
