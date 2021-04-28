@@ -11,8 +11,10 @@ import { EaseFunctionType } from "../../../../Wolfie2D/Utils/EaseFunctions";
 import WeaponType from "./WeaponType";
 
 export default class Shotgun extends WeaponType {
-    line: Line;
-    line2: Line;
+    line1: Line = null;
+    line2: Line = null;
+    line3: Line = null;
+    lines: Line[] = [this.line1, this.line2, this.line3];
     color: Color;
 
     initialize(options: Record<string, any>): void {
@@ -26,129 +28,81 @@ export default class Shotgun extends WeaponType {
 
     doAnimation(scene: Scene, shooter: GameNode, direction: Vec2): void {
         let start = shooter.position.clone();
-        let end1 = shooter.position.clone().add(direction.scaled(900));
-        let end2 = shooter.position.clone().add(direction.scaled(900).rotateCCW(0.2));
-        let end3 = shooter.position.clone().add(direction.scaled(900));
-        console.log(end1.x, + ", " + end1.y);
-        console.log(end2.x + ", " + end2.y);
-        console.log(end3.x + ", " + end3.y);
+        let r1 = Math.random()*0.4 - 0.2;
+        let r2 = Math.random()*0.4 - 0.2;
+        let r3 = Math.random()*0.4 - 0.2;
+        let end1 = shooter.position.clone().add(direction.scaled(900).rotateCCW(r1));
+        let end2 = shooter.position.clone().add(direction.scaled(900).rotateCCW(r2));
+        let end3 = shooter.position.clone().add(direction.scaled(900).rotateCCW(r3));
+        let ends: Vec2[] = [end1, end2, end3];        
+        for(let i = 0; i < ends.length; i++){
+            let end = ends[i];
+            let delta = ends[i].clone().sub(start);
 
-        let ends: Vec2[] = [end1, end2, end3];
-        
-        let end = end1;
-        let delta = end1.clone().sub(start);
+            // Iterate through the tilemap region until we find a collision
+            let minX = Math.min(start.x, end.x);
+            let maxX = Math.max(start.x, end.x);
+            let minY = Math.min(start.y, end.y);
+            let maxY = Math.max(start.y, end.y);
 
-        // Iterate through the tilemap region until we find a collision
-        let minX = Math.min(start.x, end.x);
-        let maxX = Math.max(start.x, end.x);
-        let minY = Math.min(start.y, end.y);
-        let maxY = Math.max(start.y, end.y);
+            // Get the wall tilemap
+            let walls = <OrthogonalTilemap>shooter.getScene().getLayer("Wall").getItems()[0];
 
-        // Get the wall tilemap
-        let walls = <OrthogonalTilemap>shooter.getScene().getLayer("Wall").getItems()[0];
+            let minIndex = walls.getColRowAt(new Vec2(minX, minY));
+            let maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
 
-        let minIndex = walls.getColRowAt(new Vec2(minX, minY));
-        let maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
+            let tileSize = walls.getTileSize();
 
-        let tileSize = walls.getTileSize();
+            for(let col = minIndex.x; col <= maxIndex.x; col++){
+                for(let row = minIndex.y; row <= maxIndex.y; row++){
+                    if(walls.isTileCollidable(col, row)){
+                        // Get the position of this tile
+                        let tilePos = new Vec2(col * tileSize.x + tileSize.x/2, row * tileSize.y + tileSize.y/2);
 
-        for(let col = minIndex.x; col <= maxIndex.x; col++){
-            for(let row = minIndex.y; row <= maxIndex.y; row++){
-                if(walls.isTileCollidable(col, row)){
-                    // Get the position of this tile
-                    let tilePos = new Vec2(col * tileSize.x + tileSize.x/2, row * tileSize.y + tileSize.y/2);
+                        // Create a collider for this tile
+                        let collider = new AABB(tilePos, tileSize.scaled(1/2));
 
-                    // Create a collider for this tile
-                    let collider = new AABB(tilePos, tileSize.scaled(1/2));
+                        let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
 
-                    let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
-
-                    if(hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(end)){
-                        end = hit.pos;
+                        if(hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(end)){
+                            end = hit.pos;
+                        }
                     }
                 }
             }
-        }
-        if (this.line) {
-            this.line.destroy();
-        }
-        this.line = <Line> scene.add.graphic(GraphicType.LINE, "primary", {start, end});
-
-        this.line.color = this.color;
-        this.line.tweens.add("fade", {
-            startDelay: 0,
-            duration: 300,
-            effects: [
-                {
-                    property: TweenableProperties.alpha,
-                    start: 1,
-                    end: 0,
-                    ease: EaseFunctionType.OUT_SINE
-                }
-            ]
-        });
-        this.line.start = start;
-        this.line.end = end;
-        this.line.tweens.play("fade");
-
-        delta = end2.clone().sub(start);
-        end = end2;
-        minX = Math.min(start.x, end.x);
-        maxX = Math.max(start.x, end.x);
-        minY = Math.min(start.y, end.y);
-        maxY = Math.max(start.y, end.y);
-
-        // Get the wall tilemap
-        walls = <OrthogonalTilemap>shooter.getScene().getLayer("Wall").getItems()[0];
-
-        minIndex = walls.getColRowAt(new Vec2(minX, minY));
-        maxIndex = walls.getColRowAt(new Vec2(maxX, maxY));
-
-        tileSize = walls.getTileSize();
-
-        for(let col = minIndex.x; col <= maxIndex.x; col++){
-            for(let row = minIndex.y; row <= maxIndex.y; row++){
-                if(walls.isTileCollidable(col, row)){
-                    // Get the position of this tile
-                    let tilePos = new Vec2(col * tileSize.x + tileSize.x/2, row * tileSize.y + tileSize.y/2);
-
-                    // Create a collider for this tile
-                    let collider = new AABB(tilePos, tileSize.scaled(1/2));
-
-                    let hit = collider.intersectSegment(start, delta, Vec2.ZERO);
-
-                    if(hit !== null && start.distanceSqTo(hit.pos) < start.distanceSqTo(end)){
-                        end = hit.pos;
-                    }
-                }
+            if (this.lines[i]) {
+                this.lines[i].destroy();
             }
+            this.lines[i] = <Line> scene.add.graphic(GraphicType.LINE, "primary", {start, end});
+
+            this.lines[i].color = this.color;
+            this.lines[i].tweens.add("fade", {
+                startDelay: 0,
+                duration: 300,
+                effects: [
+                    {
+                        property: TweenableProperties.alpha,
+                        start: 1,
+                        end: 0,
+                        ease: EaseFunctionType.OUT_SINE
+                    }
+                ]
+            });
+            this.lines[i].start = start;
+            this.lines[i].end = end;
+            this.lines[i].tweens.play("fade");
         }
-        if (this.line2) {
-            this.line2.destroy();
-        }
-        this.line2 = <Line> scene.add.graphic(GraphicType.LINE, "primary", {start, end});
-        this.line2.color = this.color;
-        this.line2.tweens.add("fade", {
-            startDelay: 0,
-            duration: 300,
-            effects: [
-                {
-                    property: TweenableProperties.alpha,
-                    start: 1,
-                    end: 0,
-                    ease: EaseFunctionType.OUT_SINE
-                }
-            ]
-        });
-        this.line2.end = end;
-        //this.line2.tweens.play("fade");
-    
+        console.log(this.lines[0]);
+        console.log(this.lines[1]);
+        console.log(this.lines[2]);
     }
 
     hits(node: GameNode): boolean {
         if (!node) {
             return false;
         }
-        return node.collisionShape.getBoundingRect().intersectSegment(this.line.start, this.line.end.clone().sub(this.line.start)) !== null;
+        return node.collisionShape.getBoundingRect().intersectSegment(this.lines[0].start, this.lines[0].end.clone().sub(this.lines[0].start)) !== null || 
+        node.collisionShape.getBoundingRect().intersectSegment(this.lines[1].start, this.lines[1].end.clone().sub(this.lines[1].start)) !== null ||
+        node.collisionShape.getBoundingRect().intersectSegment(this.lines[2].start, this.lines[2].end.clone().sub(this.lines[2].start)) !== null; 
     }
 }

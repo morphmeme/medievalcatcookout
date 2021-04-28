@@ -56,7 +56,7 @@
             "name": "salt_gun",
             "displayName": "SaltGun",
             "spriteKey": "saltgun",
-            "damage": 5,
+            "damage": 2,
             "cooldown": 1000,
             "useVolume": 320,
             "color": "#000000"
