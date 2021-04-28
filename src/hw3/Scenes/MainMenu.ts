@@ -8,6 +8,7 @@ import Level1 from "./Level1";
 import RenderingManager from "../../Wolfie2D/Rendering/RenderingManager";
 import SceneManager from "../../Wolfie2D/Scene/SceneManager";
 import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
+import { LEVEL_OPTIONS } from "../Constants";
 
 export default class MainMenu extends Scene {
     // Layers, for multiple main menu screens
@@ -175,23 +176,8 @@ export default class MainMenu extends Scene {
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
 
-
-            let sceneOptions = {
-                physics: {
-                    groupNames: ["ground", "player", "enemy", "item", "coin", "rescue"],
-                    collisions:
-                    [
-                        [0, 1, 1, 0, 0, 0],
-                        [1, 1, 1, 0, 1, 1],
-                        [1, 1, 1, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0],
-                        [0, 1, 0, 0, 0, 0],
-                        [0, 1, 0, 0, 0, 0]
-                    ]
-                }
-            }
             if(event.type === "play"){
-                this.sceneManager.changeToScene(Level1, {}, sceneOptions);
+                this.sceneManager.changeToScene(Level1, {}, LEVEL_OPTIONS);
             }
 
             if(event.type === "level_select"){
@@ -218,7 +204,7 @@ export default class MainMenu extends Scene {
 
             const levelSelected = this.levels.find(levelInfo => levelInfo[0] === event.type);
             if (levelSelected && levelSelected[2]) {
-                this.sceneManager.changeToScene(levelSelected[2], {}, sceneOptions);
+                this.sceneManager.changeToScene(levelSelected[2], {}, LEVEL_OPTIONS);
             }
         }
     }

@@ -233,7 +233,8 @@ export default class Scene implements Updateable {
     /** Destroys this scene and all nodes in it */
     destroy(): void {
         for(let node of this.sceneGraph.getAllNodes()){
-            node.destroy();
+            if (!node.keepForNextScene)
+                node.destroy();
         }
 
         for(let tilemap of this.tilemaps){

@@ -67,9 +67,9 @@ export default class CharacterController extends StateMachineAI implements Battl
 
     initializeAI(owner: AnimatedSprite, options: Record<string, any>): void {
         this.owner = owner;
-        this.health = 25;
+        this.health = options.health || 25;
         this.invulnerable = false;
-        this.maxHealth = this.health;
+        this.maxHealth = options.maxHealth || 25;
         this.inventory = options.inventory;
         this.allies = options.allies;
         this.viewport = options.viewport;
