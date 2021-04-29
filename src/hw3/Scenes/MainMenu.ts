@@ -8,7 +8,7 @@ import Level1 from "./Level1";
 import RenderingManager from "../../Wolfie2D/Rendering/RenderingManager";
 import SceneManager from "../../Wolfie2D/Scene/SceneManager";
 import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
-import { LEVEL_OPTIONS } from "../Constants";
+import { CONTROLS_TEXT, LEVEL_OPTIONS } from "../Constants";
 
 export default class MainMenu extends Scene {
     // Layers, for multiple main menu screens
@@ -81,17 +81,12 @@ export default class MainMenu extends Scene {
         const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 250), text: "Controls"});
         controlsHeader.textColor = Color.WHITE;
 
-        const controlsText1 = "WASD to move";
-        const controlsText2 = "E to open inventory";
-        const controlsText3 = "ESC or P to pause";
- 
-        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
-        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
-        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText3});
 
-        controlsLine1.textColor = Color.WHITE;
-        controlsLine2.textColor = Color.WHITE;
-        controlsLine3.textColor = Color.WHITE;
+        let controlMargin = [-200, -150, -100, -50, 0, 50, 100];
+        CONTROLS_TEXT.forEach((text, i) => {
+            const controlLine = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + controlMargin[i]), text});
+            controlLine.textColor = Color.WHITE;
+        })
 
         const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 250), text: "Back"});
         controlsBack.size.set(200, 50);

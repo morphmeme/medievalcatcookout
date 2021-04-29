@@ -5,7 +5,7 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
-import {Events, LEVEL_OPTIONS, Names} from "../Constants";
+import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names} from "../Constants";
 import EnemyAI from "../AI/EnemyAI";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
@@ -32,6 +32,7 @@ import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
 import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
+import Level1 from "./Level1";
 
 type HpBarData = {
     lastHp: number,
@@ -40,6 +41,8 @@ type HpBarData = {
 }
 
 export default class GameLevel extends Scene {
+    private static partySpeed = 100;
+    private static initialPartyHp = 25;
     // The players
     private static allies: Array<AnimatedSprite>;
     
@@ -327,7 +330,6 @@ export default class GameLevel extends Scene {
     }
 
     updateScene(deltaT: number): void {
-        // Win Condition: Only temporary for benchmark1
         if (GameLevel.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
         }
@@ -405,15 +407,7 @@ export default class GameLevel extends Scene {
                 case Events.PLAYER_LEVEL_END:
                 {
                     this.levelEndLabel.tweens.play("slideIn");
-                    // let node = this.sceneGraph.getNode(event.data.get("node"));
-                    // node.disablePhysics();
-                    GameLevel.allies.forEach(ally => ally.keepForNextScene = true);
-                    this.updateTimerLabel(0);
-                    this.timerStopped = true;
-                    if(this.nextLevel){
-                        this.viewport.setZoomLevel(1);    
-                        this.sceneManager.changeToScene(this.nextLevel, {}, LEVEL_OPTIONS);
-                    }
+                    this.changeLevel(this.nextLevel);
                 }
                 default: {
 
@@ -437,9 +431,35 @@ export default class GameLevel extends Scene {
             this.toggleInventory();
             this.togglePause();
             GameLevel.inventory.updateHpBars();
-        }
-        if (Input.isJustPressed("pauseMenu")) {
+        } else if (Input.isJustPressed("pauseMenu")) {
             this.togglePause();
+        } else if (Input.isKeyJustPressed("1")) {
+            this.changeLevel(Level1);
+        } else if (Input.isKeyJustPressed("2")) {
+            this.changeLevel(Level1.nextLevel);
+        } else if (Input.isKeyJustPressed("9")) {
+            GameLevel.allies.forEach(ally => {
+                (ally.ai as CharacterController).health = 100000;
+                (ally.ai as CharacterController).maxHealth = 100000;
+            } )
+        } else if (Input.isKeyJustPressed("0")) {
+            GameLevel.allies.forEach(ally => {
+                const speed = (ally.ai as CharacterController).speed;
+                if (speed === 501)
+                    (ally.ai as CharacterController).speed = GameLevel.partySpeed;
+                else
+                    (ally.ai as CharacterController).speed = 501
+            } )
+        }
+    }
+
+    changeLevel(level: new (...args: any) => GameLevel) {
+        if(level){
+            this.updateTimerLabel(0);
+            this.timerStopped = true;
+            GameLevel.allies.forEach(ally => ally.keepForNextScene = true);
+            this.viewport.setZoomLevel(1);    
+            this.sceneManager.changeToScene(level, {}, LEVEL_OPTIONS);
         }
     }
 
@@ -450,24 +470,17 @@ export default class GameLevel extends Scene {
         const controls = this.addUILayer("controls");
         controls.setHidden(true);
 
-        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.75)});
         pauseBg.color = Color.BLACK;
 
-        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 200), text: "Controls"});
+        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 250), text: "Controls"});
         controlsHeader.textColor = Color.WHITE;
 
-        const controlsText1 = "WASD to move";
-        const controlsText2 = "E to open inventory";
-        const controlsText3 = "ESC or P to pause";
- 
-        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
-        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
-        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText3});
-      
-
-        controlsLine1.textColor = Color.WHITE;
-        controlsLine2.textColor = Color.WHITE;
-        controlsLine3.textColor = Color.WHITE;
+        let controlMargin = [-200, -150, -100, -50, 0, 50, 100];
+        CONTROLS_TEXT.forEach((text, i) => {
+            const controlLine = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + controlMargin[i]), text});
+            controlLine.textColor = Color.WHITE;
+        })
 
 
         const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
@@ -637,9 +650,9 @@ export default class GameLevel extends Scene {
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
         player.addAI(CharacterController,
             {
-                health: 500,
-                maxHealth: 500,
-                speed: 500,
+                health: GameLevel.initialPartyHp,
+                maxHealth: GameLevel.initialPartyHp,
+                speed: GameLevel.partySpeed,
                 inventory,
                 allies: GameLevel.allies,
                 viewport: this.viewport,
@@ -719,9 +732,9 @@ export default class GameLevel extends Scene {
             allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
             allySprite.addAI(CharacterController,
                 {
-                    health: 500,
-                    maxHealth: 500,
-                    speed: 0,
+                    health: GameLevel.initialPartyHp,
+                    maxHealth: GameLevel.initialPartyHp,
+                    speed: GameLevel.partySpeed,
                     inventory,
                     allies: GameLevel.allies,
                     viewport: this.viewport,
