@@ -33,3 +33,5 @@ export const LEVEL_OPTIONS = {
         ]
     }
 }
+
+export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]
