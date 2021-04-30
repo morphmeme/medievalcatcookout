@@ -8,6 +8,7 @@ export default class Level2 extends GameLevel {
         // TODO Keep resources - this is up to you
     }
     loadScene(){
+        super.loadScene();
         this.load.tilemap("level", "hw3_assets/tilemaps/level1.json");
     }
     startScene(): void {
@@ -16,9 +17,7 @@ export default class Level2 extends GameLevel {
         this.nextLevel = Level2;
     }
     initializePlayer(inventory: InventoryManager): void{
-        const player = this.add.animatedSprite("player", "primary");
-        player.position.set(16*32, 95*32);
-        super.initializePlayer(inventory);
+        super.initializePlayer(inventory, 16*32, 95*32);
     }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);

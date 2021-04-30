@@ -9,7 +9,11 @@ export default class Level1 extends GameLevel {
         // TODO Keep resources - this is up to you
     }
     loadScene(){
+        super.loadScene();
         this.load.tilemap("level", "hw3_assets/tilemaps/level2.json");
+        // Load weapon data
+        this.load.object("weaponData", "hw3_assets/levels_data/level2/weaponData.json");
+        // Load enemy nav mesh
         this.load.object("navmesh", "hw3_assets/levels_data/level2/navmesh.json");
 
         // Load in the enemy info
@@ -20,14 +24,11 @@ export default class Level1 extends GameLevel {
     }
     startScene(): void {
         super.startScene();
-
         this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
         this.nextLevel = Level2;
     }
     initializePlayer(inventory: InventoryManager): void{
-        const player = this.add.animatedSprite("player", "primary");
-        player.position.set(28*32, 155*32);
-        super.initializePlayer(inventory);
+        super.initializePlayer(inventory, 28*32, 155*32);
     }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);

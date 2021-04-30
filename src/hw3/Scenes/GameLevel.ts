@@ -92,6 +92,7 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         // Load the tilemap
 
+        /*
         // Load the scene info
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
 
@@ -103,6 +104,7 @@ export default class GameLevel extends Scene {
 
         // Load in item info
         this.load.object("itemData", "hw3_assets/data/items.json");
+        */
 
         // Load the healthpack sprite
         this.load.image("healthpack", "hw3_assets/sprites/healthpack.png");
@@ -254,7 +256,7 @@ export default class GameLevel extends Scene {
         if (GameLevel.allies === undefined && GameLevel.inventory === undefined) {
             GameLevel.allies = new Array();
             GameLevel.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, 4);
-            this.initializePlayer(GameLevel.inventory);
+            this.initializePlayer(GameLevel.inventory, 0,0);
         } else {
             this.reinitializeAllies(GameLevel.allies, new Vec2(28*32, 155*32));
             const newItems = GameLevel.inventory.getWeaponsWithNewScene(this, this.battleManager);
@@ -672,9 +674,10 @@ export default class GameLevel extends Scene {
         }
     }
 
-    initializePlayer(inventory: InventoryManager): void {
+    initializePlayer(inventory: InventoryManager, x: number, y: number): void {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
+        player.position.set(x, y)
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
         player.addAI(CharacterController,
             {
@@ -695,7 +698,8 @@ export default class GameLevel extends Scene {
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
-
+    initializePlayerPosition(player: AnimatedSprite): void{
+    }
     // for next level
     reinitializeAllies(allies: Array<AnimatedSprite>, position: Vec2) {
         const newAllies: Array<AnimatedSprite> = [];
