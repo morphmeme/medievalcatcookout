@@ -4,6 +4,11 @@
             "type": "weapon",
             "weaponType": "ketchup_bottle", 
             "position": [896, 4576]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "projectile", 
+            "position": [928, 4576]
         }
     ]
 }

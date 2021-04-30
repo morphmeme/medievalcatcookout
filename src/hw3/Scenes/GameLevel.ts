@@ -5,7 +5,7 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
-import {Events, LEVEL_OPTIONS, Names} from "../Constants";
+import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names} from "../Constants";
 import EnemyAI from "../AI/EnemyAI";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
@@ -32,6 +32,8 @@ import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
 import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
+import Level1 from "./Level1";
+import ProjectileAI from "../AI/ProjectileAI";
 
 type HpBarData = {
     lastHp: number,
@@ -40,6 +42,8 @@ type HpBarData = {
 }
 
 export default class GameLevel extends Scene {
+    private static partySpeed = 100;
+    private static initialPartyHp = 25;
     // The players
     private static allies: Array<AnimatedSprite>;
     
@@ -110,6 +114,7 @@ export default class GameLevel extends Scene {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
+        this.load.image("projectile", "hw3_assets/sprites/projectile.png");
         
         this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
@@ -130,7 +135,10 @@ export default class GameLevel extends Scene {
             Events.PLAYER_LEVEL_END,
             Events.DROP_WEAPON,
             Events.CHARACTER_DEATH,
-            Events.DROP_COIN
+            Events.DROP_COIN,
+            Events.PROJECTILE_COLLIDES_ENEMY,
+            Events.PROJECTILE_COLLIDES_PLAYER,
+            Events.PROJECTILE_COLLIDES_GROUND,
         ]);
     }
 
@@ -177,6 +185,16 @@ export default class GameLevel extends Scene {
             }
             return {id: null, bars: null};
         });
+    }
+
+    protected handleProjectileCollision(projectile: AnimatedSprite, other: AnimatedSprite) {
+        // If either gets deleted.
+        if (!projectile?.ai || !other?.ai) {
+            return;
+        }
+        (other.ai as BattlerAI).damage((projectile.ai as ProjectileAI).dmg);
+        (projectile.ai as ProjectileAI).damage(1);
+        other.animation.override("HURT");
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -327,7 +345,6 @@ export default class GameLevel extends Scene {
     }
 
     updateScene(deltaT: number): void {
-        // Win Condition: Only temporary for benchmark1
         if (GameLevel.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
         }
@@ -377,6 +394,21 @@ export default class GameLevel extends Scene {
                     (node?.ai as CharacterController)?.addToInventory(item);
                     break;
                 }
+                case Events.PROJECTILE_COLLIDES_PLAYER:
+                case Events.PROJECTILE_COLLIDES_ENEMY: {
+                    let projectile = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    if (projectile?.ai instanceof ProjectileAI)
+                        this.handleProjectileCollision(projectile as AnimatedSprite, other as AnimatedSprite);
+                    else
+                        this.handleProjectileCollision(other as AnimatedSprite, projectile as AnimatedSprite);
+                    break;
+                }
+                case Events.PROJECTILE_COLLIDES_GROUND: {
+                    let projectile = this.sceneGraph.getNode(event.data.get("node"));
+                    (projectile?.ai as ProjectileAI)?.damage(1);
+                    break;
+                }
                 case Events.CHARACTER_DEATH:{
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     node.setAIActive(false, {});
@@ -405,15 +437,7 @@ export default class GameLevel extends Scene {
                 case Events.PLAYER_LEVEL_END:
                 {
                     this.levelEndLabel.tweens.play("slideIn");
-                    // let node = this.sceneGraph.getNode(event.data.get("node"));
-                    // node.disablePhysics();
-                    GameLevel.allies.forEach(ally => ally.keepForNextScene = true);
-                    this.updateTimerLabel(0);
-                    this.timerStopped = true;
-                    if(this.nextLevel){
-                        this.viewport.setZoomLevel(1);    
-                        this.sceneManager.changeToScene(this.nextLevel, {}, LEVEL_OPTIONS);
-                    }
+                    this.changeLevel(this.nextLevel);
                 }
                 default: {
 
@@ -437,9 +461,35 @@ export default class GameLevel extends Scene {
             this.toggleInventory();
             this.togglePause();
             GameLevel.inventory.updateHpBars();
-        }
-        if (Input.isJustPressed("pauseMenu")) {
+        } else if (Input.isJustPressed("pauseMenu")) {
             this.togglePause();
+        } else if (Input.isKeyJustPressed("1")) {
+            this.changeLevel(Level1);
+        } else if (Input.isKeyJustPressed("2")) {
+            this.changeLevel(Level1.nextLevel);
+        } else if (Input.isKeyJustPressed("9")) {
+            GameLevel.allies.forEach(ally => {
+                (ally.ai as CharacterController).health = 100000;
+                (ally.ai as CharacterController).maxHealth = 100000;
+            } )
+        } else if (Input.isKeyJustPressed("0")) {
+            GameLevel.allies.forEach(ally => {
+                const speed = (ally.ai as CharacterController).speed;
+                if (speed === 501)
+                    (ally.ai as CharacterController).speed = GameLevel.partySpeed;
+                else
+                    (ally.ai as CharacterController).speed = 501
+            } )
+        }
+    }
+
+    changeLevel(level: new (...args: any) => GameLevel) {
+        if(level){
+            this.updateTimerLabel(0);
+            this.timerStopped = true;
+            GameLevel.allies.forEach(ally => ally.keepForNextScene = true);
+            this.viewport.setZoomLevel(1);    
+            this.sceneManager.changeToScene(level, {}, LEVEL_OPTIONS);
         }
     }
 
@@ -450,24 +500,17 @@ export default class GameLevel extends Scene {
         const controls = this.addUILayer("controls");
         controls.setHidden(true);
 
-        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.75)});
         pauseBg.color = Color.BLACK;
 
-        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 200), text: "Controls"});
+        const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 250), text: "Controls"});
         controlsHeader.textColor = Color.WHITE;
 
-        const controlsText1 = "WASD to move";
-        const controlsText2 = "E to open inventory";
-        const controlsText3 = "ESC or P to pause";
- 
-        const controlsLine1 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 50), text: controlsText1});
-        const controlsLine2 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y), text: controlsText2});
-        const controlsLine3 = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + 50), text: controlsText3});
-      
-
-        controlsLine1.textColor = Color.WHITE;
-        controlsLine2.textColor = Color.WHITE;
-        controlsLine3.textColor = Color.WHITE;
+        let controlMargin = [-200, -150, -100, -50, 0, 50, 100];
+        CONTROLS_TEXT.forEach((text, i) => {
+            const controlLine = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + controlMargin[i]), text});
+            controlLine.textColor = Color.WHITE;
+        })
 
 
         const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
@@ -637,9 +680,9 @@ export default class GameLevel extends Scene {
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
         player.addAI(CharacterController,
             {
-                health: 500,
-                maxHealth: 500,
-                speed: 500,
+                health: GameLevel.initialPartyHp,
+                maxHealth: GameLevel.initialPartyHp,
+                speed: GameLevel.partySpeed,
                 inventory,
                 allies: GameLevel.allies,
                 viewport: this.viewport,
@@ -650,6 +693,7 @@ export default class GameLevel extends Scene {
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
+        player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
@@ -679,38 +723,13 @@ export default class GameLevel extends Scene {
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
             allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
+            allySprite.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
             newAllies.push(allySprite);
             // GameLevel.inventory.addCharacter(player);
             // ally.destroy();
         }
         GameLevel.allies = newAllies;
     }
-    
-
-    // initializeAllies(inventory: InventoryManager): void {
-    //     for (const i of [0,1]) {
-    //         const allySprite = this.add.animatedSprite("player", "primary");
-    //         allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-    //         allySprite.addAI(CharacterController,
-    //             {
-    //                 health: 1000,
-    //                 speed: 100,
-    //                 inventory,
-    //                 following: GameLevel.allies[GameLevel.allies.length-1].ai,
-    //                 followingDistance: 22,
-    //                 allies: GameLevel.allies,
-    //                 viewport: this.viewport,
-    //             });
-    //         allySprite.animation.play("IDLE");
-    //         allySprite.setGroup("player");
-    //         allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
-    //         allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
-    //         allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
-    //         allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
-    //         inventory.addCharacter(allySprite);
-    //         GameLevel.allies.push(allySprite);
-    //     }
-    // }
 
     initializeRescues(inventory: InventoryManager): void {
         for (const [posX, posY] of [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]]) {
@@ -719,9 +738,9 @@ export default class GameLevel extends Scene {
             allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
             allySprite.addAI(CharacterController,
                 {
-                    health: 500,
-                    maxHealth: 500,
-                    speed: 0,
+                    health: GameLevel.initialPartyHp,
+                    maxHealth: GameLevel.initialPartyHp,
+                    speed: GameLevel.partySpeed,
                     inventory,
                     allies: GameLevel.allies,
                     viewport: this.viewport,
@@ -830,6 +849,7 @@ export default class GameLevel extends Scene {
             this.enemies[i].addAI(EnemyAI, enemyOptions);
             this.enemies[i].setGroup("enemy");
             this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
+            this.enemies[i].setTrigger("projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
         }
 
         GameLevel.allies.forEach(character => {

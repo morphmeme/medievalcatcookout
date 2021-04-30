@@ -185,6 +185,7 @@ export default class MathUtils {
         return (Math.round((radians) / (Math.PI/2))) % 4
     }
 
+    // integer only
     static rotationToDir(rotation: number) {
         switch (rotation) {
             case 0:
