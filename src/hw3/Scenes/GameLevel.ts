@@ -33,6 +33,7 @@ import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
 import Level1 from "./Level1";
+import ProjectileAI from "../AI/ProjectileAI";
 
 type HpBarData = {
     lastHp: number,
@@ -113,6 +114,7 @@ export default class GameLevel extends Scene {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
+        this.load.image("projectile", "hw3_assets/sprites/projectile.png");
         
         this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
@@ -133,7 +135,10 @@ export default class GameLevel extends Scene {
             Events.PLAYER_LEVEL_END,
             Events.DROP_WEAPON,
             Events.CHARACTER_DEATH,
-            Events.DROP_COIN
+            Events.DROP_COIN,
+            Events.PROJECTILE_COLLIDES_ENEMY,
+            Events.PROJECTILE_COLLIDES_PLAYER,
+            Events.PROJECTILE_COLLIDES_GROUND,
         ]);
     }
 
@@ -180,6 +185,16 @@ export default class GameLevel extends Scene {
             }
             return {id: null, bars: null};
         });
+    }
+
+    protected handleProjectileCollision(projectile: AnimatedSprite, other: AnimatedSprite) {
+        // If either gets deleted.
+        if (!projectile?.ai || !other?.ai) {
+            return;
+        }
+        (other.ai as BattlerAI).damage((projectile.ai as ProjectileAI).dmg);
+        (projectile.ai as ProjectileAI).damage(1);
+        other.animation.override("HURT");
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -377,6 +392,21 @@ export default class GameLevel extends Scene {
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     const item = this.items.get(other);
                     (node?.ai as CharacterController)?.addToInventory(item);
+                    break;
+                }
+                case Events.PROJECTILE_COLLIDES_PLAYER:
+                case Events.PROJECTILE_COLLIDES_ENEMY: {
+                    let projectile = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    if (projectile?.ai instanceof ProjectileAI)
+                        this.handleProjectileCollision(projectile as AnimatedSprite, other as AnimatedSprite);
+                    else
+                        this.handleProjectileCollision(other as AnimatedSprite, projectile as AnimatedSprite);
+                    break;
+                }
+                case Events.PROJECTILE_COLLIDES_GROUND: {
+                    let projectile = this.sceneGraph.getNode(event.data.get("node"));
+                    (projectile?.ai as ProjectileAI)?.damage(1);
                     break;
                 }
                 case Events.CHARACTER_DEATH:{

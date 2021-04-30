@@ -1,5 +1,5 @@
 {
-    "numWeapons": 6,
+    "numWeapons": 7,
     "weapons": [
         {
             "weaponType": "stab",
@@ -60,6 +60,16 @@
             "cooldown": 1000,
             "useVolume": 320,
             "color": "#000000"
+        },
+        {
+            "weaponType": "projectile",
+            "name": "projectile",
+            "displayName": "projectile",
+            "spriteKey": "projectile",
+            "damage": 2,
+            "cooldown": 1000,
+            "useVolume": 320,
+            "speed": 200
         }
     ]
 }
