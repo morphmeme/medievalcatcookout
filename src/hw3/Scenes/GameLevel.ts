@@ -91,7 +91,6 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         // Load the tilemap
-        this.load.tilemap("level", "hw3_assets/tilemaps/testmap.json");
 
         // Load the scene info
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");

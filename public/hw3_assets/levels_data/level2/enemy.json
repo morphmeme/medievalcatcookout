@@ -1,0 +1,231 @@
+{
+    "numEnemies": 26,
+    "enemies": [
+        {
+            "position": [864, 4384],
+            "mode": "guard",
+            "guardPosition": [864, 4384],
+            "health": 5,
+            "attack": "charge"
+        },
+        {
+            "position": [960, 4384],
+            "mode": "guard",
+            "guardPosition": [960, 4384],
+            "health": 5,
+            "attack": "charge"
+        },
+        {
+            "position": [768, 4160],
+            "mode": "guard",
+            "guardPosition": [768, 4160],
+            "health": 5,
+            "attack": "charge",
+            "speed": 30
+        },
+        {
+            "position": [1024, 4160],
+            "mode": "guard",
+            "guardPosition": [1024, 4160],
+            "health": 5,
+            "attack": "charge",
+            "speed": 30
+        },
+        {
+            "position": [64, 3136],
+            "mode": "patrol",
+            "route": [0, 1, 2, 3],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 60
+        },
+        {
+            "position": [1952, 3136],
+            "mode": "patrol",
+            "route": [1, 2, 3, 0],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 60
+        },
+        {
+            "position": [1952, 3744],
+            "mode": "patrol",
+            "route": [2, 3, 0, 1],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 60
+        },
+        {
+            "position": [64, 3744],
+            "mode": "patrol",
+            "route": [3, 0, 1, 2],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 60
+        },
+        {
+            "position": [736, 2592],
+            "mode": "guard",
+            "guardPosition": [736, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [800, 2592],
+            "mode": "guard",
+            "guardPosition": [800, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [864, 2592],
+            "mode": "guard",
+            "guardPosition": [864, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [928, 2592],
+            "mode": "guard",
+            "guardPosition": [928, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [1120, 2592],
+            "mode": "guard",
+            "guardPosition": [1120, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [1184, 2592],
+            "mode": "guard",
+            "guardPosition": [1184, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [1248, 2592],
+            "mode": "guard",
+            "guardPosition": [1248, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [1312, 2592],
+            "mode": "guard",
+            "guardPosition": [1312, 2592],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [124, 2208],
+            "mode": "patrol",
+            "route": [4, 5],
+            "health": 5,
+            "attack": "charge",
+            "speed": 30
+        },
+        {
+            "position": [124, 2208],
+            "mode": "patrol",
+            "route": [6, 7],
+            "health": 5,
+            "attack": "charge",
+            "speed": 30
+        },
+        {
+            "position": [416, 1184],
+            "mode": "guard",
+            "guardPosition": [416, 1184],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [992, 1184],
+            "mode": "guard",
+            "guardPosition": [992, 1184],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [1600, 1184],
+            "mode": "guard",
+            "guardPosition": [1600, 1184],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [416, 736],
+            "mode": "guard",
+            "guardPosition": [416, 736],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [992, 736],
+            "mode": "guard",
+            "guardPosition": [992, 736],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [1600, 736],
+            "mode": "guard",
+            "guardPosition": [1600, 736],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [256, 480],
+            "mode": "patrol",
+            "route": [8, 9],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [1760, 256],
+            "mode": "patrol",
+            "route": [10, 11],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        }
+    ]
+}
