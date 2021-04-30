@@ -69,7 +69,8 @@
             "damage": 2,
             "cooldown": 1000,
             "useVolume": 320,
-            "speed": 200
+            "speed": 200,
+            "projectileSpriteKey": "player"
         }
     ]
 }
