@@ -10,6 +10,7 @@ import WeaponType from "./WeaponType";
 
 export default class Projectile extends WeaponType {
     private speed: number;
+    private projectileSpriteKey: string;
     initialize(options: Record<string, any>): void {
         this.damage = options.damage;
         this.cooldown = options.cooldown;
@@ -17,10 +18,11 @@ export default class Projectile extends WeaponType {
         this.spriteKey = options.spriteKey;
         this.useVolume = options.useVolume;
         this.speed = options.speed || 100;
+        this.projectileSpriteKey = options.projectileSpriteKey || "player"; 
     }
 
     doAnimation(scene: Scene, shooter: GameNode, direction: Vec2): void {
-        const projectile = scene.add.animatedSprite("player", "primary");
+        const projectile = scene.add.animatedSprite(this.projectileSpriteKey, "primary");
         const normDirection = direction.normalized();
         const shooterBoundary = (shooter as CanvasNode).boundary;
         const boundaryHalfSize = shooterBoundary?.halfSize;
@@ -28,8 +30,8 @@ export default class Projectile extends WeaponType {
             ? new Vec2(shooter.position.x + normDirection.x * boundaryHalfSize.x, shooter.position.y + normDirection.y * boundaryHalfSize.y)
             : new Vec2(shooter.position.x, shooter.position.y);
         projectile.position.set(projectilePosition.x, projectilePosition.y);
-        //TODO hitbox size
-        projectile.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
+        const hitBox = new Vec2(1, 1);
+        projectile.addPhysics(new AABB(Vec2.ZERO, hitBox));
         projectile.addAI(ProjectileAI,
             {
                 direction,

@@ -693,6 +693,7 @@ export default class GameLevel extends Scene {
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
+        player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
@@ -722,38 +723,13 @@ export default class GameLevel extends Scene {
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
             allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
+            allySprite.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
             newAllies.push(allySprite);
             // GameLevel.inventory.addCharacter(player);
             // ally.destroy();
         }
         GameLevel.allies = newAllies;
     }
-    
-
-    // initializeAllies(inventory: InventoryManager): void {
-    //     for (const i of [0,1]) {
-    //         const allySprite = this.add.animatedSprite("player", "primary");
-    //         allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
-    //         allySprite.addAI(CharacterController,
-    //             {
-    //                 health: 1000,
-    //                 speed: 100,
-    //                 inventory,
-    //                 following: GameLevel.allies[GameLevel.allies.length-1].ai,
-    //                 followingDistance: 22,
-    //                 allies: GameLevel.allies,
-    //                 viewport: this.viewport,
-    //             });
-    //         allySprite.animation.play("IDLE");
-    //         allySprite.setGroup("player");
-    //         allySprite.setTrigger("enemy", Events.ENEMY_COLLIDES_PLAYER, null);
-    //         allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
-    //         allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
-    //         allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
-    //         inventory.addCharacter(allySprite);
-    //         GameLevel.allies.push(allySprite);
-    //     }
-    // }
 
     initializeRescues(inventory: InventoryManager): void {
         for (const [posX, posY] of [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]]) {
@@ -873,6 +849,7 @@ export default class GameLevel extends Scene {
             this.enemies[i].addAI(EnemyAI, enemyOptions);
             this.enemies[i].setGroup("enemy");
             this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
+            this.enemies[i].setTrigger("projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
         }
 
         GameLevel.allies.forEach(character => {
