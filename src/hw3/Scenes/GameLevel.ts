@@ -304,7 +304,7 @@ export default class GameLevel extends Scene {
 
         // level end
         this.addUI();
-        this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
+        
     }
 
     dropWeapon(weapon: Weapon, position: Vec2) {
