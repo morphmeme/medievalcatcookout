@@ -675,7 +675,6 @@ export default class GameLevel extends Scene {
     initializePlayer(inventory: InventoryManager): void {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
-        player.position.set(28*32, 155*32);
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
         player.addAI(CharacterController,
             {

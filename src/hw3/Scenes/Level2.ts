@@ -1,4 +1,5 @@
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
+import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
 import Level2 from "./Level2";
 export default class Level1 extends GameLevel {
@@ -23,7 +24,11 @@ export default class Level1 extends GameLevel {
         this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
         this.nextLevel = Level2;
     }
-
+    initializePlayer(inventory: InventoryManager): void{
+        const player = this.add.animatedSprite("player", "primary");
+        player.position.set(28*32, 155*32);
+        super.initializePlayer(inventory);
+    }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);
     }
