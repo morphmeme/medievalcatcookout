@@ -56,6 +56,7 @@ export default class Shop extends Scene {
         let weaponType = <WeaponType> new constr();
         weaponType.initialize(data);
         let sprite = this.add.sprite(weaponType.spriteKey, "primary");
+        sprite.position.copy(new Vec2(-32, -32));
         const weapon = new Weapon(sprite, weaponType);
         return weapon;
     }
@@ -100,7 +101,7 @@ export default class Shop extends Scene {
     }
 
     drawNextLevelButton() {
-        const play = this.add.uiElement(UIElementType.BUTTON, "click", {position: new Vec2(500, 500), text: "Next Level"});
+        const play = this.add.uiElement(UIElementType.BUTTON, "click", {position: new Vec2(this.viewPortWidth * 0.5, this.viewPortHeight * 0.9), text: "Next Level"});
         play.size.set(200, 50);
         play.borderWidth = 2;
         play.borderColor = Color.WHITE;
