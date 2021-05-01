@@ -9,7 +9,14 @@ import Color from "../Wolfie2D/Utils/Color";
 export function drawProgressBar(scene: Scene, progress: number, maxProgress: number, width: number, pos: Vec2, layer: string) {
     const workBar = scene.add.graphic(GraphicType.RECT, layer, {position: pos.clone(), size: new Vec2(width, 1)});
     workBar.color = Color.RED;
-    const progressBar = scene.add.graphic(GraphicType.RECT, layer, {position: pos.clone().inc(-(width - width * (progress/maxProgress)) / 2, 0), size: new Vec2(width * (progress/maxProgress), 1)});
+    const progressBar = scene.add.graphic(
+        GraphicType.RECT,
+        layer, 
+        {
+            position: pos.clone().inc(-(width - width * (progress/maxProgress)) / 2, 0),
+            size: new Vec2(width * (progress/maxProgress), 1)
+        }
+        );
     progressBar.color = Color.GREEN;
     return [progressBar, workBar];
 }

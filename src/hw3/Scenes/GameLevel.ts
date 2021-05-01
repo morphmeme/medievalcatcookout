@@ -387,6 +387,7 @@ export default class GameLevel extends Scene {
                 case Events.PLAYER_COLLIDES_GROUND: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     (node?.ai as BattlerAI)?.damage(1);
+                    (node as AnimatedSprite)?.animation.override("HURT");
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ITEM: {

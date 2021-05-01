@@ -27,6 +27,9 @@ export default class MainMenu extends Scene {
     }
 
     startScene(){
+        GameLevel.allies = undefined;
+        GameLevel.inventory = undefined;
+        GameLevel.coinCount = 0;
         const center = this.viewport.getCenter();
 
         this.levels = [
@@ -176,8 +179,6 @@ export default class MainMenu extends Scene {
             let event = this.receiver.getNextEvent();
 
             if(event.type === "play"){
-                GameLevel.allies = undefined;
-                GameLevel.inventory = undefined;
                 this.sceneManager.changeToScene(Level1, {}, LEVEL_OPTIONS);
             }
 
@@ -205,8 +206,6 @@ export default class MainMenu extends Scene {
 
             const levelSelected = this.levels.find(levelInfo => levelInfo[0] === event.type);
             if (levelSelected && levelSelected[2]) {
-                GameLevel.allies = undefined;
-                GameLevel.inventory = undefined;
                 this.sceneManager.changeToScene(levelSelected[2], {}, LEVEL_OPTIONS);
             }
         }

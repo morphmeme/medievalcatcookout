@@ -163,7 +163,7 @@ export default class InventoryManager {
             return;
         }
         this.items[this.currentlyMoving[1]] = this.currentlyMoving[0];
-        this.currentlyMoving[0].moveSprite(this.getSlotPosition(this.currentlyMoving[1]));
+        this.currentlyMoving[0]?.moveSprite(this.getSlotPosition(this.currentlyMoving[1]));
         this.currentlyMoving = null;
     }
 
@@ -232,7 +232,7 @@ export default class InventoryManager {
     updateHpBars() {
         for (const {hpBars, character} of this.characterToInfo.values()) {
             if (hpBars) {
-                const pos = hpBars[0].position.clone();
+                const pos = hpBars[1].position.clone();
                 const [prevGreenBar, prevRedBar] = hpBars;
                 if (prevGreenBar.tweens)
                     prevGreenBar.destroy();
@@ -259,7 +259,6 @@ export default class InventoryManager {
         
         // Character hp
         this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
-
         // Character Name
         this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
 

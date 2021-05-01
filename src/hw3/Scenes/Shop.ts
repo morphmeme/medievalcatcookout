@@ -101,12 +101,12 @@ export default class Shop extends Scene {
     }
 
     drawNextLevelButton() {
-        const play = this.add.uiElement(UIElementType.BUTTON, "click", {position: new Vec2(this.viewPortWidth * 0.5, this.viewPortHeight * 0.9), text: "Next Level"});
-        play.size.set(200, 50);
-        play.borderWidth = 2;
-        play.borderColor = Color.WHITE;
-        play.backgroundColor = Color.TRANSPARENT;
-        play.onClick = () => {
+        const nextLevel = this.add.uiElement(UIElementType.BUTTON, "click", {position: new Vec2(this.viewPortWidth * 0.5, this.viewPortHeight * 0.9), text: "Next Level"});
+        nextLevel.size.set(200, 50);
+        nextLevel.borderWidth = 2;
+        nextLevel.borderColor = Color.WHITE;
+        nextLevel.backgroundColor = Color.TRANSPARENT;
+        nextLevel.onClick = () => {
             this.sceneManager.changeToScene(this.nextLevel, {}, LEVEL_OPTIONS);;
         }
     }
