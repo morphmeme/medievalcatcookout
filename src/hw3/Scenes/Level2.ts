@@ -2,8 +2,7 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
-import Level2 from "./Level2";
-export default class Level1 extends GameLevel {
+export default class Level2 extends GameLevel {
     public static nextLevel = Level2;
     public static spawnPos = new Vec2(28*32, 155*32);
 
@@ -27,7 +26,7 @@ export default class Level1 extends GameLevel {
     startScene(): void {
         super.startScene();
         this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
-        this.nextLevel = Level2;
+        this.nextLevel = Level2.nextLevel;
     }
     initializePlayer(inventory: InventoryManager): void{
         super.initializePlayer(inventory, Level2.spawnPos.x, Level2.spawnPos.y);

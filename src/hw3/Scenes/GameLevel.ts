@@ -74,7 +74,7 @@ export default class GameLevel extends Scene {
     private levelEndArea: Rect;
     private levelEndLabel: Label;
     // coins
-    protected static coinCount: number = 0;
+    public static coinCount: number = 0;
     protected coinCountLabel: Label;
 
     // timer
@@ -82,7 +82,7 @@ export default class GameLevel extends Scene {
     protected timerLabel: Label;
     protected timerStopped: boolean = false;
 
-    protected nextLevel: new (...args: any) => GameLevel;;
+    protected nextLevel: new (...args: any) => Scene;;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -485,7 +485,7 @@ export default class GameLevel extends Scene {
         }
     }
 
-    changeLevel(level: new (...args: any) => GameLevel) {
+    changeLevel(level: new (...args: any) => Scene) {
         if(level){
             this.updateTimerLabel(0);
             this.timerStopped = true;

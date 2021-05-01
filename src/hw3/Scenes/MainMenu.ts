@@ -11,6 +11,7 @@ import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
 import { CONTROLS_TEXT, LEVEL_OPTIONS } from "../Constants";
 import Level2 from "./Level2";
 import GameLevel from "./GameLevel";
+import Shop from "./Shop";
 
 
 export default class MainMenu extends Scene {
