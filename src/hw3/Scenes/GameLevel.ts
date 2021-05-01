@@ -684,7 +684,7 @@ export default class GameLevel extends Scene {
             {
                 health: GameLevel.initialPartyHp,
                 maxHealth: GameLevel.initialPartyHp,
-                speed: GameLevel.partySpeed,
+                speed: 500,
                 inventory,
                 allies: GameLevel.allies,
                 viewport: this.viewport,
