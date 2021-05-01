@@ -100,7 +100,7 @@ export default class Shop extends Scene {
     }
 
     drawNextLevelButton() {
-        const play = this.add.uiElement(UIElementType.BUTTON, "click", {position: new Vec2(500, 500), text: "Next Level"});
+        const play = this.add.uiElement(UIElementType.BUTTON, "click", {position: new Vec2(this.viewPortWidth * 0.5, this.viewPortHeight * 0.9), text: "Next Level"});
         play.size.set(200, 50);
         play.borderWidth = 2;
         play.borderColor = Color.WHITE;
