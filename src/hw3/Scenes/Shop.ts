@@ -56,6 +56,7 @@ export default class Shop extends Scene {
         let weaponType = <WeaponType> new constr();
         weaponType.initialize(data);
         let sprite = this.add.sprite(weaponType.spriteKey, "primary");
+        sprite.position.copy(new Vec2(-32, -32));
         const weapon = new Weapon(sprite, weaponType);
         return weapon;
     }
