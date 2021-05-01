@@ -45,7 +45,7 @@ export default class GameLevel extends Scene {
     private static partySpeed = 100;
     private static initialPartyHp = 25;
     // The players
-    private static allies: Array<AnimatedSprite>;
+    public static allies: Array<AnimatedSprite>;
     
     // A list of enemies
     private enemies: Array<AnimatedSprite>;
@@ -68,7 +68,7 @@ export default class GameLevel extends Scene {
     private weaponTypeMap: Map<string, any>;
 
     private zoomLevel: number;
-    private static inventory: InventoryManager;
+    public static inventory: InventoryManager;
 
     // end of level position
     private levelEndArea: Rect;

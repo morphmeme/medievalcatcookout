@@ -1,9 +1,11 @@
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
+import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
 import Level2 from "./Level2";
 export default class Level1 extends GameLevel {
     public static nextLevel = Level2;
+    public static spawnPos = new Vec2(16 * 32, 95 * 32);
 
     unloadScene(){
         // TODO Keep resources - this is up to you
@@ -26,8 +28,13 @@ export default class Level1 extends GameLevel {
         this.nextLevel = Level2;
     }
     initializePlayer(inventory: InventoryManager): void{
-        super.initializePlayer(inventory, 16*32, 95*32);
+        super.initializePlayer(inventory, Level1.spawnPos.x, Level1.spawnPos.y);
     }
+
+    reinitializeAllies(allies: Array<AnimatedSprite>, position: Vec2) {
+        super.reinitializeAllies(allies, Level1.spawnPos);;
+    }
+
     initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void{
         let pos = [[13.5*32, 76*32], [16.5*32, 76*32],[19.5*32, 76*32] ]
         super.initializeRescues(inventory, pos);

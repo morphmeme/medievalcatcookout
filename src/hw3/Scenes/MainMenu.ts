@@ -10,6 +10,7 @@ import SceneManager from "../../Wolfie2D/Scene/SceneManager";
 import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
 import { CONTROLS_TEXT, LEVEL_OPTIONS } from "../Constants";
 import Level2 from "./Level2";
+import GameLevel from "./GameLevel";
 
 
 export default class MainMenu extends Scene {
@@ -174,6 +175,8 @@ export default class MainMenu extends Scene {
             let event = this.receiver.getNextEvent();
 
             if(event.type === "play"){
+                GameLevel.allies = undefined;
+                GameLevel.inventory = undefined;
                 this.sceneManager.changeToScene(Level1, {}, LEVEL_OPTIONS);
             }
 
@@ -201,6 +204,8 @@ export default class MainMenu extends Scene {
 
             const levelSelected = this.levels.find(levelInfo => levelInfo[0] === event.type);
             if (levelSelected && levelSelected[2]) {
+                GameLevel.allies = undefined;
+                GameLevel.inventory = undefined;
                 this.sceneManager.changeToScene(levelSelected[2], {}, LEVEL_OPTIONS);
             }
         }

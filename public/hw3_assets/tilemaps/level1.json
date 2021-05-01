@@ -21,8 +21,23 @@
          "name":"Wall",
          "opacity":1,
          "properties":[
-                {
+               {
                  "name":"Collidable",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"Group",
+                 "type":"string",
+                 "value":"ground"
+                }, 
+                {
+                 "name":"IsTrigger",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"HasPhysics",
                  "type":"bool",
                  "value":true
                 }],
