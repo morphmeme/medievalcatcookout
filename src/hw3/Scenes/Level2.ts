@@ -12,15 +12,15 @@ export default class Level1 extends GameLevel {
         super.loadScene();
         this.load.tilemap("level", "hw3_assets/tilemaps/level2.json");
         // Load weapon data
-        this.load.object("weaponData", "hw3_assets/levels_data/level2/weaponData.json");
-        // Load enemy nav mesh
-        this.load.object("navmesh", "hw3_assets/levels_data/level2/navmesh.json");
+            this.load.object("weaponData", "hw3_assets/levels_data/level2/weaponData.json");
+            // Load enemy nav mesh
+            this.load.object("navmesh", "hw3_assets/levels_data/level2/navmesh.json");
 
-        // Load in the enemy info
-        this.load.object("enemyData", "hw3_assets/levels_data/level2/enemy.json");
+            // Load in the enemy info
+            this.load.object("enemyData", "hw3_assets/levels_data/level2/enemy.json");
 
-        // Load in item info
-        this.load.object("itemData", "hw3_assets/levels_data/level2/items.json");
+            // Load in item info
+            this.load.object("itemData", "hw3_assets/levels_data/level2/items.json");
     }
     startScene(): void {
         super.startScene();
@@ -29,6 +29,10 @@ export default class Level1 extends GameLevel {
     }
     initializePlayer(inventory: InventoryManager): void{
         super.initializePlayer(inventory, 28*32, 155*32);
+    }
+    initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void{
+        let pos = [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]];
+        super.initializeRescues(inventory, pos);
     }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);

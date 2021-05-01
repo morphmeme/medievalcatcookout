@@ -58,7 +58,8 @@ export default class GameLevel extends Scene {
 
     // A list of items in the scene
     private items: Map<CanvasNode, Item>;
-
+    // 2d array of positions of rescue allies
+    private rescuePositions: number[][];
     // The battle manager for the scene
     private battleManager: BattleManager;
 
@@ -267,7 +268,7 @@ export default class GameLevel extends Scene {
         }
         
         // this.initializeAllies(GameLevel.inventory);
-        this.initializeRescues(GameLevel.inventory);
+        this.initializeRescues(GameLevel.inventory, this.rescuePositions);
 
         // Make the viewport follow the player
         this.viewport.follow(GameLevel.allies[0]);
@@ -733,8 +734,8 @@ export default class GameLevel extends Scene {
         GameLevel.allies = newAllies;
     }
 
-    initializeRescues(inventory: InventoryManager): void {
-        for (const [posX, posY] of [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]]) {
+    initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void {
+        for (const [posX, posY] of rescuePositions) {
             const allySprite = this.add.animatedSprite("player", "primary");
             allySprite.position.set(posX, posY);
             allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
