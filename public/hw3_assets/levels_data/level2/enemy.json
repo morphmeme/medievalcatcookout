@@ -6,14 +6,16 @@
             "mode": "guard",
             "guardPosition": [864, 4384],
             "health": 5,
-            "attack": "charge"
+            "attack": "charge",
+            "speed": 75
         },
         {
             "position": [960, 4384],
             "mode": "guard",
             "guardPosition": [960, 4384],
             "health": 5,
-            "attack": "charge"
+            "attack": "charge",
+            "speed": 75
         },
         {
             "position": [768, 4160],
@@ -21,7 +23,7 @@
             "guardPosition": [768, 4160],
             "health": 5,
             "attack": "charge",
-            "speed": 30
+            "speed": 75
         },
         {
             "position": [1024, 4160],
@@ -29,7 +31,7 @@
             "guardPosition": [1024, 4160],
             "health": 5,
             "attack": "charge",
-            "speed": 30
+            "speed": 75
         },
         {
             "position": [64, 3136],
@@ -145,7 +147,7 @@
             "route": [4, 5],
             "health": 5,
             "attack": "charge",
-            "speed": 30
+            "speed": 75
         },
         {
             "position": [124, 2208],
@@ -153,7 +155,7 @@
             "route": [6, 7],
             "health": 5,
             "attack": "charge",
-            "speed": 30
+            "speed": 75
         },
         {
             "position": [416, 1184],

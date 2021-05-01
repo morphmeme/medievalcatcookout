@@ -137,6 +137,12 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         return null;
     }
 
+    moveWithRotation(deltaT: number) {
+        const cardinal = MathUtils.radiansToCardinal(this.rotation);
+        const dir = MathUtils.cardinalToVec2(cardinal);
+        this.owner.move(dir.normalized().scale(this.speed * deltaT));
+    }
+
     setMovingAnimation() {
         const direction = MathUtils.radiansToCardinal(this.rotation);
         if (direction === 0)

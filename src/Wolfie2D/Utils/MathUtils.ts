@@ -185,6 +185,20 @@ export default class MathUtils {
         return (Math.round((radians) / (Math.PI/2))) % 4
     }
 
+    static cardinalToVec2(cardinal: number) {
+        switch (cardinal) {
+            case 0:
+                return Vec2.UP;
+            case 1:
+                return Vec2.LEFT;
+            case 2:
+                return Vec2.DOWN;
+            case 3:
+                return Vec2.RIGHT;
+        }
+        return Vec2.ZERO;
+    }
+
     // integer only
     static rotationToDir(rotation: number) {
         switch (rotation) {

@@ -49,8 +49,8 @@ export default class Charge extends EnemyState {
 
             // Fire at player
             const dir = this.owner.position.dirTo(this.playerPos);
-            this.owner.move(dir.normalized().scale(3 * this.parent.speed * deltaT));
             this.parent.rotation = Vec2.UP.angleToCCW(dir);
+            this.parent.moveWithRotation(deltaT);
             this.parent.setMovingAnimation();
         }
 
