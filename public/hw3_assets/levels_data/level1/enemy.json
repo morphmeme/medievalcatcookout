@@ -1,0 +1,72 @@
+{
+    "numEnemies": 8,
+    "enemies": [
+        {
+            "position": [352, 864],
+            "mode": "guard",
+            "guardPosition": [352, 864],
+            "health": 5,
+            "attack": "charge"
+        },
+        {
+            "position": [512, 864],
+            "mode": "guard",
+            "guardPosition": [512, 864],
+            "health": 5,
+            "attack": "charge"
+        },
+        {
+            "position": [672, 864],
+            "mode": "guard",
+            "guardPosition": [672, 864],
+            "health": 5,
+            "attack": "charge",
+            "speed": 30
+        },
+        {
+            "position": [320, 704],
+            "mode": "guard",
+            "guardPosition": [320, 704],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 60
+        },
+        {
+            "position": [512, 704],
+            "mode": "guard",
+            "guardPosition": [512, 704],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 60
+        },
+        {
+            "position": [704, 704],
+            "mode": "guard",
+            "guardPosition": [704, 704],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 60
+        },
+        {
+            "position": [252, 324],
+            "mode": "guard",
+            "guardPosition": [252, 324],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [324, 324],
+            "mode": "guard",
+            "guardPosition": [324, 324],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        }
+    ]
+}

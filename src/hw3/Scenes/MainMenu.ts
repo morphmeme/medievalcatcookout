@@ -9,6 +9,8 @@ import RenderingManager from "../../Wolfie2D/Rendering/RenderingManager";
 import SceneManager from "../../Wolfie2D/Scene/SceneManager";
 import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
 import { CONTROLS_TEXT, LEVEL_OPTIONS } from "../Constants";
+import Level2 from "./Level2";
+
 
 export default class MainMenu extends Scene {
     // Layers, for multiple main menu screens
@@ -26,8 +28,8 @@ export default class MainMenu extends Scene {
         const center = this.viewport.getCenter();
 
         this.levels = [
-            ["1-1 Burger Kat", new Vec2(1.5 * center.x / 3, center.y), Level1],
-            ["1-2 Untitled", new Vec2(3 * center.x / 3, center.y), null],
+            ["1-1 Awaken", new Vec2(1.5 * center.x / 3, center.y), Level1],
+            ["1-2 Emerging Ruins", new Vec2(3 * center.x / 3, center.y), Level2],
             ["1-3 Untitled", new Vec2(4.5 * center.x / 3, center.y), null],
             ["1-4 Untitled", new Vec2(1.5 * center.x / 3, center.y + 100), null],
             ["1-5 Untitled", new Vec2(3 * center.x / 3, center.y + 100), null],

@@ -1,0 +1,76 @@
+{
+    "numWeapons": 7,
+    "weapons": [
+        {
+            "weaponType": "stab",
+            "name": "spatula",
+            "displayName": "Spatula",
+            "animationSprite": "slice",
+            "spriteKey": "spatula",
+            "damage": 1,
+            "cooldown": 800,
+            "useVolume": 0
+        },
+        {
+            "weaponType": "semiAutoGun",
+            "name": "ketchup_bottle",
+            "displayName": "KetchupBottle",
+            "spriteKey": "ketchupbottle",
+            "damage": 2,
+            "cooldown": 175,
+            "useVolume": 150,
+            "color": "#FF0000"
+        },
+        {
+            "weaponType": "semiAutoGun",
+            "name": "mustard_bottle",
+            "displayName": "MustardBottle",
+            "spriteKey": "mustardbottle",
+            "damage": 30,
+            "cooldown": 1000,
+            "useVolume": 400,
+            "color": "#000000"
+        },
+        {
+            "weaponType": "semiAutoGun",
+            "name": "weak_pistol",
+            "displayName": "WeakPistol",
+            "spriteKey": "pistol",
+            "damage": 1,
+            "cooldown": 1000,
+            "useVolume": 320,
+            "color": "#FFEEDD"
+        },
+        {
+            "weaponType": "laserGun",
+            "name": "laser_gun",
+            "displayName": "LaserGun",
+            "spriteKey": "lasergun",
+            "damage": 100,
+            "cooldown": 20,
+            "useVolume": 320,
+            "color": "#00FF00"
+        },
+        {
+            "weaponType": "shotGun",
+            "name": "salt_gun",
+            "displayName": "SaltGun",
+            "spriteKey": "saltgun",
+            "damage": 2,
+            "cooldown": 1000,
+            "useVolume": 320,
+            "color": "#000000"
+        },
+        {
+            "weaponType": "projectile",
+            "name": "projectile",
+            "displayName": "projectile",
+            "spriteKey": "projectile",
+            "damage": 2,
+            "cooldown": 1000,
+            "useVolume": 320,
+            "speed": 200,
+            "projectileSpriteKey": "player"
+        }
+    ]
+}

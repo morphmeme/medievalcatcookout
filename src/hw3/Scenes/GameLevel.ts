@@ -58,7 +58,8 @@ export default class GameLevel extends Scene {
 
     // A list of items in the scene
     private items: Map<CanvasNode, Item>;
-
+    // 2d array of positions of rescue allies
+    private rescuePositions: number[][];
     // The battle manager for the scene
     private battleManager: BattleManager;
 
@@ -91,8 +92,8 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         // Load the tilemap
-        this.load.tilemap("level", "hw3_assets/tilemaps/testmap.json");
 
+        /*
         // Load the scene info
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
 
@@ -104,6 +105,7 @@ export default class GameLevel extends Scene {
 
         // Load in item info
         this.load.object("itemData", "hw3_assets/data/items.json");
+        */
 
         // Load the healthpack sprite
         this.load.image("healthpack", "hw3_assets/sprites/healthpack.png");
@@ -255,7 +257,7 @@ export default class GameLevel extends Scene {
         if (GameLevel.allies === undefined && GameLevel.inventory === undefined) {
             GameLevel.allies = new Array();
             GameLevel.inventory = new InventoryManager(this, 48, "inventorySlot", new Vec2(8, 8), 4, 4);
-            this.initializePlayer(GameLevel.inventory);
+            this.initializePlayer(GameLevel.inventory, 0,0);
         } else {
             this.reinitializeAllies(GameLevel.allies, new Vec2(28*32, 155*32));
             const newItems = GameLevel.inventory.getWeaponsWithNewScene(this, this.battleManager);
@@ -266,7 +268,7 @@ export default class GameLevel extends Scene {
         }
         
         // this.initializeAllies(GameLevel.inventory);
-        this.initializeRescues(GameLevel.inventory);
+        this.initializeRescues(GameLevel.inventory, this.rescuePositions);
 
         // Make the viewport follow the player
         this.viewport.follow(GameLevel.allies[0]);
@@ -322,7 +324,7 @@ export default class GameLevel extends Scene {
 
         // level end
         this.addUI();
-        this.addLevelEnd(new Vec2(20, 0), new Vec2(12,1));
+        
     }
 
     dropWeapon(weapon: Weapon, position: Vec2) {
@@ -673,10 +675,10 @@ export default class GameLevel extends Scene {
         }
     }
 
-    initializePlayer(inventory: InventoryManager): void {
+    initializePlayer(inventory: InventoryManager, x: number, y: number): void {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
-        player.position.set(28*32, 155*32);
+        player.position.set(x, y)
         player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
         player.addAI(CharacterController,
             {
@@ -697,7 +699,8 @@ export default class GameLevel extends Scene {
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
-
+    initializePlayerPosition(player: AnimatedSprite): void{
+    }
     // for next level
     reinitializeAllies(allies: Array<AnimatedSprite>, position: Vec2) {
         const newAllies: Array<AnimatedSprite> = [];
@@ -731,8 +734,8 @@ export default class GameLevel extends Scene {
         GameLevel.allies = newAllies;
     }
 
-    initializeRescues(inventory: InventoryManager): void {
-        for (const [posX, posY] of [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]]) {
+    initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void {
+        for (const [posX, posY] of rescuePositions) {
             const allySprite = this.add.animatedSprite("player", "primary");
             allySprite.position.set(posX, posY);
             allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
