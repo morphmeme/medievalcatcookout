@@ -147,7 +147,6 @@ export default class InventoryManager {
             slotClick.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)))
             slotClick.setGroup("item");
             slotClick.onClick = () => {
-                console.log(i);
                 this.slotOnClick(i);
             }
             this.inventoryClickSlots[i]= slotClick;
@@ -301,7 +300,7 @@ export default class InventoryManager {
     /**
      * Adds an item to the currently selected slot
      */
-    addItem(item: Item): boolean {
+    addItem(item: Item, dontUpdateItemLayer?: boolean): boolean {
         // addItem might happen twice in a row? TODO: better way to fix this
         for (const other of this.items) {
             if (other && other.sprite.id == item.sprite.id) {
@@ -321,7 +320,8 @@ export default class InventoryManager {
         this.items[firstSlotAvailable] = item;
             
         // Update the gui
-        item.moveSprite(this.getSlotPosition(firstSlotAvailable), LayerNames.ITEM_LAYER);
+        if (!dontUpdateItemLayer)
+            item.moveSprite(this.getSlotPosition(firstSlotAvailable), LayerNames.ITEM_LAYER);
 
         return true;
     }

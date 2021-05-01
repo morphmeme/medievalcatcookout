@@ -176,8 +176,9 @@ export default abstract class CanvasNode extends GameNode implements Region {
 		}
 	}
 
-	update(deltaT: number): void {
+	update(deltaT: number, isUIElement?: boolean): void {
 		super.update(deltaT);
-		this.checkMouseClick();
+		if (!isUIElement)
+			this.checkMouseClick();
 	}
 }
