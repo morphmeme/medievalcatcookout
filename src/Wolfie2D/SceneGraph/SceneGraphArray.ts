@@ -83,7 +83,7 @@ export default class SceneGraphArray extends SceneGraph {
         let visibleSet = new Array<CanvasNode>();
 
         for(let node of this.nodeList){
-            if(!node.getLayer().isHidden() && node.visible){
+            if(!node.getLayer().isHidden() && node.visible && this.viewport.includes(node)){
                 visibleSet.push(node);
             }
         }
