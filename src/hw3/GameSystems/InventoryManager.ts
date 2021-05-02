@@ -8,6 +8,7 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
+import Button from "../../Wolfie2D/Nodes/UIElements/Button";
 import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import UILayer from "../../Wolfie2D/Scene/Layers/UILayer";
 import Scene from "../../Wolfie2D/Scene/Scene";
@@ -46,6 +47,7 @@ export default class InventoryManager {
     private slotSize: Vec2;
     private padding: number;
     private viewPortWidth: number;
+    private viewPortHeight: number;
     private margin: number;
     private slotsCount: number;
     private portraitLayer: UILayer;
@@ -54,6 +56,8 @@ export default class InventoryManager {
     private inventoryStart: number;
     // Partitions some slots for characters
     private characterToInfo: CharacterInfo[];
+    private numPages: number = 0;
+    private currentPage: number = 0;
 
     constructor(private scene: Scene, size: number, private inventorySlot: string, position: Vec2, padding: number, private zoomLevel: number, items?: Array<Item>, allies?: AnimatedSprite[]){
         size = items?.length || size;
@@ -91,6 +95,7 @@ export default class InventoryManager {
         const viewPortCenter = viewPort.getCenter();
         const viewPortHalfSize = viewPort.getHalfSize();
         this.viewPortWidth = viewPortCenter.x + viewPortHalfSize.x;
+        this.viewPortHeight = viewPortCenter.y + viewPortHalfSize.y;
         const bgRect = <Rect>scene.add.graphic(GraphicType.RECT, LayerNames.BACKGROUND_LAYER, {position: viewPortCenter, size: viewPortHalfSize.scaled(2)});
         bgRect.color = Color.BLACK;
 
@@ -102,6 +107,18 @@ export default class InventoryManager {
                 this.addCharacter(ally, true);
             })
             this.updateItemPositions();
+        }
+
+        const nextPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.5, this.viewPortHeight * 0.60), text: "Next Characters"});
+        nextPage.size.set(300, 50);
+        nextPage.borderWidth = 2;
+        nextPage.borderColor = Color.WHITE;
+        nextPage.onClick = () => {
+            const newPage = (this.currentPage + 1) % this.numPages;
+            if (this.currentPage !== newPage) {
+                this.setPageVisiblity(newPage);
+            }
+            this.currentPage = newPage;
         }
     }
 
@@ -146,7 +163,6 @@ export default class InventoryManager {
             // create clickable rect
             const slotClick = this.scene.add.sprite(this.inventorySlot, LayerNames.CLICK_LAYER);
             slotClick.position.set(slotPos.x, slotPos.y);
-            slotClick.visible = false;
             slotClick.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)))
             slotClick.setGroup("item");
             slotClick.onClick = () => {
@@ -171,7 +187,9 @@ export default class InventoryManager {
     }
 
     slotOnClick(pos: Vec2) {
-        const i = Array.from(this.slotPositions.values()).findIndex(otherPos => otherPos.equals(pos));
+        const i = Array.from(this.slotPositions.values()).findIndex((otherPos, j) => {
+            return (j >= this.characterToInfo.length || Math.floor(j / 4) === this.currentPage) && otherPos.equals(pos) 
+        });
         if (i === -1) {
             return;
         }
@@ -205,12 +223,11 @@ export default class InventoryManager {
         // TODO edit player
         this.drawCharacterPortrait(this.inventoryStart, character, "player", dontMove);
         this.inventoryStart += 1;
+        this.numPages = Math.floor((this.characterToInfo.length-1) / 4) + 1;
     }
 
-    // TODO later
     deleteCharacter(character: AnimatedSprite) {
         const idx = this.characterToInfo.findIndex((info) => info.id === character.id);
-        console.log(`${idx} died`);
         if (idx >= 0) {
             this.characterToInfo.forEach((characterInfo, i) => {
                 if (i > idx) {
@@ -229,7 +246,6 @@ export default class InventoryManager {
             // delete dead cats's portrait
             this.characterToInfo[idx].hpBars?.forEach((hpBar) => hpBar.destroy());
             this.characterToInfo[idx].portrait.forEach(node => {
-                console.log(node?.id);
                 node.destroy();
             });
             
@@ -245,21 +261,25 @@ export default class InventoryManager {
             this.items.splice(idx, 1);
             this.inventoryStart -= 1;
             this.slotsCount -= 1;
+            this.numPages = Math.floor((this.characterToInfo.length-1) / 4) + 1;
+            this.currentPage = this.currentPage % this.numPages;
 
             
             // now delete and redraw
-            this.characterToInfo.forEach((characterInfo) => {
-                // destroy all portraits
-                characterInfo.hpBars?.forEach((hpBar) => hpBar.destroy());
-                characterInfo.portrait.forEach(node => {
-                    console.log(node?.id);
-                    node.destroy();
-                });
-                //redraw
-                console.log("characterInfo.slotIdxStart", characterInfo.slotIdxStart);
-                this.drawCharacterPortrait(characterInfo.slotIdxStart, characterInfo.character, "player", true, true);
-            })
+            this.redrawPortraits();
         }
+    }
+
+    redrawPortraits() {
+        this.characterToInfo.forEach((characterInfo) => {
+            // destroy all portraits
+            characterInfo.hpBars?.forEach((hpBar) => hpBar.destroy());
+            characterInfo.portrait.forEach(node => {
+                node.destroy();
+            });
+            //redraw
+            this.drawCharacterPortrait(characterInfo.slotIdxStart, characterInfo.character, "player", true, true);
+        })
     }
 
     moveSlotSprites(i: number, pos: Vec2) {
@@ -299,10 +319,39 @@ export default class InventoryManager {
                 this.updateHpBar(character, pos);
             }
         }
+        this.setPageVisiblity(this.currentPage);
+    }
+
+    setPageVisiblity(page: number) {
+        this.characterToInfo.forEach((info, i) => {
+            if (Math.floor(i / 4) !== page) {
+                info.hpBars?.forEach(node => {
+                    node.visible = false;
+                })
+                info.portrait.forEach(node => {
+                    node.visible = false;
+                })
+                this.inventorySlots[i].visible = false;
+                this.inventoryClickSlots[i].visible = false;
+                if (this.items[i])
+                    this.items[i].sprite.visible = false;
+            } else {
+                info.hpBars?.forEach(node => {
+                    node.visible = true;
+                })
+                info.portrait.forEach(node => {
+                    node.visible = true;
+                })
+                this.inventorySlots[i].visible = true;
+                this.inventoryClickSlots[i].visible = true;
+                if (this.items[i])
+                    this.items[i].sprite.visible = true;
+            }
+        })
     }
 
     drawCharacterPortrait(i: number, character: AnimatedSprite, spriteImageId: string, dontMove?: boolean, deleting?: boolean) {
-        const centerOfPortait = this.position.clone().add(new Vec2(i * (this.viewPortWidth / (4*this.zoomLevel)) + 7 * this.padding, 10 * this.padding));
+        const centerOfPortait = this.position.clone().add(new Vec2((i % 4) * (this.viewPortWidth / (4*this.zoomLevel)) + 7 * this.padding, 10 * this.padding));
         const width = 60;
         const height = 90;
         let options = {
@@ -325,12 +374,9 @@ export default class InventoryManager {
             characterInfo.portrait = [border, characterImg, characterName];
         }
             
-
-
         // Character hp
         this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
         
-
         // Updates inventory slot positions an add new ones for those that were taken by characters
         if (!dontMove) {
             this.createInventorySlots(this.slotsCount, this.slotsCount+1);
@@ -342,6 +388,8 @@ export default class InventoryManager {
             // Move to portrait
             this.moveSlotSprites(i, centerOfPortait.clone().inc(10, 0));
         }
+
+        this.setPageVisiblity(this.currentPage);
     }
 
     getWeapon(character: AnimatedSprite): any {

@@ -41,6 +41,10 @@ export default class Attack extends EnemyState {
     handleInput(event: GameEvent): void {}
 
     update(deltaT: number): void {
+        // disabled
+        if (!this.owner.active) {
+            return;
+        }
         if(this.pollTimer.isStopped()){
             // Restart the timer
             this.pollTimer.start();

@@ -198,7 +198,7 @@ export default class Shop extends Scene {
         nextLevel.borderColor = Color.WHITE;
         nextLevel.backgroundColor = Color.TRANSPARENT;
         nextLevel.onClick = () => {
-            this.sceneManager.changeToScene(this.nextLevel, {}, LEVEL_OPTIONS);;
+            this.sceneManager.changeToScene(this.nextLevel, {}, LEVEL_OPTIONS);
         }
     }
 

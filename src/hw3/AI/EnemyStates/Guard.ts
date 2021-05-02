@@ -46,6 +46,9 @@ export default class Guard extends EnemyState {
     }
 
     update(deltaT: number): void {
+        if (!this.owner.active) {
+            return;
+        }
         if(this.awayFromGuardPosition){
             // Navigate back home
             if(this.route.isDone()){

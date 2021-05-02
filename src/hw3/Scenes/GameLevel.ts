@@ -371,13 +371,11 @@ export default class GameLevel extends Scene {
                     break;
                 }
                 case Events.PLAYER_COLLIDES_RESCUE: {
-                    if (GameLevel.allies.length < 4) {
-                        let node = this.sceneGraph.getNode(event.data.get("other"));
-                        (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 22);
-                        (node?.ai as CharacterController).setEnemies(this.enemies);
-                        GameLevel.inventory.addCharacter(node as AnimatedSprite);
-                        GameLevel.allies.push(node as AnimatedSprite);
-                    }
+                    let node = this.sceneGraph.getNode(event.data.get("other"));
+                    (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 22);
+                    (node?.ai as CharacterController).setEnemies(this.enemies);
+                    GameLevel.inventory.addCharacter(node as AnimatedSprite);
+                    GameLevel.allies.push(node as AnimatedSprite);
                     
                     break;
                 }
@@ -473,6 +471,7 @@ export default class GameLevel extends Scene {
             this.togglePause();
             GameLevel.inventory.updateHpBars();
         } else if (Input.isJustPressed("pauseMenu")) {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         } else if (Input.isKeyJustPressed("1")) {
             this.changeLevel(Level1);
@@ -576,10 +575,12 @@ export default class GameLevel extends Scene {
     togglePause() {
         this.getLayer("primary").toggle();
         this.getLayer("health").toggle();
-        this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
         GameLevel.allies.forEach(ally => ally.togglePhysics());
         this.enemies.forEach(enemy => enemy.togglePhysics());
-        
+        this.sceneGraph.getAllNodes().forEach(node => {
+            if (node.group === 128 || node.group === 256)
+                node.togglePhysics();
+        })
     }
 
     toggleInventory() {
