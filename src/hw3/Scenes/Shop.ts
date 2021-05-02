@@ -47,6 +47,7 @@ export default class Shop extends Scene {
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         this.load.image("coin", "hw3_assets/sprites/coin.png");
+        this.load.audio("purchase", "mcc_assets/sounds/purchase.mp3");
     }
 
     loadWeaponTypeMap() {
@@ -86,6 +87,7 @@ export default class Shop extends Scene {
                     (ally?.ai as BattlerAI).maxHealth *= 1.1
                     hpBuffRect.backgroundColor.a = 0.5;
                     this.hpBuffBought = true;
+                    this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
                 })
             }
         }
@@ -111,6 +113,7 @@ export default class Shop extends Scene {
                     (ally?.ai as CharacterController).speed *= 1.1;
                     speedBuffRect.backgroundColor.a = 0.5;
                     this.speedBuffBought = true;
+                    this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
                 })
             }
         }
@@ -136,6 +139,7 @@ export default class Shop extends Scene {
                     (ally?.ai as CharacterController).health = (ally?.ai as CharacterController).maxHealth;
                     partyHealRect.backgroundColor.a = 0.5;
                     this.partyHealBought = true;
+                    this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
                 })
             }
         }
@@ -169,6 +173,7 @@ export default class Shop extends Scene {
                     shopItem.quantity -= 1;
                     GameLevel.coinCount = Math.max(0, GameLevel.coinCount - gold);
                     clickableRect.setText(`     ${displayName} (${shopItem.quantity})`);
+                    this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
                 }
             }
 
