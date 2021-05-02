@@ -546,6 +546,7 @@ export default class GameLevel extends Scene {
         play.borderColor = Color.WHITE;
         play.backgroundColor = Color.TRANSPARENT;
         play.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         }
 
