@@ -77,7 +77,7 @@ export default class GameLevel extends Scene {
     private levelEndArea: Rect;
     private levelEndLabel: Label;
     // sign frame
-    private signLabel: Rect;
+    private signLabel: Label;
     // coins
     protected static coinCount: number = 0;
     protected coinCountLabel: Label;
@@ -922,8 +922,9 @@ export default class GameLevel extends Scene {
 
     protected addSignUI(){
         let center = this.viewport.getCenter();
-        this.signLabel = <Rect> this.add.graphic(GraphicType.RECT, "UI",{position: new Vec2(center.x/2, center.y/2), size: new Vec2(100,100)});
+        this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), size: new Vec2(100,100), text:"sign"});
         this.signLabel.alpha = 0.0;
+        this.signLabel.backgroundColor = new Color(164,116,73,0.0);
         //this.signLabel.borderRadius = 0;
         //this.signLabel.backgroundColor = new Color(164, 116, 73);
         //this.signLabel.textColor = Color.BLACK;

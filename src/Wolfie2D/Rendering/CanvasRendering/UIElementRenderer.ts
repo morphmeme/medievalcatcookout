@@ -44,19 +44,19 @@ export default class UIElementRenderer {
 		let offset = label.calculateTextOffset(this.ctx);
 
 		// Stroke and fill a rounded rect and give it text
-		this.ctx.globalAlpha = label.backgroundColor.a;
+		previousAlpha = label.backgroundColor.a;
 		this.ctx.fillStyle = label.calculateBackgroundColor().toStringRGBA();
 		this.ctx.fillRoundedRect(-label.size.x/2, -label.size.y/2,
 			label.size.x, label.size.y, label.borderRadius);
 		
 		this.ctx.strokeStyle = label.calculateBorderColor().toStringRGBA();
-		this.ctx.globalAlpha = label.borderColor.a;
+		previousAlpha = label.borderColor.a;
 		this.ctx.lineWidth = label.borderWidth;
 		this.ctx.strokeRoundedRect(-label.size.x/2, -label.size.y/2,
 			label.size.x, label.size.y, label.borderRadius);
 
 		this.ctx.fillStyle = label.calculateTextColor();
-		this.ctx.globalAlpha = label.textColor.a;
+		previousAlpha = label.textColor.a;
 		this.ctx.fillText(label.text, offset.x - label.size.x/2, offset.y - label.size.y/2);
 	
 		this.ctx.globalAlpha = previousAlpha;
