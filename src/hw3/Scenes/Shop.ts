@@ -9,6 +9,8 @@ import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
 import Scene from "../../Wolfie2D/Scene/Scene";
 import Color from "../../Wolfie2D/Utils/Color";
+import BattlerAI from "../AI/BattlerAI";
+import CharacterController from "../AI/CharacterController";
 import { LEVEL_OPTIONS } from "../Constants";
 import Weapon from "../GameSystems/items/Weapon";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
@@ -26,9 +28,17 @@ export type ShopItem = {
 
 const shopItemRectWidthRatio = 0.4;
 const shopItemRectHeightRatio = 0.05;
+const buffWidthRatio = 0.4;
+const buffHeightRatio = 0.25;
 export default class Shop extends Scene {
     private weaponTypeMap: Map<string, any> = new Map();
     protected shopItems: ShopItem[] = [];
+    private hpBuffBought = false;
+    protected hpBuffCost = 10;
+    protected speedBuffCost = 0;
+    private speedBuffBought = false;
+    protected partyHealCost = 0;
+    private partyHealBought = false;
     protected nextLevel: new (...args: any) => Scene;
     private viewPortWidth: number;
     private viewPortHeight: number;
@@ -59,6 +69,87 @@ export default class Shop extends Scene {
         sprite.position.copy(new Vec2(-32, -32));
         const weapon = new Weapon(sprite, weaponType);
         return weapon;
+    }
+
+    drawShopBuffs() {
+        const buffWidth = buffWidthRatio * this.viewPortWidth;
+        const buffHeight = buffHeightRatio * this.viewPortHeight;
+        const rectSize = new Vec2(buffWidth, buffHeight);
+        const hpBuffPosition = new Vec2(this.viewPortWidth * 0.75, buffHeight - 64);
+        const hpBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: hpBuffPosition.clone(), text: "Increase Max HP By 10%"});
+        hpBuffRect.size.copy(rectSize);
+        hpBuffRect.borderColor = Color.WHITE;
+        hpBuffRect.onClick = () => {
+            if (!this.hpBuffBought && GameLevel.coinCount >= this.hpBuffCost) {
+                GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.hpBuffCost);
+                GameLevel.allies.forEach(ally => {
+                    (ally?.ai as BattlerAI).maxHealth *= 1.1
+                    hpBuffRect.backgroundColor.a = 0.5;
+                    this.hpBuffBought = true;
+                })
+            }
+        }
+
+        let goldTextPosition = hpBuffPosition.clone().inc(0, 36);
+        let goldText = <Label>this.add.uiElement(UIElementType.LABEL, "click", {position: goldTextPosition, text: this.pad(`${this.hpBuffCost}`, 3)});
+        goldText.textColor = Color.WHITE;
+        goldText.setHAlign(HAlign.RIGHT);
+
+        let goldPosition = hpBuffPosition.clone().inc(36,34);
+        let coin = this.add.animatedSprite("coin", "primary");
+        coin.position.copy(goldPosition);
+        coin.animation.play("spinning");
+
+        const speedBuffPosition = new Vec2(this.viewPortWidth * 0.75, 2 * buffHeight - 64);
+        const speedBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: speedBuffPosition.clone(), text: "Increase Speed By 10%"});
+        speedBuffRect.size.copy(rectSize);
+        speedBuffRect.borderColor = Color.WHITE;
+        speedBuffRect.onClick = () => {
+            if (!this.speedBuffBought && GameLevel.coinCount >= this.speedBuffCost) {
+                GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.speedBuffCost);
+                GameLevel.allies.forEach(ally => {
+                    (ally?.ai as CharacterController).speed *= 1.1;
+                    speedBuffRect.backgroundColor.a = 0.5;
+                    this.speedBuffBought = true;
+                })
+            }
+        }
+
+        goldTextPosition = speedBuffPosition.clone().inc(0, 36);
+        goldText = <Label>this.add.uiElement(UIElementType.LABEL, "click", {position: goldTextPosition, text: this.pad(`${this.speedBuffCost}`, 3)});
+        goldText.textColor = Color.WHITE;
+        goldText.setHAlign(HAlign.RIGHT);
+
+        goldPosition = speedBuffPosition.clone().inc(36,34);
+        coin = this.add.animatedSprite("coin", "primary");
+        coin.position.copy(goldPosition);
+        coin.animation.play("spinning");
+
+        const partyHealPosition = new Vec2(this.viewPortWidth * 0.75, 3 * buffHeight - 64);
+        const partyHealRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: partyHealPosition.clone(), text: "Party Heal"});
+        partyHealRect.size.copy(rectSize);
+        partyHealRect.borderColor = Color.WHITE;
+        partyHealRect.onClick = () => {
+            if (!this.partyHealBought && GameLevel.coinCount >= this.partyHealCost) {
+                GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.partyHealCost);
+                GameLevel.allies.forEach(ally => {
+                    (ally?.ai as CharacterController).health = (ally?.ai as CharacterController).maxHealth;
+                    partyHealRect.backgroundColor.a = 0.5;
+                    this.partyHealBought = true;
+                })
+            }
+        }
+
+        goldTextPosition = partyHealPosition.clone().inc(0, 36);
+        goldText = <Label>this.add.uiElement(UIElementType.LABEL, "click", {position: goldTextPosition, text: this.pad(`${this.partyHealCost}`, 3)});
+        goldText.textColor = Color.WHITE;
+        goldText.setHAlign(HAlign.RIGHT);
+
+        goldPosition = partyHealPosition.clone().inc(36,34);
+        coin = this.add.animatedSprite("coin", "primary");
+        coin.position.copy(goldPosition);
+        coin.animation.play("spinning");
+
     }
 
     drawShopItems() {
@@ -132,5 +223,6 @@ export default class Shop extends Scene {
         
         this.drawShopItems();
         this.drawNextLevelButton();
+        this.drawShopBuffs();
     }
 }
