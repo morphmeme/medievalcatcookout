@@ -91,11 +91,14 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
+        this.load.spritesheet("ketchupbottleprojectile", "mcc_assets/sprites/Sprites/ketchup.json");
+        this.load.spritesheet("mustardbottleprojectile", "mcc_assets/sprites/Sprites/mustard.json");
+        this.load.object("weaponData", "hw3_assets/data/weaponData.json");
         // Load the tilemap
 
         /*
         // Load the scene info
-        this.load.object("weaponData", "hw3_assets/data/weaponData.json");
+        
 
         // Load the nav mesh
         this.load.object("navmesh", "hw3_assets/data/navmesh.json");
@@ -116,7 +119,6 @@ export default class GameLevel extends Scene {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
-        this.load.image("projectile", "hw3_assets/sprites/projectile.png");
         
         this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
@@ -195,7 +197,10 @@ export default class GameLevel extends Scene {
             return;
         }
         (other.ai as BattlerAI).damage((projectile.ai as ProjectileAI).dmg);
-        (projectile.ai as ProjectileAI).damage(1);
+        projectile.disablePhysics();
+        projectile.animation.play("collision", false, undefined, () => {
+            (projectile.ai as ProjectileAI).damage(1);
+        });
         other.animation.override("HURT");
     }
 
@@ -408,8 +413,11 @@ export default class GameLevel extends Scene {
                     break;
                 }
                 case Events.PROJECTILE_COLLIDES_GROUND: {
-                    let projectile = this.sceneGraph.getNode(event.data.get("node"));
-                    (projectile?.ai as ProjectileAI)?.damage(1);
+                    let projectile = this.sceneGraph.getNode(event.data.get("node")) as AnimatedSprite;
+                    projectile.disablePhysics();
+                    projectile.animation.play("collision", false, undefined, () => {
+                        (projectile.ai as ProjectileAI).damage(1);
+                    });
                     break;
                 }
                 case Events.CHARACTER_DEATH:{
@@ -696,7 +704,7 @@ export default class GameLevel extends Scene {
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
-        player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
+        player.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
@@ -727,7 +735,7 @@ export default class GameLevel extends Scene {
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
             allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
-            allySprite.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
+            allySprite.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
             newAllies.push(allySprite);
             // GameLevel.inventory.addCharacter(player);
             // ally.destroy();
@@ -853,7 +861,7 @@ export default class GameLevel extends Scene {
             this.enemies[i].addAI(EnemyAI, enemyOptions);
             this.enemies[i].setGroup("enemy");
             this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
-            this.enemies[i].setTrigger("projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
+            this.enemies[i].setTrigger("player_projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
         }
 
         GameLevel.allies.forEach(character => {

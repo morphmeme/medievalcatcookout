@@ -38,11 +38,18 @@ export default class Projectile extends WeaponType {
                 dmg: this.damage,
                 speed: this.speed,
             });
-        projectile.animation.play("IDLE");
-        projectile.setGroup("projectile");
-        projectile.setTrigger("enemy", Events.PROJECTILE_COLLIDES_ENEMY, null);
-        projectile.setTrigger("player", Events.PROJECTILE_COLLIDES_PLAYER, null);
-        projectile.setTrigger("ground", Events.PROJECTILE_COLLIDES_GROUND, null);
+        projectile.animation.play("flying");
+        projectile.rotation = Vec2.UP.angleToCCW(direction);
+        // Enemy shooter group (assuming groups dont change. a bit of a hack (pls dont change groups))
+        if (shooter.group === 4) {
+            projectile.setGroup("enemy_projectile");
+            projectile.setTrigger("player", Events.PROJECTILE_COLLIDES_PLAYER, null);
+            projectile.setTrigger("ground", Events.PROJECTILE_COLLIDES_GROUND, null);
+        } else {
+            projectile.setGroup("player_projectile");
+            projectile.setTrigger("enemy", Events.PROJECTILE_COLLIDES_ENEMY, null);
+            projectile.setTrigger("ground", Events.PROJECTILE_COLLIDES_GROUND, null);
+        }
     }
 
     hits(node: GameNode): boolean {
