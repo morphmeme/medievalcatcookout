@@ -228,7 +228,10 @@ export default class InventoryManager {
             this.slotPositions.delete(this.inventorySlots.length);
             // delete dead cats's portrait
             this.characterToInfo[idx].hpBars?.forEach((hpBar) => hpBar.destroy());
-            this.characterToInfo[idx].portrait.forEach(node => node.destroy());
+            this.characterToInfo[idx].portrait.forEach(node => {
+                console.log(node?.id);
+                node.destroy();
+            });
             
             // delete slot and item
             this.inventorySlots[idx].destroy();
@@ -248,8 +251,12 @@ export default class InventoryManager {
             this.characterToInfo.forEach((characterInfo) => {
                 // destroy all portraits
                 characterInfo.hpBars?.forEach((hpBar) => hpBar.destroy());
-                characterInfo.portrait.forEach(node => node.destroy());
+                characterInfo.portrait.forEach(node => {
+                    console.log(node?.id);
+                    node.destroy();
+                });
                 //redraw
+                console.log("characterInfo.slotIdxStart", characterInfo.slotIdxStart);
                 this.drawCharacterPortrait(characterInfo.slotIdxStart, characterInfo.character, "player", true, true);
             })
         }
@@ -311,8 +318,14 @@ export default class InventoryManager {
         const characterName = this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
         
         // Save data
-        if (!deleting)
+        if (!deleting) {
             this.characterToInfo.push({id: character.id, character, slotIdxStart: this.inventoryStart, hpBars: null, portrait: [border, characterImg, characterName]});
+        } else {
+            const characterInfo = this.characterToInfo.find((info) => info.id === character.id);
+            characterInfo.portrait = [border, characterImg, characterName];
+        }
+            
+
 
         // Character hp
         this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
