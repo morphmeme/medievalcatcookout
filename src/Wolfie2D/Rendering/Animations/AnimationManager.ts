@@ -40,6 +40,8 @@ export default class AnimationManager {
     /** The name of the event (if any) to send when the current animation stops playing. */
     protected onEndEvent: string;
 
+    protected onEndCallBack: Function;
+
     /** The event emitter for this animation manager */
     protected emitter: Emitter;
 
@@ -151,6 +153,10 @@ export default class AnimationManager {
             this.emitter.fireEvent(this.onEndEvent, {owner: this.owner.id, animation: this.currentAnimation});
         }
 
+        if (this.onEndCallBack) {
+            this.onEndCallBack();
+        }
+
         // If there is a pending animation, play it
         if(this.pendingAnimation !== null){
             this.play(this.pendingAnimation, this.pendingLoop, this.pendingOnEnd);
@@ -175,7 +181,7 @@ export default class AnimationManager {
      * @param loop Whether or not to loop the animation. False by default
      * @param onEnd The name of an event to send when this animation naturally stops playing. This only matters if loop is false.
      */
-    play(animation: string, loop?: boolean, onEnd?: string): void {
+    play(animation: string, loop?: boolean, onEnd?: string, onEndCallBack?: Function): void {
         if(!this.overriding){
             this.currentAnimation = animation;
             this.currentFrame = 0;
@@ -194,6 +200,12 @@ export default class AnimationManager {
                 this.onEndEvent = onEnd;
             } else {
                 this.onEndEvent = null;
+            }
+
+            if (onEndCallBack !== undefined) {
+                this.onEndCallBack = onEndCallBack;
+            } else {
+                this.onEndCallBack = null;
             }
 
             // Reset pending animation
