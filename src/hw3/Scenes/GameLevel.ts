@@ -77,7 +77,7 @@ export default class GameLevel extends Scene {
     private levelEndArea: Rect;
     private levelEndLabel: Label;
     // sign frame
-    private signLabel: Label;
+    private signLabel: Rect;
     // coins
     protected static coinCount: number = 0;
     protected coinCountLabel: Label;
@@ -336,6 +336,9 @@ export default class GameLevel extends Scene {
 
         // level end
         this.addLevelEndUI();
+
+        // sign
+        this.addSignUI();
         
     }
 
@@ -454,10 +457,9 @@ export default class GameLevel extends Scene {
                     this.changeLevel(this.nextLevel);
                 }
                 case Events.PLAYER_HIT_SIGN:
-                {
-                    let node = this.sceneGraph.getNodesAt(event.data.get("node"));
-                    if(node)
-                        console.log(node);
+                {   
+                    console.log("sign");
+                    this.signLabel.tweens.play("fadeIn");
                 }
                 default: {
 
@@ -920,20 +922,21 @@ export default class GameLevel extends Scene {
 
     protected addSignUI(){
         let center = this.viewport.getCenter();
-        this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), text :"Sign"});
-        this.signLabel.size.set(900,600);
-        this.signLabel.borderRadius = 0;
-        this.signLabel.backgroundColor = new Color(164, 116, 73, 0.0);
-        this.signLabel.textColor = Color.BLACK;
-        this.signLabel.fontSize = 32;
-        this.signLabel.font = "PixelSimple";
-        this.signLabel.tweens.add("show", {
-            startDelay: 250,
+        this.signLabel = <Rect> this.add.graphic(GraphicType.RECT, "UI",{position: new Vec2(center.x/2, center.y/2), size: new Vec2(100,100)});
+        this.signLabel.alpha = 0.0;
+        //this.signLabel.borderRadius = 0;
+        //this.signLabel.backgroundColor = new Color(164, 116, 73);
+        //this.signLabel.textColor = Color.BLACK;
+        //this.signLabel.fontSize = 32;
+        //this.signLabel.font = "PixelSimple";
+        this.signLabel.tweens.add("fadeIn", {
+            startDelay: 0,
+            duration: 500,
             effects: [
                 {
                     property: TweenableProperties.alpha,
-                    start: 0.0,
-                    end: 1.0,
+                    start: 0,
+                    end: 1,
                     ease: EaseFunctionType.IN_OUT_QUAD
                 }
             ]
