@@ -24,6 +24,7 @@ export default class MainMenu extends Scene {
 
     loadScene(){
         this.load.image("logo", "hw3_assets/static_images/logo.png")
+        this.load.audio("click", "mcc_assets/sounds/click.wav");
     }
 
     startScene(){

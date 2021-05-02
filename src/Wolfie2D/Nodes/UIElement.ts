@@ -84,9 +84,11 @@ export default abstract class UIElement extends CanvasNode {
 				this.isClicked = true;
 
 				if(this.onClick !== null){
+					this.emitter.fireEvent("play_sound", {key: "click", loop: false, holdReference: false});
 					this.onClick();
 				}
 				if(this.onClickEventId !== null){
+					this.emitter.fireEvent("play_sound", {key: "click", loop: false, holdReference: false});
 					let data = {};
 					this.emitter.fireEvent(this.onClickEventId, data);
 				}

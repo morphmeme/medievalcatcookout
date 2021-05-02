@@ -84,6 +84,9 @@ export default class GameLevel extends Scene {
 
     protected nextLevel: new (...args: any) => Scene;;
 
+    // bump timer
+    private bumpSoundTimer = new Timer(200);
+
     loadScene(){
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
@@ -94,6 +97,11 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("ketchupbottleprojectile", "mcc_assets/sprites/Sprites/ketchup.json");
         this.load.spritesheet("mustardbottleprojectile", "mcc_assets/sprites/Sprites/mustard.json");
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
+
+        this.load.audio("squirt", "mcc_assets/sounds/squirt.mp3");
+        this.load.audio("coin", "mcc_assets/sounds/coin.wav");
+        this.load.audio("bump", "mcc_assets/sounds/bump.wav");
+        this.load.audio("click", "mcc_assets/sounds/click.wav");
         // Load the tilemap
 
         /*
@@ -394,6 +402,10 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
+                    if (node?.ai && this.bumpSoundTimer.isStopped()) {
+                        this.emitter.fireEvent("play_sound", {key: "bump", loop: false, holdReference: false});
+                        this.bumpSoundTimer.start();
+                    }
                     (node?.ai as BattlerAI)?.damage(1);
                     (node as AnimatedSprite)?.animation.override("HURT");
                     break;
@@ -444,7 +456,7 @@ export default class GameLevel extends Scene {
                     // Remove coin
                     if (coin) {
                         coin.destroy();
-
+                        this.emitter.fireEvent("play_sound", {key: "coin", loop: false, holdReference: false});
                         // Increment our number of coins
                         this.incPlayerCoins(1);
                     }

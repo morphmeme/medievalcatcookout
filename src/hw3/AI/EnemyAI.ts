@@ -89,11 +89,13 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     
         if(this.health <= 0){
             // Drop weapon
-            if (Math.random() < 0.5) {
-                this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
-            } else {
-                this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
-            }
+            // if (Math.random() < 0.5) {
+            //     this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
+            // } else {
+            //     this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
+            // }
+
+            this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
             
             this.owner.setAIActive(false, {});
             this.owner.isCollidable = false;
