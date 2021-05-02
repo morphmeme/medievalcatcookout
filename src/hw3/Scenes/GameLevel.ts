@@ -141,6 +141,7 @@ export default class GameLevel extends Scene {
             Events.PROJECTILE_COLLIDES_ENEMY,
             Events.PROJECTILE_COLLIDES_PLAYER,
             Events.PROJECTILE_COLLIDES_GROUND,
+            Events.PLAYER_HIT_SIGN,
         ]);
     }
 
@@ -441,6 +442,11 @@ export default class GameLevel extends Scene {
                     this.levelEndLabel.tweens.play("slideIn");
                     this.changeLevel(this.nextLevel);
                 }
+                case Events.PLAYER_HIT_SIGN:
+                {
+                    let node = this.sceneGraph.getNodesAt(event.data.get("other"));
+                    console.log(node);
+                }
                 default: {
 
                 }
@@ -696,6 +702,7 @@ export default class GameLevel extends Scene {
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
         player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
+        player.setTrigger("sign", Events.PLAYER_HIT_SIGN, null);
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
