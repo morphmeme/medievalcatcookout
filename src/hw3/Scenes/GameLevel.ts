@@ -198,9 +198,14 @@ export default class GameLevel extends Scene {
         }
         (other.ai as BattlerAI).damage((projectile.ai as ProjectileAI).dmg);
         projectile.disablePhysics();
-        projectile.animation.play("collision", false, undefined, () => {
+        if (this.viewport.includes(projectile)) {
+            projectile.animation.play("collision", false, undefined, () => {
+                (projectile.ai as ProjectileAI).damage(1);
+            });
+        } else {
             (projectile.ai as ProjectileAI).damage(1);
-        });
+        }
+        
         other.animation.override("HURT");
     }
 
@@ -412,10 +417,16 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PROJECTILE_COLLIDES_GROUND: {
                     let projectile = this.sceneGraph.getNode(event.data.get("node")) as AnimatedSprite;
-                    projectile.disablePhysics();
-                    projectile.animation.play("collision", false, undefined, () => {
-                        (projectile.ai as ProjectileAI).damage(1);
-                    });
+                    if (projectile) {
+                        projectile.disablePhysics();
+                        if (this.viewport.includes(projectile)) {
+                            projectile.animation.play("collision", false, undefined, () => {
+                                (projectile.ai as ProjectileAI).damage(1);
+                            });
+                        } else {
+                            (projectile.ai as ProjectileAI).damage(1);
+                        }
+                    }
                     break;
                 }
                 case Events.CHARACTER_DEATH:{
