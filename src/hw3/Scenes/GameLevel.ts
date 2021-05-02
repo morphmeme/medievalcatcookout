@@ -29,11 +29,12 @@ import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
-import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
+import GameNode, {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
 import Level1 from "./Level1";
 import ProjectileAI from "../AI/ProjectileAI";
+import Tilemap from "../../Wolfie2D/Nodes/Tilemap";
 
 type HpBarData = {
     lastHp: number,
@@ -52,7 +53,7 @@ export default class GameLevel extends Scene {
 
     // The wall layer of the tilemap to use for bullet visualization
     private walls: OrthogonalTilemap;
-
+    private signs: OrthogonalTilemap;
     // The position graph for the navmesh
     private graph: PositionGraph;
 
@@ -62,7 +63,9 @@ export default class GameLevel extends Scene {
     private rescuePositions: number[][];
     // The battle manager for the scene
     private battleManager: BattleManager;
-
+    // Sign Texts and tile pos
+    private signpos: Array<Vec2> = new Array();
+    private texts: string[][];
     // Characters healths
     private hpBars: Map<number, HpBarData>;
     private weaponTypeMap: Map<string, any>;
@@ -239,7 +242,11 @@ export default class GameLevel extends Scene {
 
         // Get the wall layer
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
-
+        console.log(this.walls);
+        this.signs = <OrthogonalTilemap>tilemapLayers[2].getItems()[0];
+        this.getSignPositions(this.signs);
+        console.log(this.signs);
+        console.log(this.signpos);
         // Set the viewport bounds to the tilemap
         let tilemapSize: Vec2 = this.walls.size; 
         this.viewport.setBounds(0, 0, tilemapSize.x, tilemapSize.y);
@@ -444,8 +451,9 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PLAYER_HIT_SIGN:
                 {
-                    let node = this.sceneGraph.getNodesAt(event.data.get("other"));
-                    console.log(node);
+                    let node = this.sceneGraph.getNodesAt(event.data.get("node"));
+                    if(node)
+                        console.log(node);
                 }
                 default: {
 
@@ -911,5 +919,16 @@ export default class GameLevel extends Scene {
         this.levelEndArea.addPhysics(undefined, undefined, false, true);
         this.levelEndArea.setTrigger("player", Events.PLAYER_LEVEL_END, null);
         this.levelEndArea.color = new Color(255,0,0,1);
+    }
+
+    protected getSignPositions(map: OrthogonalTilemap): void{
+        let size = map.getDimensions();
+        let tiles = size.x * size.y;
+        for(let i =0; i < tiles; i++){
+            if(map.getTile(i) == 7){
+                //console.log(map.getTileWorldPosition(i));
+                this.signpos.push(map.getTileWorldPosition(i));
+            }
+        }
     }
 }
