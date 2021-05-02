@@ -53,12 +53,13 @@ export default class Alert extends EnemyState {
             this.parent.moveWithRotation(deltaT);
             this.parent.setMovingAnimation();
         }
-
-        if(this.parent.getPlayerPosition() !== null){
-            if (this.parent.attack === Attacks.charge) {
-                this.finished(EnemyStates.CHARGING);
-            } else {
-                this.finished(EnemyStates.ATTACKING);
+        if (this.owner.getScene().getViewport().includes(this.owner)) {
+            if(this.parent.getPlayerPosition() !== null){
+                if (this.parent.attack === Attacks.charge) {
+                    this.finished(EnemyStates.CHARGING);
+                } else {
+                    this.finished(EnemyStates.ATTACKING);
+                }
             }
         }
     }
