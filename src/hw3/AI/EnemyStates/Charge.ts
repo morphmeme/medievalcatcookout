@@ -36,6 +36,9 @@ export default class Charge extends EnemyState {
     handleInput(event: GameEvent): void {}
 
     update(deltaT: number): void {
+        if (!this.owner.active) {
+            return;
+        }
         this.playerPos = this.parent.getPlayerPosition();
 
         if(this.playerPos !== null){

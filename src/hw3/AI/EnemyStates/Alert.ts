@@ -39,6 +39,9 @@ export default class Alert extends EnemyState {
      * target position.
      */
     update(deltaT: number): void {
+        if (!this.owner.active) {
+            return;
+        }
         if(this.alertTimer.isStopped()){
             // The timer is up, return to the default state
             this.finished(EnemyStates.DEFAULT);
