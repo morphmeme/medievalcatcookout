@@ -375,7 +375,7 @@ export default class GameLevel extends Scene {
                         let node = this.sceneGraph.getNode(event.data.get("other"));
                         (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 22);
                         (node?.ai as CharacterController).setEnemies(this.enemies);
-                        GameLevel.inventory.addCharacter(node);
+                        GameLevel.inventory.addCharacter(node as AnimatedSprite);
                         GameLevel.allies.push(node as AnimatedSprite);
                     }
                     
