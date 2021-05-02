@@ -76,6 +76,8 @@ export default class GameLevel extends Scene {
     // end of level position
     private levelEndArea: Rect;
     private levelEndLabel: Label;
+    // sign frame
+    private signLabel: Label;
     // coins
     protected static coinCount: number = 0;
     protected coinCountLabel: Label;
@@ -310,6 +312,8 @@ export default class GameLevel extends Scene {
         this.drawControlScreen();
         this.drawPauseLayer();
 
+
+
         // UI layer
         this.addUILayer("UI");
         const viewportHalfSize = this.viewport.getHalfSize();
@@ -331,7 +335,7 @@ export default class GameLevel extends Scene {
         stageNameLabel.font = "PixelSimple";
 
         // level end
-        this.addUI();
+        this.addLevelEndUI();
         
     }
 
@@ -891,7 +895,7 @@ export default class GameLevel extends Scene {
         this.timerLabel.text = `${date.toISOString().substr(11, 8)}`;
     }
 
-    protected addUI(){
+    protected addLevelEndUI(){
         this.levelEndLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(-700, 200), text: "Level Complete"});
         this.levelEndLabel.size.set(1400, 60);
         this.levelEndLabel.borderRadius = 0;
@@ -914,6 +918,28 @@ export default class GameLevel extends Scene {
         });
     }
 
+    protected addSignUI(){
+        let center = this.viewport.getCenter();
+        this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), text :"Sign"});
+        this.signLabel.size.set(900,600);
+        this.signLabel.borderRadius = 0;
+        this.signLabel.backgroundColor = new Color(164, 116, 73, 0.0);
+        this.signLabel.textColor = Color.BLACK;
+        this.signLabel.fontSize = 32;
+        this.signLabel.font = "PixelSimple";
+        this.signLabel.tweens.add("show", {
+            startDelay: 250,
+            effects: [
+                {
+                    property: TweenableProperties.alpha,
+                    start: 0.0,
+                    end: 1.0,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        })
+    }
+
     protected addLevelEnd(Tile: Vec2, size: Vec2): void{
         this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: Tile.add(size.scale(1.0)).scaled(32), size: size.scale(16)});
         this.levelEndArea.addPhysics(undefined, undefined, false, true);
@@ -931,4 +957,5 @@ export default class GameLevel extends Scene {
             }
         }
     }
+
 }
