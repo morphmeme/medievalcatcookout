@@ -230,11 +230,13 @@ export default class MathUtils {
 
         if (avoid) {
             for (const avoiding of avoid) {
-                const hit = (avoiding.collisionShape as AABB).intersectSegment(pos0, delta, Vec2.ZERO);
-                if(hit !== null && pos0.distanceSqTo(hit.pos) < pos0.distanceSqTo(pos1)){
-                    // We hit an ally, we can't see the player
-                    return false;
-                }
+                if (avoiding?.collisionShape) {
+                    const hit = (avoiding.collisionShape as AABB).intersectSegment(pos0, delta, Vec2.ZERO);
+                    if(hit !== null && pos0.distanceSqTo(hit.pos) < pos0.distanceSqTo(pos1)){
+                        // We hit an ally, we can't see the player
+                        return false;
+                    }
+                }   
             }
         }
 

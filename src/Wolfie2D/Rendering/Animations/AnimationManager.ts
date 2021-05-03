@@ -239,7 +239,7 @@ export default class AnimationManager {
      * @param animation The animation to be played
      * @param onEnd The event to fire when the queued animation ends.
      */
-    override(animation: string, loop: boolean = false, onEnd?: string): void{
+    override(animation: string, loop: boolean = false, onEnd?: string, onEndCallBack?: Function): void{
         this.overriding = true;
         this.pendingAnimation = this.currentAnimation;
         this.pendingLoop = this.loop;
@@ -262,6 +262,12 @@ export default class AnimationManager {
             this.onEndEvent = onEnd;
         } else {
             this.onEndEvent = null;
+        }
+
+        if(onEndCallBack !== undefined){
+            this.onEndCallBack = onEndCallBack;
+        } else {
+            this.onEndCallBack = null;
         }
     }
     
