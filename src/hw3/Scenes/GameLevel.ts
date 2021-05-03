@@ -87,6 +87,7 @@ export default class GameLevel extends Scene {
 
     // bump timer
     private bumpSoundTimer = new Timer(200);
+    protected levelName: string = "";
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -352,7 +353,7 @@ export default class GameLevel extends Scene {
         this.timerLabel.font = "PixelSimple";
 
         // Placeholder for image
-        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(7 * width / 8, height / 20), text: `STAGE 1-1 Burger Kat`});
+        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(6.5 * width / 8, height / 20), text: `STAGE ${this.levelName}`});
         stageNameLabel.textColor = Color.WHITE
         stageNameLabel.font = "PixelSimple";
 

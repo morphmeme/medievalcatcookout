@@ -1,5 +1,6 @@
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
+import { LEVEL_NAMES } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
 import Shop1 from "./Shop1";
@@ -11,6 +12,7 @@ export default class Level1 extends GameLevel {
         // TODO Keep resources - this is up to you
     }
     loadScene(){
+        this.levelName = LEVEL_NAMES[0];
         super.loadScene();
         this.load.tilemap("level", "hw3_assets/tilemaps/level1.json");
         // Load enemy nav mesh
