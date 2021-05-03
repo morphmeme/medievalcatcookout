@@ -102,6 +102,7 @@ export default class GameLevel extends Scene {
         this.load.audio("coin", "mcc_assets/sounds/coin.wav");
         this.load.audio("bump", "mcc_assets/sounds/bump.wav");
         this.load.audio("click", "mcc_assets/sounds/click.wav");
+        this.load.audio("gameplay", "mcc_assets/music/levelmusic.mp3");
         // Load the tilemap
 
         /*
