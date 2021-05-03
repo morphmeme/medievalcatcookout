@@ -35,9 +35,9 @@ export default class Shop extends Scene {
     protected shopItems: ShopItem[] = [];
     private hpBuffBought = false;
     protected hpBuffCost = 10;
-    protected speedBuffCost = 0;
+    protected speedBuffCost = 10;
     private speedBuffBought = false;
-    protected partyHealCost = 0;
+    protected partyHealCost = 10;
     private partyHealBought = false;
     protected nextLevel: new (...args: any) => Scene;
     private viewPortWidth: number;
