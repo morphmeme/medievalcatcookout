@@ -374,6 +374,7 @@ export default class GameLevel extends Scene {
             switch(event.type){
                 case Events.DROP_COIN: {
                     this.dropCoin(event.data.get("position"));
+                    break;
                 }
                 case Events.DROP_WEAPON: {
                     this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
@@ -470,6 +471,7 @@ export default class GameLevel extends Scene {
                 {
                     this.levelEndLabel.tweens.play("slideIn");
                     this.changeLevel(this.nextLevel);
+                    break;
                 }
                 default: {
 

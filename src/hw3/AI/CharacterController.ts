@@ -142,13 +142,15 @@ export default class CharacterController extends StateMachineAI implements Battl
                 if (this.allies[indexOfCharacter-1]?.ai && this.allies[indexOfCharacter+1]?.ai)
                     (this.allies[indexOfCharacter+1].ai as CharacterController).following = (this.allies[indexOfCharacter-1].ai as CharacterController);
             }
-            this.inventory.deleteCharacter(this.owner);
-            this.owner.setAIActive(false, {});
-            this.owner.isCollidable = false;
-            this.owner.visible = false;
             this.owner.disablePhysics();
-            this.owner.destroy();
+            this.owner.isCollidable = false;
+            this.inventory.deleteCharacter(this.owner);
             this.allies.splice(indexOfCharacter, 1);
+            this.owner.animation.play("DOWNED", false, undefined, () => {
+                this.owner.setAIActive(false, {});
+                this.owner.visible = false;
+                this.owner.destroy();
+            });
         }
     }
 
