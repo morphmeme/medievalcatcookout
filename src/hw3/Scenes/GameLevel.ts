@@ -78,6 +78,7 @@ export default class GameLevel extends Scene {
     private levelEndLabel: Label;
     // sign frame
     private signLabel: Label;
+    private signToggle: boolean = false;
     // coins
     protected static coinCount: number = 0;
     protected coinCountLabel: Label;
@@ -472,7 +473,9 @@ export default class GameLevel extends Scene {
                             break;
                         }
                     }
+                    this.signToggle = true;
                     this.signLabel.tweens.play("fadeIn");
+                    this.toggleSign();
                     break;
                 }
                 default: {
@@ -516,6 +519,11 @@ export default class GameLevel extends Scene {
                 else
                     (ally.ai as CharacterController).speed = 501
             } )
+        } else if((this.signToggle) && (Input.isPressed("forward") || Input.isPressed("left") || Input.isPressed("right") || Input.isPressed("backward"))){
+            console.log("exiting sign");
+            this.signToggle = false;
+            this.signLabel.tweens.play("fadeOut");
+            this.toggleSign();
         }
     }
 
@@ -596,6 +604,10 @@ export default class GameLevel extends Scene {
             this.viewport.setZoomLevel(1);
             this.sceneManager.changeToScene(MainMenu);
         }
+    }
+    toggleSign(){
+        GameLevel.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
     }
 
     togglePause() {
@@ -953,6 +965,18 @@ export default class GameLevel extends Scene {
                     property: TweenableProperties.alpha,
                     start: 0,
                     end: 1,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        });
+        this.signLabel.tweens.add("fadeOut", {
+            startDelay: 0,
+            duration: 500,
+            effects: [
+                {
+                    property: TweenableProperties.alpha,
+                    start: 1.0,
+                    end: 0.0,
                     ease: EaseFunctionType.IN_OUT_QUAD
                 }
             ]
