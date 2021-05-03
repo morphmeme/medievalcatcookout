@@ -5,7 +5,7 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
-import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names} from "../Constants";
+import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names, TUTORIAL_TEXT} from "../Constants";
 import EnemyAI from "../AI/EnemyAI";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
@@ -246,6 +246,9 @@ export default class GameLevel extends Scene {
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
         console.log(this.walls);
         this.signs = <OrthogonalTilemap>tilemapLayers[2].getItems()[0];
+        for(let i = 0; i< this.signs.getLayer().getItems().length; i++){
+            this.signpos.push(this.signs.getLayer().getItems()[i].position);
+        }
         //this.getSignPositions(this.signs);
         console.log(this.signs);
         console.log(this.signpos);
@@ -461,8 +464,14 @@ export default class GameLevel extends Scene {
                 {   
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
-                    console.log(node);
-                    console.log(other.position);
+                    for(let i =0; i < this.signpos.length; i++){
+                        console.log(this.signpos[i]);
+                        console.log(other.position);
+                        if(this.signpos[i] == other.position){
+                            this.editSignUI(i);
+                            break;
+                        }
+                    }
                     this.signLabel.tweens.play("fadeIn");
                     break;
                 }
@@ -927,7 +936,8 @@ export default class GameLevel extends Scene {
 
     protected addSignUI(){
         let center = this.viewport.getCenter();
-        this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), size: new Vec2(100,100), text:"sign"});
+        this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), text:""});
+        this.signLabel.size.set(700,500);
         this.signLabel.alpha = 0.0;
         this.signLabel.backgroundColor = new Color(164,116,73,0.0);
         //this.signLabel.borderRadius = 0;
@@ -949,6 +959,10 @@ export default class GameLevel extends Scene {
         })
     }
 
+    protected editSignUI(index: number): void{
+        this.signLabel.text = TUTORIAL_TEXT[index];
+    }
+
     protected addLevelEnd(Tile: Vec2, size: Vec2): void{
         this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: Tile.add(size.scale(1.0)).scaled(32), size: size.scale(16)});
         this.levelEndArea.addPhysics(undefined, undefined, false, true);
@@ -956,9 +970,11 @@ export default class GameLevel extends Scene {
         this.levelEndArea.color = new Color(255,0,0,1);
     }
 
-    /*
+    
     protected getSignPositions(map: OrthogonalTilemap): void{
-        let size = map.getDimensions();
+        let cols = map.getNumCols();
+        let rows = map.getNumRows();
+        let size = new Vec2(cols, rows);
         let tiles = size.x * size.y;
         for(let i =0; i < tiles; i++){
             if(map.getTile(i) == 7){
@@ -967,6 +983,6 @@ export default class GameLevel extends Scene {
             }
         }
     }
-    */
+    
 
 }
