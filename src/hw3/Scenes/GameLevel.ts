@@ -214,7 +214,9 @@ export default class GameLevel extends Scene {
             (projectile.ai as ProjectileAI).damage(1);
         }
         
-        other.animation.override("HURT");
+        if ((other.ai as BattlerAI).health > 0) {
+            other.animation.override("HURT");
+        }
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -233,17 +235,26 @@ export default class GameLevel extends Scene {
             cardinalRad0 == 3 && cardinalRad1 == 1) {
             (character1.ai as BattlerAI).damage(1);
             (character0.ai as BattlerAI).damage(1);
-            character0.animation.override("HURT");
-            character1.animation.override("HURT");
+            if ((character0.ai as BattlerAI).health > 0) {
+                character0.animation.override("HURT");
+            }
+            if ((character1.ai as BattlerAI).health > 0) {
+                character1.animation.override("HURT");
+            }
+            
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
             (character1.ai as BattlerAI).damage(1);
-            character1.animation.override("HURT");
+            if ((character1.ai as BattlerAI).health > 0) {
+                character1.animation.override("HURT");
+            }
         } else {
             (character0.ai as BattlerAI).damage(1);
-            character0.animation.override("HURT");
+            if ((character0.ai as BattlerAI).health > 0) {
+                character0.animation.override("HURT");
+            }
         }
     }
 
@@ -374,6 +385,7 @@ export default class GameLevel extends Scene {
             switch(event.type){
                 case Events.DROP_COIN: {
                     this.dropCoin(event.data.get("position"));
+                    break;
                 }
                 case Events.DROP_WEAPON: {
                     this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
@@ -407,7 +419,9 @@ export default class GameLevel extends Scene {
                         this.bumpSoundTimer.start();
                     }
                     (node?.ai as BattlerAI)?.damage(1);
-                    (node as AnimatedSprite)?.animation.override("HURT");
+                    if ((node.ai as BattlerAI).health > 0) {
+                        (node as AnimatedSprite).animation.override("HURT");
+                    }
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ITEM: {
@@ -470,6 +484,7 @@ export default class GameLevel extends Scene {
                 {
                     this.levelEndLabel.tweens.play("slideIn");
                     this.changeLevel(this.nextLevel);
+                    break;
                 }
                 default: {
 
@@ -502,16 +517,20 @@ export default class GameLevel extends Scene {
             this.changeLevel(Level1.nextLevel);
         } else if (Input.isKeyJustPressed("9")) {
             GameLevel.allies.forEach(ally => {
-                (ally.ai as CharacterController).health = 100000;
-                (ally.ai as CharacterController).maxHealth = 100000;
+                if (ally.ai) {
+                    (ally.ai as CharacterController).health = 100000;
+                    (ally.ai as CharacterController).maxHealth = 100000;
+                }
             } )
         } else if (Input.isKeyJustPressed("0")) {
             GameLevel.allies.forEach(ally => {
-                const speed = (ally.ai as CharacterController).speed;
-                if (speed === 501)
-                    (ally.ai as CharacterController).speed = GameLevel.partySpeed;
-                else
-                    (ally.ai as CharacterController).speed = 501
+                if (ally.ai) {
+                    const speed = (ally.ai as CharacterController).speed;
+                    if (speed === 501)
+                        (ally.ai as CharacterController).speed = GameLevel.partySpeed;
+                    else
+                        (ally?.ai as CharacterController).speed = 501;
+                }
             } )
         }
     }
