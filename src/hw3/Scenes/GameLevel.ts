@@ -246,7 +246,7 @@ export default class GameLevel extends Scene {
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
         console.log(this.walls);
         this.signs = <OrthogonalTilemap>tilemapLayers[2].getItems()[0];
-        this.getSignPositions(this.signs);
+        //this.getSignPositions(this.signs);
         console.log(this.signs);
         console.log(this.signpos);
         // Set the viewport bounds to the tilemap
@@ -455,11 +455,16 @@ export default class GameLevel extends Scene {
                 {
                     this.levelEndLabel.tweens.play("slideIn");
                     this.changeLevel(this.nextLevel);
+                    break;
                 }
                 case Events.PLAYER_HIT_SIGN:
                 {   
-                    console.log("sign");
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    console.log(node);
+                    console.log(other.position);
                     this.signLabel.tweens.play("fadeIn");
+                    break;
                 }
                 default: {
 
@@ -951,6 +956,7 @@ export default class GameLevel extends Scene {
         this.levelEndArea.color = new Color(255,0,0,1);
     }
 
+    /*
     protected getSignPositions(map: OrthogonalTilemap): void{
         let size = map.getDimensions();
         let tiles = size.x * size.y;
@@ -961,5 +967,6 @@ export default class GameLevel extends Scene {
             }
         }
     }
+    */
 
 }
