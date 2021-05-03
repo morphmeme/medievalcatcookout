@@ -116,6 +116,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     }
 
     damage(damage: number): void {
+        this.emitter.fireEvent("play_sound", {key: "cathurt", loop: false, holdReference: false})
         if(this.invulnerable){
             return;
         }
