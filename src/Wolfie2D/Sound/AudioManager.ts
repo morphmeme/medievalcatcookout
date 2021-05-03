@@ -142,6 +142,14 @@ export default class AudioManager {
         sound.start();
     }
 
+    public isPlaying(key: string): boolean {
+        let sound = this.currentSounds.get(key);
+        if (sound) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Stop the sound specified by the key
      */

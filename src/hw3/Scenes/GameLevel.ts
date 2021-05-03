@@ -34,6 +34,7 @@ import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
 import Level1 from "./Level1";
 import ProjectileAI from "../AI/ProjectileAI";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 
 type HpBarData = {
     lastHp: number,
@@ -42,7 +43,7 @@ type HpBarData = {
 }
 
 export default class GameLevel extends Scene {
-    private static partySpeed = 100;
+    public static partySpeed = 100;
     private static initialPartyHp = 25;
     // The players
     public static allies: Array<AnimatedSprite>;
@@ -157,7 +158,7 @@ export default class GameLevel extends Scene {
 
     private displayHp() {
         for (const [id, data] of this.hpBars.entries()) {
-            if (!data?.character?.ai) {
+            if (!data?.character?.ai || (data.character.ai as BattlerAI).dead) {
                 data.bars.forEach(bar => {
                     bar.destroy();
                 })
@@ -165,7 +166,7 @@ export default class GameLevel extends Scene {
             }
         }
         return [...GameLevel.allies, ...this.enemies].map(character => {
-            if (character?.ai && this.viewport.includes(character)) {
+            if (character?.ai && !(character.ai as BattlerAI).dead && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
                 if (this.hpBars.has(character.id)) {
                     const existingHpBarData = this.hpBars.get(character.id);
@@ -260,6 +261,8 @@ export default class GameLevel extends Scene {
     }
 
     startScene(){
+        if (!AudioManager.getInstance().isPlaying("gameplay"))
+            this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});
         this.zoomLevel = 2;
         this.hpBars = new Map();
         

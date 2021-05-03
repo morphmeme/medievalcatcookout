@@ -28,6 +28,7 @@ export default class MainMenu extends Scene {
     }
 
     startScene(){
+        this.emitter.fireEvent("stop_sound", {key: "gameplay"});
         GameLevel.allies = undefined;
         GameLevel.inventory = undefined;
         GameLevel.coinCount = 0;
