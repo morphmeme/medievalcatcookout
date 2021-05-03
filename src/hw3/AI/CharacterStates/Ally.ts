@@ -1,6 +1,7 @@
 import Queue from "../../../Wolfie2D/DataTypes/Queue";
 import Vec2 from "../../../Wolfie2D/DataTypes/Vec2";
 import GameEvent from "../../../Wolfie2D/Events/GameEvent";
+import CanvasNode from "../../../Wolfie2D/Nodes/CanvasNode";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Timer from "../../../Wolfie2D/Timing/Timer";
 import { Events } from "../../Constants";
@@ -65,12 +66,15 @@ export default class Ally extends CharacterState {
         // Using weapon
         if(this.pollTimer.isStopped()){
             this.pollTimer.start();
-            const enemyPos = this.parent.nearestEnemy()?.position;
-            if(enemyPos){
-                let dir = enemyPos.clone().sub(this.owner.position).normalize();
-                dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
-                const weapon = this.parent.inventory.getWeapon(this.owner);
-                weapon?.use(this.owner, "player", dir)
+            const nearestEnemy = this.parent.nearestEnemy();
+            if (this.owner.getScene().getViewport().includes(nearestEnemy as CanvasNode)) {
+                const enemyPos = nearestEnemy?.position;
+                if(enemyPos){
+                    let dir = enemyPos.clone().sub(this.owner.position).normalize();
+                    dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
+                    const weapon = this.parent.inventory.getWeapon(this.owner);
+                    weapon?.use(this.owner, "player", dir)
+                }
             }
         }
 
