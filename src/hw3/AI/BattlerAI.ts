@@ -11,4 +11,6 @@ export default interface BattlerAI extends AI {
     damage: (damage: number) => void;
 
     rotation: number;
+
+    dead: boolean;
 }

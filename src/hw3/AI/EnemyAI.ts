@@ -16,6 +16,7 @@ import Charge from "./EnemyStates/Charge";
 import Timer from "../../Wolfie2D/Timing/Timer";
 
 export default class EnemyAI extends StateMachineAI implements BattlerAI {
+    dead: boolean;
     /** The owner of this AI */
     owner: AnimatedSprite;
 
@@ -94,7 +95,7 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
             // } else {
             //     this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
             // }
-
+            this.dead = true;
             this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
             
             this.owner.isCollidable = false;

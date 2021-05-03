@@ -15,6 +15,7 @@ import Rescue from "./CharacterStates/Rescue";
 import Timer from "../../Wolfie2D/Timing/Timer";
 
 export default class CharacterController extends StateMachineAI implements BattlerAI {
+    dead: boolean;
 
     invulnerable: boolean;
     // Fields from BattlerAI
@@ -142,6 +143,7 @@ export default class CharacterController extends StateMachineAI implements Battl
                 if (this.allies[indexOfCharacter-1]?.ai && this.allies[indexOfCharacter+1]?.ai)
                     (this.allies[indexOfCharacter+1].ai as CharacterController).following = (this.allies[indexOfCharacter-1].ai as CharacterController);
             }
+            this.dead = true;
             this.owner.disablePhysics();
             this.owner.isCollidable = false;
             this.inventory.deleteCharacter(this.owner);

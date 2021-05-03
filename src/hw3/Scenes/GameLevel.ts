@@ -157,7 +157,7 @@ export default class GameLevel extends Scene {
 
     private displayHp() {
         for (const [id, data] of this.hpBars.entries()) {
-            if (!data?.character?.ai) {
+            if (!data?.character?.ai || (data.character.ai as BattlerAI).dead) {
                 data.bars.forEach(bar => {
                     bar.destroy();
                 })
@@ -165,7 +165,7 @@ export default class GameLevel extends Scene {
             }
         }
         return [...GameLevel.allies, ...this.enemies].map(character => {
-            if (character?.ai && this.viewport.includes(character)) {
+            if (character?.ai && !(character.ai as BattlerAI).dead && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
                 if (this.hpBars.has(character.id)) {
                     const existingHpBarData = this.hpBars.get(character.id);
