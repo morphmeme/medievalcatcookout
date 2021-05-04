@@ -36,13 +36,13 @@ export default class UIElementRenderer {
     renderLabel(label: Label): void {
         let previousAlpha = this.ctx.globalAlpha;
         // Stroke and fill a rounded rect and give it text
-        previousAlpha = label.backgroundColor.a;
+        this.ctx.globalAlpha = label.alpha > 0 ? label.alpha : label.backgroundColor.a;
         this.ctx.fillStyle = label.calculateBackgroundColor().toStringRGBA();
         this.ctx.fillRoundedRect(-label.size.x/2, -label.size.y/2,
             label.size.x, label.size.y, label.borderRadius);
         
         this.ctx.strokeStyle = label.calculateBorderColor().toStringRGBA();
-        previousAlpha = label.borderColor.a;
+        this.ctx.globalAlpha = label.alpha > 0 ? label.alpha : label.borderColor.a;
         this.ctx.lineWidth = label.borderWidth;
         this.ctx.strokeRoundedRect(-label.size.x/2, -label.size.y/2,
             label.size.x, label.size.y, label.borderRadius);
@@ -64,8 +64,8 @@ export default class UIElementRenderer {
             
 
             this.ctx.fillStyle = label.calculateTextColor();
-            previousAlpha = label.textColor.a;
-            this.ctx.fillText(texts[i], offset.x-label.size.x/2, offset.y - label.size.y/2 +(i*20));
+            this.ctx.globalAlpha = label.alpha > 0 ? label.alpha : label.textColor.a;
+            this.ctx.fillText(texts[i], offset.x-label.size.x/2, offset.y - label.size.y/2 +((i - Math.floor(texts.length / 2))*label.fontSize));
         }
         this.ctx.globalAlpha = previousAlpha;
         label.text = originalText;
