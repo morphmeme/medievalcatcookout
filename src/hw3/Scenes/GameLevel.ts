@@ -548,12 +548,12 @@ export default class GameLevel extends Scene {
         // if(Input.isKeyJustPressed("g")){
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
-        if(Input.isJustPressed("inventory") && this.signToggle == false){
+        if(Input.isJustPressed("inventory") && this.signToggle == false && this.getLayer("pauseLayer").isHidden()){
             GameLevel.inventory.undoCurrentlyMoving();
             this.toggleInventory();
             this.togglePause();
             GameLevel.inventory.updateHpBars();
-        } else if (Input.isJustPressed("pauseMenu") && this.signToggle == false) {
+        } else if (Input.isJustPressed("pauseMenu") && this.signToggle == false && this.getLayer("inv_bg").isHidden()) {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         } else if (Input.isKeyJustPressed("1")) {
@@ -683,7 +683,7 @@ export default class GameLevel extends Scene {
         this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
         this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
         this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
-        this.getLayer("inv_bg").setHidden(!this.getLayer("inv_portrait").isHidden())
+        this.getLayer("inv_bg").setHidden(!this.getLayer("inv_bg").isHidden())
         this.getLayer("inv_portrait").setHidden(!this.getLayer("inv_portrait").isHidden())
         // Zoom level 4 for inventory
         if (this.viewport.getZoomLevel() !== 4) {
