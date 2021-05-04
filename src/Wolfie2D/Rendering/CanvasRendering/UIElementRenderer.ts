@@ -6,6 +6,7 @@ import TextInput from "../../Nodes/UIElements/TextInput";
 import ResourceManager from "../../ResourceManager/ResourceManager";
 import Scene from "../../Scene/Scene";
 import MathUtils from "../../Utils/MathUtils";
+import LabelShaderType from "../WebGLRendering/ShaderTypes/LabelShaderType";
 
 /**
  * A utility class to help the @reference[CanvasRenderer] render @reference[UIElement]s
@@ -57,7 +58,10 @@ export default class UIElementRenderer {
 
 		this.ctx.fillStyle = label.calculateTextColor();
 		previousAlpha = label.textColor.a;
-		this.ctx.fillText(label.text, offset.x - label.size.x/2, offset.y - label.size.y/2);
+        let texts = label.text.split('/\n/');
+        for(var i =0; i < texts.length; i++){
+            this.ctx.fillText(texts[i], offset.x-label.size.x/2, offset.y - label.size.y/2 +(i*20));
+        }
 	
 		this.ctx.globalAlpha = previousAlpha;
     }

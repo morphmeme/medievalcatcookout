@@ -35,6 +35,8 @@ export default class Level1 extends GameLevel {
     }
     protected editSignUI(index: number): void{
         this.signLabel.text = TUTORIAL_TEXT[index];
+        console.log(TUTORIAL_TEXT[index]);
+        this.signLabel.update(1)
     }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);

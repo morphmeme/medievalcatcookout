@@ -247,14 +247,10 @@ export default class GameLevel extends Scene {
 
         // Get the wall layer
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
-        console.log(this.walls);
         this.signs = <OrthogonalTilemap>tilemapLayers[2].getItems()[0];
         for(let i = 0; i< this.signs.getLayer().getItems().length; i++){
             this.signpos.push(this.signs.getLayer().getItems()[i].position);
         }
-        //this.getSignPositions(this.signs);
-        console.log(this.signs);
-        console.log(this.signpos);
         // Set the viewport bounds to the tilemap
         let tilemapSize: Vec2 = this.walls.size; 
         this.viewport.setBounds(0, 0, tilemapSize.x, tilemapSize.y);
@@ -474,8 +470,6 @@ export default class GameLevel extends Scene {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     for(let i =0; i < this.signpos.length; i++){
-                        console.log(this.signpos[i]);
-                        console.log(other.position);
                         if(this.signpos[i] == other.position){
                             this.editSignUI(i);
                             break;
@@ -529,7 +523,6 @@ export default class GameLevel extends Scene {
                     (ally.ai as CharacterController).speed = 501
             } )
         } else if((this.signToggle) && (Input.isPressed("forward") || Input.isPressed("left") || Input.isPressed("right") || Input.isPressed("backward"))){
-            console.log("exiting sign");
             this.signToggle = false;
             this.signLabel.tweens.play("fadeOut");
             this.toggleSign();
@@ -1006,7 +999,6 @@ export default class GameLevel extends Scene {
         let tiles = size.x * size.y;
         for(let i =0; i < tiles; i++){
             if(map.getTile(i) == 7){
-                //console.log(map.getTileWorldPosition(i));
                 this.signpos.push(map.getTileWorldPosition(i));
             }
         }

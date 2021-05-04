@@ -44,10 +44,7 @@ export const LEVEL_OPTIONS = {
 export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]
 
 export const TUTORIAL_TEXT = [
-    "You've been asleep for quite some time warrior. Do you remember where you are? This is the Cookout Kingdom! Well, the remains of it anyways.\r\n \
-    The kingdom has been attacked by the Fast Food Dynasty. Those bastard! Not many have survived their seige on us, but we won't back down\n\
-    Get on your feet! Find the others! Avenge the Kingdom! Your determination forces you to march without halting.\n\
-    Stop reading this sign and press ESC to find the controls. You've only got one shot at this!",
+    "You've been asleep for quite some time warrior. Do you remember where you are? This is the Cookout Kingdom! Well, the remains of it anyways.\n The kingdom has been attacked by the Fast Food Dynasty. Those bastard! Not many have survived their seige on us, but we won't back down\n Get on your feet! Find the others! Avenge the Kingdom! Your determination forces you to march without halting.\n Stop reading this sign and press ESC to find the controls. You've only got one shot at this!",
     "Looks like you've found three lost strays. Walk across them and they will join your squad automatically. \n\
      Once they have joined your squad, open your inventory with E. See the characters and their equipment slot, you'll need them later",
     "Let's test out your controls cat! Maneuver through these obstacles with your newfound squad!",
