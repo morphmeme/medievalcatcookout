@@ -65,7 +65,7 @@ export default class UIElementRenderer {
 
             this.ctx.fillStyle = label.calculateTextColor();
             this.ctx.globalAlpha = label.alpha > 0 ? label.alpha : label.textColor.a;
-            this.ctx.fillText(texts[i], offset.x-label.size.x/2, offset.y - label.size.y/2 +(i*20));
+            this.ctx.fillText(texts[i], offset.x-label.size.x/2, offset.y - label.size.y/2 +((i - Math.floor(texts.length / 2))*label.fontSize));
         }
         this.ctx.globalAlpha = previousAlpha;
         label.text = originalText;

@@ -1010,7 +1010,7 @@ export default class GameLevel extends Scene {
     protected addSignUI(){
         let center = this.viewport.getCenter();
         this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), text:""});
-        this.signLabel.size.set(700,500);
+        this.signLabel.size.set(900,600);
         //this.signLabel.setHAlign(HAlign.LEFT);
         this.signLabel.alpha = 0.0;
         this.signLabel.backgroundColor = new Color(164,116,73,0.0);
