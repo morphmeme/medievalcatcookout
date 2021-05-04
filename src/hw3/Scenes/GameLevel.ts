@@ -826,7 +826,7 @@ export default class GameLevel extends Scene {
                     allies: newAllies,
                     viewport: this.viewport,
                     following: i == 0 ? undefined : newAllies[newAllies.length-1].ai,
-                    followingDistance: i == 0 ? undefined : 28,
+                    followingDistance: i == 0 ? undefined : 32,
                 });
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
