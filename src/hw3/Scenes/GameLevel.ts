@@ -1044,8 +1044,8 @@ export default class GameLevel extends Scene {
     protected editSignUI(index: number): void{
     }
 
-    protected addLevelEnd(Tile: Vec2, size: Vec2): void{
-        this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: Tile.add(size.scale(1.0)).scaled(32), size: size.scale(16)});
+    protected addLevelEnd(tile: Vec2, size: Vec2): void{
+        this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: tile, size: size.scale(16)});
         this.levelEndArea.addPhysics(undefined, undefined, false, true);
         this.levelEndArea.setTrigger("player", Events.PLAYER_LEVEL_END, null);
         this.levelEndArea.color = new Color(255,0,0,1);

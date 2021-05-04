@@ -28,7 +28,7 @@ export default class Level1 extends GameLevel {
     }
     startScene(): void {
         super.startScene();
-        this.addLevelEnd(new Vec2(8, 0), new Vec2(8,1));
+        this.addLevelEnd(new Vec2(534, 32), new Vec2(7,1));
         this.nextLevel = Level1.nextLevel;
     }
     initializePlayer(inventory: InventoryManager): void{
