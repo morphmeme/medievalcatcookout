@@ -1014,6 +1014,7 @@ export default class GameLevel extends Scene {
         //this.signLabel.setHAlign(HAlign.LEFT);
         this.signLabel.alpha = 0.0;
         this.signLabel.backgroundColor = new Color(164,116,73,0.0);
+        this.signLabel.textColor = new Color(0, 0, 0, 0);
         this.signLabel.tweens.add("fadeIn", {
             startDelay: 0,
             duration: 500,
@@ -1032,8 +1033,8 @@ export default class GameLevel extends Scene {
             effects: [
                 {
                     property: TweenableProperties.alpha,
-                    start: 1.0,
-                    end: 0.0,
+                    start: 1,
+                    end: 0,
                     ease: EaseFunctionType.IN_OUT_QUAD
                 }
             ]
