@@ -420,7 +420,7 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PLAYER_COLLIDES_RESCUE: {
                     let node = this.sceneGraph.getNode(event.data.get("other"));
-                    (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 22);
+                    (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 28);
                     (node?.ai as CharacterController).setEnemies(this.enemies);
                     GameLevel.inventory.addCharacter(node as AnimatedSprite);
                     GameLevel.allies.push(node as AnimatedSprite);
@@ -826,7 +826,7 @@ export default class GameLevel extends Scene {
                     allies: newAllies,
                     viewport: this.viewport,
                     following: i == 0 ? undefined : newAllies[newAllies.length-1].ai,
-                    followingDistance: i == 0 ? undefined : 32,
+                    followingDistance: i == 0 ? undefined : 28,
                 });
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
