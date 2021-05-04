@@ -34,6 +34,7 @@ export default class Splash extends Scene {
         play.size.set(1280, 720);
         play.borderColor = Color.TRANSPARENT;
         play.backgroundColor = Color.TRANSPARENT;
+        play.alpha = 0.0;
         play.onClickEventId = "splash_next";
 
         this.receiver.subscribe("splash_next");

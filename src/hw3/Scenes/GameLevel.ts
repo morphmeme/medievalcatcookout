@@ -5,7 +5,7 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
-import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names} from "../Constants";
+import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names, TUTORIAL_TEXT} from "../Constants";
 import EnemyAI from "../AI/EnemyAI";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
@@ -16,7 +16,7 @@ import Item from "../GameSystems/items/Item";
 import AABB from "../../Wolfie2D/DataTypes/Shapes/AABB";
 import BattleManager from "../GameSystems/BattleManager";
 import BattlerAI from "../AI/BattlerAI";
-import Label from "../../Wolfie2D/Nodes/UIElements/Label";
+import Label, { HAlign } from "../../Wolfie2D/Nodes/UIElements/Label";
 import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import Color from "../../Wolfie2D/Utils/Color";
 import Input from "../../Wolfie2D/Input/Input";
@@ -29,11 +29,12 @@ import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
-import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
+import GameNode, {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
 import Level1 from "./Level1";
 import ProjectileAI from "../AI/ProjectileAI";
+import Tilemap from "../../Wolfie2D/Nodes/Tilemap";
 import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 
 type HpBarData = {
@@ -53,7 +54,12 @@ export default class GameLevel extends Scene {
 
     // The wall layer of the tilemap to use for bullet visualization
     private walls: OrthogonalTilemap;
-
+    // The sign layer of the tilemap to use for sign detection
+    private signs: OrthogonalTilemap;
+    // Array of sign positions to distinguish signs
+    private signpos: Array<Vec2> = new Array();
+    // Timer for sign collision
+    private signTimer: Timer = new Timer(1500);
     // The position graph for the navmesh
     private graph: PositionGraph;
 
@@ -63,7 +69,6 @@ export default class GameLevel extends Scene {
     private rescuePositions: number[][];
     // The battle manager for the scene
     private battleManager: BattleManager;
-
     // Characters healths
     private hpBars: Map<number, HpBarData>;
     private weaponTypeMap: Map<string, any>;
@@ -74,6 +79,9 @@ export default class GameLevel extends Scene {
     // end of level position
     private levelEndArea: Rect;
     private levelEndLabel: Label;
+    // sign frame
+    protected signLabel: Label;
+    private signToggle: boolean = false;
     // coins
     public static coinCount: number = 0;
     protected coinCountLabel: Label;
@@ -155,6 +163,7 @@ export default class GameLevel extends Scene {
             Events.PROJECTILE_COLLIDES_ENEMY,
             Events.PROJECTILE_COLLIDES_PLAYER,
             Events.PROJECTILE_COLLIDES_GROUND,
+            Events.PLAYER_HIT_SIGN,
         ]);
     }
 
@@ -273,7 +282,10 @@ export default class GameLevel extends Scene {
 
         // Get the wall layer
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
-
+        this.signs = <OrthogonalTilemap>tilemapLayers[2].getItems()[0];
+        for(let i = 0; i< this.signs.getLayer().getItems().length; i++){
+            this.signpos.push(this.signs.getLayer().getItems()[i].position);
+        }
         // Set the viewport bounds to the tilemap
         let tilemapSize: Vec2 = this.walls.size; 
         this.viewport.setBounds(0, 0, tilemapSize.x, tilemapSize.y);
@@ -337,6 +349,8 @@ export default class GameLevel extends Scene {
         this.drawControlScreen();
         this.drawPauseLayer();
 
+
+
         // UI layer
         this.addUILayer("UI");
         const viewportHalfSize = this.viewport.getHalfSize();
@@ -358,7 +372,10 @@ export default class GameLevel extends Scene {
         stageNameLabel.font = "PixelSimple";
 
         // level end
-        this.addUI();
+        this.addLevelEndUI();
+
+        // sign
+        this.addSignUI();
         
     }
 
@@ -492,6 +509,28 @@ export default class GameLevel extends Scene {
                     this.changeLevel(this.nextLevel);
                     break;
                 }
+                case Events.PLAYER_HIT_SIGN:
+                {   
+                    if(!this.signTimer.isStopped()){
+                        break;
+                    }
+                    else{
+                        this.signTimer.reset();
+                    }
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    for(let i =0; i < this.signpos.length; i++){
+                        if(this.signpos[i] == other.position){
+                            this.editSignUI(i);
+                            break;
+                        }
+                    }
+                    this.signToggle = true;
+                    this.signLabel.tweens.play("fadeIn");
+                    this.toggleSign();
+                    this.signTimer.start(3000);
+                    break;
+                }
                 default: {
 
                 }
@@ -509,12 +548,12 @@ export default class GameLevel extends Scene {
         // if(Input.isKeyJustPressed("g")){
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
-        if(Input.isJustPressed("inventory")){
+        if(Input.isJustPressed("inventory") && this.signToggle == false){
             GameLevel.inventory.undoCurrentlyMoving();
             this.toggleInventory();
             this.togglePause();
             GameLevel.inventory.updateHpBars();
-        } else if (Input.isJustPressed("pauseMenu")) {
+        } else if (Input.isJustPressed("pauseMenu") && this.signToggle == false) {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         } else if (Input.isKeyJustPressed("1")) {
@@ -538,6 +577,10 @@ export default class GameLevel extends Scene {
                         (ally?.ai as CharacterController).speed = 501;
                 }
             } )
+        } else if((this.signToggle) && (Input.isPressed("forward") || Input.isPressed("left") || Input.isPressed("right") || Input.isPressed("backward"))){
+            this.signToggle = false;
+            this.signLabel.tweens.play("fadeOut");
+            this.toggleSign();
         }
     }
 
@@ -619,6 +662,10 @@ export default class GameLevel extends Scene {
             this.viewport.setZoomLevel(1);
             this.sceneManager.changeToScene(MainMenu);
         }
+    }
+    toggleSign(){
+        GameLevel.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
     }
 
     togglePause() {
@@ -754,6 +801,8 @@ export default class GameLevel extends Scene {
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
+        player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
+        player.setTrigger("sign", Events.PLAYER_HIT_SIGN, null);
         player.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
@@ -935,7 +984,7 @@ export default class GameLevel extends Scene {
         this.timerLabel.text = `${date.toISOString().substr(11, 8)}`;
     }
 
-    protected addUI(){
+    protected addLevelEndUI(){
         this.levelEndLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(-700, 200), text: "Level Complete"});
         this.levelEndLabel.size.set(1400, 60);
         this.levelEndLabel.borderRadius = 0;
@@ -958,10 +1007,61 @@ export default class GameLevel extends Scene {
         });
     }
 
+    protected addSignUI(){
+        let center = this.viewport.getCenter();
+        this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), text:""});
+        this.signLabel.size.set(700,500);
+        //this.signLabel.setHAlign(HAlign.LEFT);
+        this.signLabel.alpha = 0.0;
+        this.signLabel.backgroundColor = new Color(164,116,73,0.0);
+        this.signLabel.tweens.add("fadeIn", {
+            startDelay: 0,
+            duration: 500,
+            effects: [
+                {
+                    property: TweenableProperties.alpha,
+                    start: 0,
+                    end: 1,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        });
+        this.signLabel.tweens.add("fadeOut", {
+            startDelay: 0,
+            duration: 500,
+            effects: [
+                {
+                    property: TweenableProperties.alpha,
+                    start: 1.0,
+                    end: 0.0,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        })
+    }
+
+    protected editSignUI(index: number): void{
+    }
+
     protected addLevelEnd(Tile: Vec2, size: Vec2): void{
         this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: Tile.add(size.scale(1.0)).scaled(32), size: size.scale(16)});
         this.levelEndArea.addPhysics(undefined, undefined, false, true);
         this.levelEndArea.setTrigger("player", Events.PLAYER_LEVEL_END, null);
         this.levelEndArea.color = new Color(255,0,0,1);
     }
+
+    
+    protected getSignPositions(map: OrthogonalTilemap): void{
+        let cols = map.getNumCols();
+        let rows = map.getNumRows();
+        let size = new Vec2(cols, rows);
+        let tiles = size.x * size.y;
+        for(let i =0; i < tiles; i++){
+            if(map.getTile(i) == 7){
+                this.signpos.push(map.getTileWorldPosition(i));
+            }
+        }
+    }
+    
+
 }

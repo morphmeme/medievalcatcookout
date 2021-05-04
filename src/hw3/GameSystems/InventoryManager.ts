@@ -376,7 +376,12 @@ export default class InventoryManager {
             
         // Character hp
         this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
-        
+
+        // Character Name
+        let names = this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
+        names.backgroundColor = Color.WHITE;
+        names.alpha = 1.0;
+
         // Updates inventory slot positions an add new ones for those that were taken by characters
         if (!dontMove) {
             this.createInventorySlots(this.slotsCount, this.slotsCount+1);
