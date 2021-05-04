@@ -2,9 +2,10 @@ import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
 import Level2 from "./Level2";
+import {TUTORIAL_TEXT} from "../Constants";
+import signLabel from "./GameLevel";
 export default class Level1 extends GameLevel {
     public static nextLevel = Level2;
-    private static texts: string[][];
     unloadScene(){
         // TODO Keep resources - this is up to you
     }
@@ -31,6 +32,9 @@ export default class Level1 extends GameLevel {
     initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void{
         let pos = [[13.5*32, 76*32], [16.5*32, 76*32],[19.5*32, 76*32] ]
         super.initializeRescues(inventory, pos);
+    }
+    protected editSignUI(index: number): void{
+        this.signLabel.text = TUTORIAL_TEXT[index];
     }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);

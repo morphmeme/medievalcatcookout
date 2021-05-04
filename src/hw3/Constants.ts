@@ -44,9 +44,17 @@ export const LEVEL_OPTIONS = {
 export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]
 
 export const TUTORIAL_TEXT = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5"
+    "You've been asleep for quite some time warrior. Do you remember where you are? This is the Cookout Kingdom! Well, the remains of it anyways.\r\n \
+    The kingdom has been attacked by the Fast Food Dynasty. Those bastard! Not many have survived their seige on us, but we won't back down\n\
+    Get on your feet! Find the others! Avenge the Kingdom! Your determination forces you to march without halting.\n\
+    Stop reading this sign and press ESC to find the controls. You've only got one shot at this!",
+    "Looks like you've found three lost strays. Walk across them and they will join your squad automatically. \n\
+     Once they have joined your squad, open your inventory with E. See the characters and their equipment slot, you'll need them later",
+    "Let's test out your controls cat! Maneuver through these obstacles with your newfound squad!",
+    "There are three weapons ahead of you. Walk across them to pick them up. Then open your inventory. \n\
+    Since you are controlling your squad, it's best you leave the shooting and stabbing to them. \n\
+    However, if you're the last one alive, you can always pick up the damn ketchup bottle yourself and fire away! \n\
+    Just up ahead are some troublemaking strays, slaught the bastards",
+    "Good work kitties! But you aren't finished yet, this is just the beginning. Just up ahead is the exit. \n\
+    Go on ahead and Avenge the Kingdom!"
 ];

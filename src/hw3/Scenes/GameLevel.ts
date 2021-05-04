@@ -16,7 +16,7 @@ import Item from "../GameSystems/items/Item";
 import AABB from "../../Wolfie2D/DataTypes/Shapes/AABB";
 import BattleManager from "../GameSystems/BattleManager";
 import BattlerAI from "../AI/BattlerAI";
-import Label from "../../Wolfie2D/Nodes/UIElements/Label";
+import Label, { HAlign } from "../../Wolfie2D/Nodes/UIElements/Label";
 import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import Color from "../../Wolfie2D/Utils/Color";
 import Input from "../../Wolfie2D/Input/Input";
@@ -53,7 +53,12 @@ export default class GameLevel extends Scene {
 
     // The wall layer of the tilemap to use for bullet visualization
     private walls: OrthogonalTilemap;
+    // The sign layer of the tilemap to use for sign detection
     private signs: OrthogonalTilemap;
+    // Array of sign positions to distinguish signs
+    private signpos: Array<Vec2> = new Array();
+    // Timer for sign collision
+    private signTimer: Timer = new Timer(1500);
     // The position graph for the navmesh
     private graph: PositionGraph;
 
@@ -63,9 +68,6 @@ export default class GameLevel extends Scene {
     private rescuePositions: number[][];
     // The battle manager for the scene
     private battleManager: BattleManager;
-    // Sign Texts and tile pos
-    private signpos: Array<Vec2> = new Array();
-    private texts: string[][];
     // Characters healths
     private hpBars: Map<number, HpBarData>;
     private weaponTypeMap: Map<string, any>;
@@ -77,7 +79,7 @@ export default class GameLevel extends Scene {
     private levelEndArea: Rect;
     private levelEndLabel: Label;
     // sign frame
-    private signLabel: Label;
+    protected signLabel: Label;
     private signToggle: boolean = false;
     // coins
     protected static coinCount: number = 0;
@@ -463,6 +465,12 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PLAYER_HIT_SIGN:
                 {   
+                    if(!this.signTimer.isStopped()){
+                        break;
+                    }
+                    else{
+                        this.signTimer.reset();
+                    }
                     let node = this.sceneGraph.getNode(event.data.get("node"));
                     let other = this.sceneGraph.getNode(event.data.get("other"));
                     for(let i =0; i < this.signpos.length; i++){
@@ -476,6 +484,7 @@ export default class GameLevel extends Scene {
                     this.signToggle = true;
                     this.signLabel.tweens.play("fadeIn");
                     this.toggleSign();
+                    this.signTimer.start(3000);
                     break;
                 }
                 default: {
@@ -495,12 +504,12 @@ export default class GameLevel extends Scene {
         // if(Input.isKeyJustPressed("g")){
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
-        if(Input.isJustPressed("inventory")){
+        if(Input.isJustPressed("inventory") && this.signToggle == false){
             GameLevel.inventory.undoCurrentlyMoving();
             this.toggleInventory();
             this.togglePause();
             GameLevel.inventory.updateHpBars();
-        } else if (Input.isJustPressed("pauseMenu")) {
+        } else if (Input.isJustPressed("pauseMenu") && this.signToggle == false) {
             this.togglePause();
         } else if (Input.isKeyJustPressed("1")) {
             this.changeLevel(Level1);
@@ -950,13 +959,9 @@ export default class GameLevel extends Scene {
         let center = this.viewport.getCenter();
         this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), text:""});
         this.signLabel.size.set(700,500);
+        //this.signLabel.setHAlign(HAlign.LEFT);
         this.signLabel.alpha = 0.0;
         this.signLabel.backgroundColor = new Color(164,116,73,0.0);
-        //this.signLabel.borderRadius = 0;
-        //this.signLabel.backgroundColor = new Color(164, 116, 73);
-        //this.signLabel.textColor = Color.BLACK;
-        //this.signLabel.fontSize = 32;
-        //this.signLabel.font = "PixelSimple";
         this.signLabel.tweens.add("fadeIn", {
             startDelay: 0,
             duration: 500,
@@ -984,7 +989,6 @@ export default class GameLevel extends Scene {
     }
 
     protected editSignUI(index: number): void{
-        this.signLabel.text = TUTORIAL_TEXT[index];
     }
 
     protected addLevelEnd(Tile: Vec2, size: Vec2): void{
