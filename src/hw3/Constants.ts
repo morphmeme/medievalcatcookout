@@ -24,25 +24,26 @@ export enum Events {
     PLAYER_LEAVE_SIGN = "PlayerLeaveSign"
 }
 
+// Important: Enemy must be the third option (because it's used for projectiles. a bit hacky i know)
 export const LEVEL_OPTIONS = {
     physics: {
-        groupNames: ["ground", "player", "enemy", "item", "coin", "rescue", "projectile", "sign"],
+        groupNames: ["ground", "player", "enemy", "item", "coin", "rescue", "player_projectile", "enemy_projectile", "sign"],
         collisions:
         [
-            [0, 1, 1, 0, 0, 0, 1, 0],
-            [1, 1, 1, 0, 1, 1, 1, 0],
-            [1, 1, 1, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 1]
+            [0, 1, 1, 0, 0, 0, 1, 1, 0],
+            [1, 1, 1, 0, 1, 1, 0, 1, 1],
+            [1, 1, 1, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0]
+        ]
         ]
     }
 }
-
-export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]
-
+      
 export const TUTORIAL_TEXT = [
     "You've been asleep for quite some time warrior. Do you remember where you are? This is the Cookout Kingdom! Well, the remains of it anyways.\n The kingdom has been attacked by the Fast Food Dynasty. Those bastard! Not many have survived their seige on us, but we won't back down\n Get on your feet! Find the others! Avenge the Kingdom! Your determination forces you to march without halting.\n Stop reading this sign and press ESC to find the controls. You've only got one shot at this!",
     "Looks like you've found three lost strays. Walk across them and they will join your squad automatically. \n\
@@ -55,3 +56,7 @@ export const TUTORIAL_TEXT = [
     "Good work kitties! But you aren't finished yet, this is just the beginning. Just up ahead is the exit. \n\
     Go on ahead and Avenge the Kingdom!"
 ];
+
+export const LEVEL_NAMES = ["1-1 Awaken", "1-2 Emerging Ruins", "1-3 Untitled", "1-4 Untitled", "1-5 Untitled", "1-6 Untitled"];
+
+export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]

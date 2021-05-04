@@ -21,7 +21,7 @@ export default class Weapon extends Item {
     /** The cooldown timer for this weapon's use */
     cooldownTimer: Timer;
 
-    constructor(sprite: Sprite, type: WeaponType, battleManager: BattleManager){
+    constructor(sprite: Sprite, type: WeaponType, battleManager?: BattleManager){
         super(sprite);
 
         // Set the weapon type
@@ -54,7 +54,7 @@ export default class Weapon extends Item {
         this.type.doAnimation(this.sprite.getScene(), user, direction);
 
         // Apply damage
-        this.battleManager.handleInteraction(userType, this);
+        this.battleManager?.handleInteraction(userType, this);
 
         // Send out an event to alert enemies
         this.emitter.fireEvent(Events.SHOT_FIRED, {position: user.position.clone(), volume: this.type.useVolume});

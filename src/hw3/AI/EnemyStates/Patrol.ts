@@ -55,9 +55,13 @@ export default class Patrol extends EnemyState {
      * For inspiration, check out the Guard state, or look at the NavigationPath class or the GameNode class
      */
     update(deltaT: number): void {
+        if (!this.owner.active) {
+            return;
+        }
         if(!this.currentPath.isDone()){
             this.owner.moveOnPath(this.parent.speed * deltaT, this.currentPath);
             this.parent.rotation = Vec2.UP.angleToCCW(this.currentPath.getMoveDirection(this.owner));
+            this.parent.moveWithRotation(deltaT);
             this.parent.setMovingAnimation();
         } else {
             this.currentPath = this.getNextPath();

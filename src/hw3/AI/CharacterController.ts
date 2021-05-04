@@ -15,6 +15,7 @@ import Rescue from "./CharacterStates/Rescue";
 import Timer from "../../Wolfie2D/Timing/Timer";
 
 export default class CharacterController extends StateMachineAI implements BattlerAI {
+    dead: boolean;
 
     invulnerable: boolean;
     // Fields from BattlerAI
@@ -118,6 +119,7 @@ export default class CharacterController extends StateMachineAI implements Battl
         if(this.invulnerable){
             return;
         }
+        this.emitter.fireEvent("play_sound", {key: "cathurt", loop: false, holdReference: false})
         this.health -= damage;
         this.invulnerable = true;
         this.invulTimer.start();
@@ -142,12 +144,17 @@ export default class CharacterController extends StateMachineAI implements Battl
                 if (this.allies[indexOfCharacter-1]?.ai && this.allies[indexOfCharacter+1]?.ai)
                     (this.allies[indexOfCharacter+1].ai as CharacterController).following = (this.allies[indexOfCharacter-1].ai as CharacterController);
             }
-            this.owner.setAIActive(false, {});
-            this.owner.isCollidable = false;
-            this.owner.visible = false;
+            this.dead = true;
             this.owner.disablePhysics();
-            this.owner.destroy();
+            this.owner.isCollidable = false;
+            this.inventory.deleteCharacter(this.owner);
+            this.owner.setAIActive(false, {});
             this.allies.splice(indexOfCharacter, 1);
+            this.owner.animation.override("DOWNED", false, undefined, () => {
+                this.owner.visible = false;
+                this.owner.animation.stop();
+                this.owner.destroy();
+            });
         }
     }
 

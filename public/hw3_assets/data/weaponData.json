@@ -1,5 +1,5 @@
 {
-    "numWeapons": 7,
+    "numWeapons": 6,
     "weapons": [
         {
             "weaponType": "stab",
@@ -12,24 +12,26 @@
             "useVolume": 0
         },
         {
-            "weaponType": "semiAutoGun",
+            "weaponType": "projectile",
             "name": "ketchup_bottle",
             "displayName": "KetchupBottle",
             "spriteKey": "ketchupbottle",
             "damage": 2,
-            "cooldown": 175,
+            "cooldown": 300,
             "useVolume": 150,
-            "color": "#FF0000"
+            "speed": 200,
+            "projectileSpriteKey": "ketchupbottleprojectile"
         },
         {
-            "weaponType": "semiAutoGun",
+            "weaponType": "projectile",
             "name": "mustard_bottle",
             "displayName": "MustardBottle",
             "spriteKey": "mustardbottle",
-            "damage": 30,
+            "damage": 10,
             "cooldown": 1000,
             "useVolume": 400,
-            "color": "#000000"
+            "speed": 200,
+            "projectileSpriteKey": "mustardbottleprojectile"
         },
         {
             "weaponType": "semiAutoGun",
@@ -60,17 +62,6 @@
             "cooldown": 1000,
             "useVolume": 320,
             "color": "#000000"
-        },
-        {
-            "weaponType": "projectile",
-            "name": "projectile",
-            "displayName": "projectile",
-            "spriteKey": "projectile",
-            "damage": 2,
-            "cooldown": 1000,
-            "useVolume": 320,
-            "speed": 200,
-            "projectileSpriteKey": "player"
         }
     ]
 }

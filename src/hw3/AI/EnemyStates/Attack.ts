@@ -41,11 +41,14 @@ export default class Attack extends EnemyState {
     handleInput(event: GameEvent): void {}
 
     update(deltaT: number): void {
+        // disabled
+        if (!this.owner.active) {
+            return;
+        }
+        this.playerPos = this.parent.getPlayerPosition();
         if(this.pollTimer.isStopped()){
             // Restart the timer
             this.pollTimer.start();
-
-            this.playerPos = this.parent.getPlayerPosition();
 
             if(this.playerPos !== null){
                 // If we see a new player position, update the last position
@@ -53,7 +56,7 @@ export default class Attack extends EnemyState {
             }
         }
 
-        if(this.playerPos !== null){
+        if(this.playerPos !== null && (this.owner.getScene().getViewport().includes(this.owner))) {
             // Player is visible, restart the exitTimer
             this.exitTimer.start();
 

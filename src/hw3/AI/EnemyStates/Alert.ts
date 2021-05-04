@@ -39,6 +39,9 @@ export default class Alert extends EnemyState {
      * target position.
      */
     update(deltaT: number): void {
+        if (!this.owner.active) {
+            return;
+        }
         if(this.alertTimer.isStopped()){
             // The timer is up, return to the default state
             this.finished(EnemyStates.DEFAULT);
@@ -47,14 +50,16 @@ export default class Alert extends EnemyState {
         if(!this.path.isDone()){
             this.owner.moveOnPath(this.parent.speed * deltaT, this.path);
             this.parent.rotation = Vec2.UP.angleToCCW(this.path.getMoveDirection(this.owner));
+            this.parent.moveWithRotation(deltaT);
             this.parent.setMovingAnimation();
         }
-
-        if(this.parent.getPlayerPosition() !== null){
-            if (this.parent.attack === Attacks.charge) {
-                this.finished(EnemyStates.CHARGING);
-            } else {
-                this.finished(EnemyStates.ATTACKING);
+        if (this.owner.getScene().getViewport().includes(this.owner)) {
+            if(this.parent.getPlayerPosition() !== null){
+                if (this.parent.attack === Attacks.charge) {
+                    this.finished(EnemyStates.CHARGING);
+                } else {
+                    this.finished(EnemyStates.ATTACKING);
+                }
             }
         }
     }

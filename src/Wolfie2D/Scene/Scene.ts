@@ -49,7 +49,7 @@ export default class Scene implements Updateable {
     protected receiver: Receiver;
 
     /** The emitter for this scene. */
-    protected emitter: Emitter;
+    public emitter: Emitter;
 
     /** This list of tilemaps in this scene. */
     protected tilemaps: Array<Tilemap>;

@@ -4,6 +4,7 @@ import Input from "../../../Wolfie2D/Input/Input";
 import AnimatedSprite from "../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { Events } from "../../Constants";
 import Healthpack from "../../GameSystems/items/Healthpack";
+import GameLevel from "../../Scenes/GameLevel";
 import CharacterController from "../CharacterController";
 import CharacterState from "./CharacterState";
 
@@ -13,6 +14,7 @@ export default class Player extends CharacterState {
     }
     
     onEnter(options: Record<string, any>): void {
+        this.parent.speed = GameLevel.partySpeed;
     }
 
     handleInput(event: GameEvent): void {
@@ -20,6 +22,9 @@ export default class Player extends CharacterState {
 
     update(deltaT: number): void {
         this.parent.inventory.update();
+        if (!this.owner.active) {
+            return;
+        }
         // Get the movement direction
         if (Input.isPressed("forward") && this.parent.rotation !== Math.PI) {
             this.parent.direction.y = -1;

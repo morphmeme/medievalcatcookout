@@ -35,6 +35,7 @@ import MainMenu from "./MainMenu";
 import Level1 from "./Level1";
 import ProjectileAI from "../AI/ProjectileAI";
 import Tilemap from "../../Wolfie2D/Nodes/Tilemap";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 
 type HpBarData = {
     lastHp: number,
@@ -43,10 +44,10 @@ type HpBarData = {
 }
 
 export default class GameLevel extends Scene {
-    private static partySpeed = 100;
+    public static partySpeed = 100;
     private static initialPartyHp = 25;
     // The players
-    private static allies: Array<AnimatedSprite>;
+    public static allies: Array<AnimatedSprite>;
     
     // A list of enemies
     private enemies: Array<AnimatedSprite>;
@@ -73,7 +74,7 @@ export default class GameLevel extends Scene {
     private weaponTypeMap: Map<string, any>;
 
     private zoomLevel: number;
-    private static inventory: InventoryManager;
+    public static inventory: InventoryManager;
 
     // end of level position
     private levelEndArea: Rect;
@@ -82,7 +83,7 @@ export default class GameLevel extends Scene {
     protected signLabel: Label;
     private signToggle: boolean = false;
     // coins
-    protected static coinCount: number = 0;
+    public static coinCount: number = 0;
     protected coinCountLabel: Label;
 
     // timer
@@ -90,7 +91,11 @@ export default class GameLevel extends Scene {
     protected timerLabel: Label;
     protected timerStopped: boolean = false;
 
-    protected nextLevel: new (...args: any) => GameLevel;;
+    protected nextLevel: new (...args: any) => Scene;;
+
+    // bump timer
+    private bumpSoundTimer = new Timer(200);
+    protected levelName: string = "";
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -99,11 +104,21 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
+        this.load.spritesheet("ketchupbottleprojectile", "mcc_assets/sprites/Sprites/ketchup.json");
+        this.load.spritesheet("mustardbottleprojectile", "mcc_assets/sprites/Sprites/mustard.json");
+        this.load.object("weaponData", "hw3_assets/data/weaponData.json");
+
+        this.load.audio("squirt", "mcc_assets/sounds/squirt.mp3");
+        this.load.audio("coin", "mcc_assets/sounds/coin.wav");
+        this.load.audio("bump", "mcc_assets/sounds/bump.wav");
+        this.load.audio("click", "mcc_assets/sounds/click.wav");
+        this.load.audio("cathurt", "mcc_assets/sounds/cathurt.mp3");
+        this.load.audio("gameplay", "mcc_assets/music/levelmusic.mp3");
         // Load the tilemap
 
         /*
         // Load the scene info
-        this.load.object("weaponData", "hw3_assets/data/weaponData.json");
+        
 
         // Load the nav mesh
         this.load.object("navmesh", "hw3_assets/data/navmesh.json");
@@ -124,7 +139,6 @@ export default class GameLevel extends Scene {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
-        this.load.image("projectile", "hw3_assets/sprites/projectile.png");
         
         this.load.image("coin", "hw3_assets/sprites/coin.png");
     }
@@ -155,7 +169,7 @@ export default class GameLevel extends Scene {
 
     private displayHp() {
         for (const [id, data] of this.hpBars.entries()) {
-            if (!data?.character?.ai) {
+            if (!data?.character?.ai || (data.character.ai as BattlerAI).dead) {
                 data.bars.forEach(bar => {
                     bar.destroy();
                 })
@@ -163,7 +177,7 @@ export default class GameLevel extends Scene {
             }
         }
         return [...GameLevel.allies, ...this.enemies].map(character => {
-            if (character?.ai && this.viewport.includes(character)) {
+            if (character?.ai && !(character.ai as BattlerAI).dead && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
                 if (this.hpBars.has(character.id)) {
                     const existingHpBarData = this.hpBars.get(character.id);
@@ -204,8 +218,18 @@ export default class GameLevel extends Scene {
             return;
         }
         (other.ai as BattlerAI).damage((projectile.ai as ProjectileAI).dmg);
-        (projectile.ai as ProjectileAI).damage(1);
-        other.animation.override("HURT");
+        projectile.disablePhysics();
+        if (this.viewport.includes(projectile)) {
+            projectile.animation.play("collision", false, undefined, () => {
+                (projectile.ai as ProjectileAI).damage(1);
+            });
+        } else {
+            (projectile.ai as ProjectileAI).damage(1);
+        }
+        
+        if ((other.ai as BattlerAI).health > 0) {
+            other.animation.override("HURT");
+        }
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -224,21 +248,32 @@ export default class GameLevel extends Scene {
             cardinalRad0 == 3 && cardinalRad1 == 1) {
             (character1.ai as BattlerAI).damage(1);
             (character0.ai as BattlerAI).damage(1);
-            character0.animation.override("HURT");
-            character1.animation.override("HURT");
+            if ((character0.ai as BattlerAI).health > 0) {
+                character0.animation.override("HURT");
+            }
+            if ((character1.ai as BattlerAI).health > 0) {
+                character1.animation.override("HURT");
+            }
+            
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
             (character1.ai as BattlerAI).damage(1);
-            character1.animation.override("HURT");
+            if ((character1.ai as BattlerAI).health > 0) {
+                character1.animation.override("HURT");
+            }
         } else {
             (character0.ai as BattlerAI).damage(1);
-            character0.animation.override("HURT");
+            if ((character0.ai as BattlerAI).health > 0) {
+                character0.animation.override("HURT");
+            }
         }
     }
 
     startScene(){
+        if (!AudioManager.getInstance().isPlaying("gameplay"))
+            this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});
         this.zoomLevel = 2;
         this.hpBars = new Map();
         
@@ -332,7 +367,7 @@ export default class GameLevel extends Scene {
         this.timerLabel.font = "PixelSimple";
 
         // Placeholder for image
-        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(7 * width / 8, height / 20), text: `STAGE 1-1 Burger Kat`});
+        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(6.5 * width / 8, height / 20), text: `STAGE ${this.levelName}`});
         stageNameLabel.textColor = Color.WHITE
         stageNameLabel.font = "PixelSimple";
 
@@ -373,6 +408,7 @@ export default class GameLevel extends Scene {
             switch(event.type){
                 case Events.DROP_COIN: {
                     this.dropCoin(event.data.get("position"));
+                    break;
                 }
                 case Events.DROP_WEAPON: {
                     this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
@@ -383,13 +419,11 @@ export default class GameLevel extends Scene {
                     break;
                 }
                 case Events.PLAYER_COLLIDES_RESCUE: {
-                    if (GameLevel.allies.length < 4) {
-                        let node = this.sceneGraph.getNode(event.data.get("other"));
-                        (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 22);
-                        (node?.ai as CharacterController).setEnemies(this.enemies);
-                        GameLevel.inventory.addCharacter(node);
-                        GameLevel.allies.push(node as AnimatedSprite);
-                    }
+                    let node = this.sceneGraph.getNode(event.data.get("other"));
+                    (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 22);
+                    (node?.ai as CharacterController).setEnemies(this.enemies);
+                    GameLevel.inventory.addCharacter(node as AnimatedSprite);
+                    GameLevel.allies.push(node as AnimatedSprite);
                     
                     break;
                 }
@@ -403,7 +437,14 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
+                    if (node?.ai && this.bumpSoundTimer.isStopped()) {
+                        this.emitter.fireEvent("play_sound", {key: "bump", loop: false, holdReference: false});
+                        this.bumpSoundTimer.start();
+                    }
                     (node?.ai as BattlerAI)?.damage(1);
+                    if ((node.ai as BattlerAI).health > 0) {
+                        (node as AnimatedSprite).animation.override("HURT");
+                    }
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ITEM: {
@@ -424,8 +465,17 @@ export default class GameLevel extends Scene {
                     break;
                 }
                 case Events.PROJECTILE_COLLIDES_GROUND: {
-                    let projectile = this.sceneGraph.getNode(event.data.get("node"));
-                    (projectile?.ai as ProjectileAI)?.damage(1);
+                    let projectile = this.sceneGraph.getNode(event.data.get("node")) as AnimatedSprite;
+                    if (projectile) {
+                        projectile.disablePhysics();
+                        if (this.viewport.includes(projectile)) {
+                            projectile.animation.play("collision", false, undefined, () => {
+                                (projectile.ai as ProjectileAI).damage(1);
+                            });
+                        } else {
+                            (projectile.ai as ProjectileAI).damage(1);
+                        }
+                    }
                     break;
                 }
                 case Events.CHARACTER_DEATH:{
@@ -443,7 +493,7 @@ export default class GameLevel extends Scene {
                     // Remove coin
                     if (coin) {
                         coin.destroy();
-
+                        this.emitter.fireEvent("play_sound", {key: "coin", loop: false, holdReference: false});
                         // Increment our number of coins
                         this.incPlayerCoins(1);
                     }
@@ -504,6 +554,7 @@ export default class GameLevel extends Scene {
             this.togglePause();
             GameLevel.inventory.updateHpBars();
         } else if (Input.isJustPressed("pauseMenu") && this.signToggle == false) {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         } else if (Input.isKeyJustPressed("1")) {
             this.changeLevel(Level1);
@@ -511,16 +562,20 @@ export default class GameLevel extends Scene {
             this.changeLevel(Level1.nextLevel);
         } else if (Input.isKeyJustPressed("9")) {
             GameLevel.allies.forEach(ally => {
-                (ally.ai as CharacterController).health = 100000;
-                (ally.ai as CharacterController).maxHealth = 100000;
+                if (ally.ai) {
+                    (ally.ai as CharacterController).health = 100000;
+                    (ally.ai as CharacterController).maxHealth = 100000;
+                }
             } )
         } else if (Input.isKeyJustPressed("0")) {
             GameLevel.allies.forEach(ally => {
-                const speed = (ally.ai as CharacterController).speed;
-                if (speed === 501)
-                    (ally.ai as CharacterController).speed = GameLevel.partySpeed;
-                else
-                    (ally.ai as CharacterController).speed = 501
+                if (ally.ai) {
+                    const speed = (ally.ai as CharacterController).speed;
+                    if (speed === 501)
+                        (ally.ai as CharacterController).speed = GameLevel.partySpeed;
+                    else
+                        (ally?.ai as CharacterController).speed = 501;
+                }
             } )
         } else if((this.signToggle) && (Input.isPressed("forward") || Input.isPressed("left") || Input.isPressed("right") || Input.isPressed("backward"))){
             this.signToggle = false;
@@ -529,7 +584,7 @@ export default class GameLevel extends Scene {
         }
     }
 
-    changeLevel(level: new (...args: any) => GameLevel) {
+    changeLevel(level: new (...args: any) => Scene) {
         if(level){
             this.updateTimerLabel(0);
             this.timerStopped = true;
@@ -582,6 +637,7 @@ export default class GameLevel extends Scene {
         play.borderColor = Color.WHITE;
         play.backgroundColor = Color.TRANSPARENT;
         play.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         }
 
@@ -615,10 +671,12 @@ export default class GameLevel extends Scene {
     togglePause() {
         this.getLayer("primary").toggle();
         this.getLayer("health").toggle();
-        this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
         GameLevel.allies.forEach(ally => ally.togglePhysics());
         this.enemies.forEach(enemy => enemy.togglePhysics());
-        
+        this.sceneGraph.getAllNodes().forEach(node => {
+            if (node.group === 128 || node.group === 256)
+                node.togglePhysics();
+        })
     }
 
     toggleInventory() {
@@ -745,6 +803,7 @@ export default class GameLevel extends Scene {
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
         player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         player.setTrigger("sign", Events.PLAYER_HIT_SIGN, null);
+        player.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
@@ -775,7 +834,7 @@ export default class GameLevel extends Scene {
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
             allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
-            allySprite.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
+            allySprite.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
             newAllies.push(allySprite);
             // GameLevel.inventory.addCharacter(player);
             // ally.destroy();
@@ -901,7 +960,7 @@ export default class GameLevel extends Scene {
             this.enemies[i].addAI(EnemyAI, enemyOptions);
             this.enemies[i].setGroup("enemy");
             this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
-            this.enemies[i].setTrigger("projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
+            this.enemies[i].setTrigger("player_projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
         }
 
         GameLevel.allies.forEach(character => {
