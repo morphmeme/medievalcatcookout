@@ -85,6 +85,7 @@ export default class TweenController {
             tween.elapsedTime = 0;
             tween.progress = 0;
             tween.reversing = false;
+
         } else {
             console.warn(`Tried to play tween "${key}" on node with id ${this.owner.id}, but no such tween exists`);
         }
@@ -166,6 +167,10 @@ export default class TweenController {
 
                 // If we're past the startDelay, do the tween
                 if(tween.elapsedTime >= tween.startDelay){
+                    if (tween.onStartCallback) {
+                        tween.onStartCallback();
+                        tween.onStartCallback = undefined;
+                    }
                     if(!tween.reversing && tween.elapsedTime >= tween.startDelay + tween.duration){
                         // If we're over time, stop the tween, loop, or reverse
                         if(tween.reverseOnComplete){

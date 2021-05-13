@@ -39,6 +39,10 @@ export default class Level2 extends GameLevel {
         let pos = [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]];
         super.initializeRescues(inventory, pos);
     }
+    initializeChests(positions: Vec2[]) {
+        super.initializeChests([new Vec2(2*32, 117*32), new Vec2(61*32, 117*32),
+            new Vec2(2*32, 69*32), new Vec2(58*32, 7*32),]);
+    }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);
     }

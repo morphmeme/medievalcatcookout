@@ -36,6 +36,7 @@ import Level1 from "./Level1";
 import ProjectileAI from "../AI/ProjectileAI";
 import Tilemap from "../../Wolfie2D/Nodes/Tilemap";
 import AudioManager from "../../Wolfie2D/Sound/AudioManager";
+import RandUtils from "../../Wolfie2D/Utils/RandUtils";
 
 type HpBarData = {
     lastHp: number,
@@ -97,6 +98,9 @@ export default class GameLevel extends Scene {
     private bumpSoundTimer = new Timer(200);
     protected levelName: string = "";
 
+    // coin chest timer
+    private coinTweenDuration = 500;
+
     loadScene(){
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
@@ -114,6 +118,7 @@ export default class GameLevel extends Scene {
         this.load.audio("click", "mcc_assets/sounds/click.wav");
         this.load.audio("cathurt", "mcc_assets/sounds/cathurt.mp3");
         this.load.audio("gameplay", "mcc_assets/music/levelmusic.mp3");
+        this.load.audio("chest-open", "mcc_assets/sounds/chest-open.wav");
         // Load the tilemap
 
         /*
@@ -140,7 +145,9 @@ export default class GameLevel extends Scene {
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
         
-        this.load.image("coin", "hw3_assets/sprites/coin.png");
+        this.load.image("coin", "mcc_assets/sprites/Sprites/coin.png");
+        this.load.image("chest-closed", "mcc_assets/sprites/Sprites/chest-closed.png");
+        this.load.image("chest-open", "mcc_assets/sprites/Sprites/chest-open.png");
     }
 
     /**
@@ -164,6 +171,7 @@ export default class GameLevel extends Scene {
             Events.PROJECTILE_COLLIDES_PLAYER,
             Events.PROJECTILE_COLLIDES_GROUND,
             Events.PLAYER_HIT_SIGN,
+            Events.PLAYER_HIT_CHEST,
         ]);
     }
 
@@ -296,6 +304,7 @@ export default class GameLevel extends Scene {
         this.battleManager = new BattleManager();
 
         this.initializeWeapons();
+        this.initializeChests([]);
 
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
@@ -398,6 +407,16 @@ export default class GameLevel extends Scene {
         coin.setTrigger("player", Events.PLAYER_HIT_COIN, null);
     }
 
+    initializeChests(positions: Vec2[]) {
+        for (const position of positions) {
+            const chest = this.add.sprite("chest-closed", "primary");
+            chest.position.copy(position);
+            chest.addPhysics(new AABB(Vec2.ZERO, new Vec2(16, 16)));
+            chest.setGroup("chest");
+            chest.setTrigger("player", Events.PLAYER_HIT_CHEST, null);
+        }
+    }
+
     fixAllies() {
         for (let i = GameLevel.allies.length - 1; i >= 1; i--) {
             const current = GameLevel.allies[i];
@@ -408,6 +427,53 @@ export default class GameLevel extends Scene {
                 break;
             }
         }
+    }
+
+    playChestCoinsAnimation(position: Vec2, count: number, chest: AnimatedSprite) {
+        for (let i = 0; i < count; i++) {
+            const coin = this.add.sprite("coin", "primary");
+            coin.position.copy(position);
+            coin.alpha = 0;
+            coin.tweens.add("coin", {
+                startDelay: this.coinTweenDuration * i,
+                duration: this.coinTweenDuration,
+                effects: [
+                    {
+                        property: "positionY",
+                        resetOnComplete: true,
+                        start: coin.position.y - 16,
+                        end: coin.position.y - 64,
+                        ease: EaseFunctionType.OUT_SINE
+                    },
+                    {
+                        property: "alpha",
+                        resetOnComplete: true,
+                        start: 1,
+                        end: 0,
+                        ease: EaseFunctionType.OUT_SINE
+                    }
+                ],
+                onStartCallback: () => {
+                    this.emitter.fireEvent("play_sound", {key: "coin", loop: false, holdReference: false});
+                    this.incPlayerCoins(1);
+                }
+            });
+            coin.tweens.play("coin");
+        }
+        chest.tweens.add("chest", {
+            startDelay: this.coinTweenDuration * count,
+            duration: this.coinTweenDuration,
+            effects: [
+                {
+                    property: "alpha",
+                    resetOnComplete: true,
+                    start: 1,
+                    end: 0,
+                    ease: EaseFunctionType.OUT_SINE
+                }
+            ],
+        });
+        chest.tweens.play("chest");
     }
 
     updateScene(deltaT: number): void {
@@ -543,6 +609,14 @@ export default class GameLevel extends Scene {
                     this.signTimer.start(3000);
                     break;
                 }
+                case Events.PLAYER_HIT_CHEST:
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    const openChest = this.add.sprite("chest-open", "primary");
+                    openChest.position.copy(other.position);
+                    this.emitter.fireEvent("play_sound", {key: "chest-open", loop: false, holdReference: false});
+                    this.playChestCoinsAnimation(other.position, RandUtils.randInt(1, 6), openChest as AnimatedSprite);
+                    other?.destroy();
+                    break;
                 default: {
 
                 }

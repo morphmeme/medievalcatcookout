@@ -21,24 +21,26 @@ export enum Events {
     PROJECTILE_COLLIDES_ENEMY = "PROJECTILE_COLLIDES_ENEMY",
     PROJECTILE_COLLIDES_GROUND = "PROJECTILE_COLLIDES_GROUND",
     PLAYER_HIT_SIGN = "PlayerHitSign",
-    PLAYER_LEAVE_SIGN = "PlayerLeaveSign"
+    PLAYER_LEAVE_SIGN = "PlayerLeaveSign",
+    PLAYER_HIT_CHEST = "PLAYER_HIT_CHEST"
 }
 
 // Important: Enemy must be the third option (because it's used for projectiles. a bit hacky i know)
 export const LEVEL_OPTIONS = {
     physics: {
-        groupNames: ["ground", "player", "enemy", "item", "coin", "rescue", "player_projectile", "enemy_projectile", "sign"],
+        groupNames: ["ground", "player", "enemy", "item", "coin", "rescue", "player_projectile", "enemy_projectile", "sign", "chest"],
         collisions:
         [
-            [0, 1, 1, 0, 0, 0, 1, 1, 0],
-            [1, 0, 1, 0, 1, 1, 0, 1, 1],
-            [1, 1, 1, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 1, 0, 0, 0, 0, 0, 0],
-            [1, 1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0]
+            [0, 1, 1, 0, 0, 0, 1, 1, 0, 0],
+            [1, 0, 1, 0, 1, 1, 0, 1, 1, 1],
+            [1, 1, 1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
         ]
     }
 }
