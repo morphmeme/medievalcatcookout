@@ -33,6 +33,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     inventory: InventoryManager;
 
     following: CharacterController;
+    followingDistance: number;
 
     rescue: boolean;
 
@@ -51,7 +52,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     set speed(x: number) {
         this._speed = x;
     }
-
+    public slowed: number;
     private viewport: Viewport;
     public rotation: number = 0;
     protected invulTimer: Timer;
@@ -76,9 +77,11 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.viewport = options.viewport;
         this.direction = Vec2.ZERO;
         this.speed = options.speed || 0;
+        this.slowed = 1;
         this.following = options.following;
         this.enemies = [];
         this.rescue = options.rescue;
+        this.followingDistance = options.followingDistance;
 
         this.invulTimer = new Timer(300, ()=> {
             this.invulnerable = false;
@@ -99,6 +102,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     }
 
     rescued(following: CharacterController, followingDistance: number) {
+        this.followingDistance = followingDistance;
         this.rescue = false;
         this.following = following;
         this.owner.setGroup("player");

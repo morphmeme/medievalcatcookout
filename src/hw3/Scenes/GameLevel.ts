@@ -398,6 +398,18 @@ export default class GameLevel extends Scene {
         coin.setTrigger("player", Events.PLAYER_HIT_COIN, null);
     }
 
+    fixAllies() {
+        for (let i = GameLevel.allies.length - 1; i >= 1; i--) {
+            const current = GameLevel.allies[i];
+            const following = (current.ai as CharacterController).following;
+            const dist = current.position.distanceTo(following.owner.position);
+            if (dist < (current.ai as CharacterController).followingDistance) {
+                (current.ai as CharacterController).slowed = 0.5;
+                break;
+            }
+        }
+    }
+
     updateScene(deltaT: number): void {
         if (GameLevel.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
@@ -420,7 +432,7 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PLAYER_COLLIDES_RESCUE: {
                     let node = this.sceneGraph.getNode(event.data.get("other"));
-                    (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 28);
+                    (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 20);
                     (node?.ai as CharacterController).setEnemies(this.enemies);
                     GameLevel.inventory.addCharacter(node as AnimatedSprite);
                     GameLevel.allies.push(node as AnimatedSprite);
@@ -582,6 +594,8 @@ export default class GameLevel extends Scene {
             this.signLabel.tweens.play("fadeOut");
             this.toggleSign();
         }
+        
+        this.fixAllies();
     }
 
     changeLevel(level: new (...args: any) => Scene) {
@@ -826,7 +840,7 @@ export default class GameLevel extends Scene {
                     allies: newAllies,
                     viewport: this.viewport,
                     following: i == 0 ? undefined : newAllies[newAllies.length-1].ai,
-                    followingDistance: i == 0 ? undefined : 28,
+                    followingDistance: i == 0 ? undefined : 20,
                 });
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");

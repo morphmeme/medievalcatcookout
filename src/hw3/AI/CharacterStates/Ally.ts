@@ -73,13 +73,17 @@ export default class Ally extends CharacterState {
                 weapon?.use(this.owner, "player", dir)
             }
         }
-
+        // this.parent.speed = this.parent.originalSpeed;
 
         this.parent.speed = this.parent.following.speed;
+        if (this.parent.slowed !== 1) {
+            this.parent.speed *= this.parent.slowed;
+            this.parent.slowed = 1;
+        }
         this.parent.direction = this.parent.following.direction;
         const distToFollower = this.owner.position.distanceTo(this.parent.following.owner.position);
         // Speed up if left behind
-        if (distToFollower - this.followingDistance >= 1) {
+        if (distToFollower - this.followingDistance >= 0.2) {
             const catchUpFactor = this.parent.speed + (distToFollower - this.followingDistance) ** 1.5;
             this.parent.speed = catchUpFactor;
         }
