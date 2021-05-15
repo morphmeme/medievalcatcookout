@@ -58,6 +58,13 @@ export const TUTORIAL_TEXT = [
     Go on ahead and Avenge the Kingdom!"
 ];
 
+export const LEVEL2_TEXT = [
+    "On your right are fallen cats from your kingdom.\n Pick them up and get moving! \n Don't forget, it's better if you give weapons\n to your teammates rather than the leader.\n Get the ketchup gun and leave the ruins!",
+    "Are the enemies getting tough? \n Well I didn't say it was easy. \n You'll pick up more strays along the way. \n The more strays, the more weapons you'll need. \n I believe in you, anything is paw-sible.",
+    "Keep a lookout for these signs, \n they may have hints and might even lead to treasure!",
+    "Good work, you've made it to the cafeteria. \n Hopefully there are still some of you left, \n because we need all we can get."
+]
+
 export const LEVEL_NAMES = ["1-1 Awaken", "1-2 Emerging Ruins", "1-3 Untitled", "1-4 Untitled", "1-5 Untitled", "1-6 Untitled"];
 
 export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]
