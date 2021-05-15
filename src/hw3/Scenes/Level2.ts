@@ -37,7 +37,7 @@ export default class Level2 extends GameLevel {
     }
     initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void{
         let pos = [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32], [51*32, 115*32], [61*32, 98*32], 
-        [10*32, 79*32], [7*32, 45*32], [50*32, 37*32]];
+        [10*32, 79*32], [7*32, 45*32], [50*32, 37*32], [38*32, 126*32], [6*32, 116*32]];
         super.initializeRescues(inventory, pos);
     }
     protected editSignUI(index: number): void{
@@ -45,7 +45,7 @@ export default class Level2 extends GameLevel {
         this.signLabel.update(1)
     }
     initializeChests(positions: Vec2[]) {
-        super.initializeChests([new Vec2(2*32, 117*32), new Vec2(61*32, 117*32),
+        super.initializeChests([new Vec2(2*32, 117*32), new Vec2(61*32, 117*32), new Vec2(61*32, 116*32), new Vec2(60*32, 116*32),
             new Vec2(2*32, 69*32), new Vec2(58*32, 7*32),]);
     }
     updateScene(deltaT: number): void {
