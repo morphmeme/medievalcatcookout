@@ -26,7 +26,7 @@ export default class Level5 extends GameLevel {
     }
     startScene(): void {
         super.startScene();
-        // this.addLevelEnd(new Vec2(1025, 0), new Vec2(12,1));
+        this.addLevelEnd(new Vec2(50.5*32, 0), new Vec2(18,1));
         this.nextLevel = Level5.nextLevel;
     }
     initializePlayer(inventory: InventoryManager): void{
@@ -36,12 +36,14 @@ export default class Level5 extends GameLevel {
         super.reinitializeAllies(allies, Level5.spawnPos);;
     }
     initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void{
-        // let pos = [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]];
-        // super.initializeRescues(inventory, pos);
+        let pos = [[20*32, 28*32], [4*32, 8*32], [78*32, 28*32], [93*32, 5*32]];
+        super.initializeRescues(inventory, pos);
     }
     initializeChests(positions: Vec2[]) {
-        // super.initializeChests([new Vec2(2*32, 117*32), new Vec2(61*32, 117*32),
-        //     new Vec2(2*32, 69*32), new Vec2(58*32, 7*32),]);
+        super.initializeChests([new Vec2(21*32, 74*32), new Vec2(28*32, 74*32),
+            new Vec2(22*32, 66*32), new Vec2(43*32, 63*32), new Vec2(53*32, 89*32),
+            new Vec2(93*32, 97*32), new Vec2(95*32, 97*32), new Vec2(97*32, 97*32),
+            new Vec2(41*32, 28*32), new Vec2(16*32, 16*32), new Vec2(83*32, 16*32)]);
     }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);
