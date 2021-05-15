@@ -36,7 +36,8 @@ export default class Level2 extends GameLevel {
         super.reinitializeAllies(allies, Level2.spawnPos);;
     }
     initializeRescues(inventory: InventoryManager, rescuePositions: number[][]): void{
-        let pos = [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32]];
+        let pos = [[34*32, 142*32], [36*32, 142*32], [38*32, 142*32], [51*32, 115*32], [61*32, 98*32], 
+        [10*32, 79*32], [7*32, 45*32], [50*32, 37*32]];
         super.initializeRescues(inventory, pos);
     }
     protected editSignUI(index: number): void{
