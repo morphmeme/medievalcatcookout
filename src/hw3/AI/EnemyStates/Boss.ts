@@ -161,7 +161,7 @@ export default class Boss extends EnemyState {
     }
 
     laserAttack() {
-        if (this.laserTimer.isStopped()) {
+        if (this.laserTimer.isStopped() && this.playerPos) {
             let dir = this.playerPos.clone().sub(this.owner.position).normalize();
             this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 1, 100, Math.PI / 8);
             this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 1, 100, 0);
@@ -171,6 +171,9 @@ export default class Boss extends EnemyState {
     }
 
     chargeAttack(deltaT: number) {
+        if (!this.playerPos) {
+            return;
+        }
         const dir = this.owner.position.dirTo(this.playerPos);
         this.parent.rotation = Vec2.UP.angleToCCW(dir);
         this.parent.moveWithRotation(deltaT);
