@@ -1,0 +1,42 @@
+{
+    "name": "Spike Trap",
+    "spriteSheetImage": "spike-trap.png",
+    "spriteWidth": 32,
+    "spriteHeight": 32,
+    "columns": 8,
+    "rows": 1,
+    "leftBuffer": 0,
+    "rightBuffer": 0,
+    "topBuffer": 0,
+    "bottomBuffer": 0,
+    "animations": [
+      {
+        "name": "DISARMED",
+        "repeat": true,
+        "frames": [
+          { "index": 0, "duration": 10}
+        ]
+      },
+      {
+        "name": "ACTIVATING",
+        "repeat": false,
+        "next": "ARMED",
+        "frames": [
+          { "index": 1, "duration": 10},
+          { "index": 2, "duration": 10},
+          { "index": 3, "duration": 10},
+          { "index": 4, "duration": 10},
+          { "index": 5, "duration": 10},
+          { "index": 6, "duration": 10},
+          { "index": 7, "duration": 10 }
+        ]
+      },
+      {
+        "name": "ARMED",
+        "repeat": true,
+        "frames": [
+          { "index": 7, "duration": 10}
+        ]
+      }
+    ]
+  }
