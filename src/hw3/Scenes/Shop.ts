@@ -16,6 +16,7 @@ import Weapon from "../GameSystems/items/Weapon";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import GameLevel from "./GameLevel";
 import Level2 from "./Level2";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 
 // Only weapons for now
 export type ShopItem = {
@@ -44,6 +45,7 @@ export default class Shop extends Scene {
     private viewPortHeight: number;
     
     loadScene() {
+        this.load.audio("shopmusic", "mcc_assets/music/shopmusic.mp3");
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         this.load.image("coin", "hw3_assets/sprites/coin.png");
@@ -204,6 +206,8 @@ export default class Shop extends Scene {
         nextLevel.backgroundColor = Color.TRANSPARENT;
         nextLevel.onClick = () => {
             this.sceneManager.changeToScene(this.nextLevel, {}, LEVEL_OPTIONS);
+            if (AudioManager.getInstance().isPlaying("shopmusic"))
+                this.emitter.fireEvent("stop_sound", {key: "shopmusic", loop: true, holdReference: true});
         }
     }
 
