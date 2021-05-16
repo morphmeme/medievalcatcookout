@@ -55,6 +55,16 @@
          "opacity":1,
          "properties":[
                 {
+                 "name": "Group",
+                 "type": "string",
+                 "value": "sign"
+                },
+                {
+                 "name":"HasPhysics",
+                 "type":"bool",
+                 "value":false
+                },
+                {
                  "name":"Collidable",
                  "type":"bool",
                  "value":true
@@ -67,7 +77,7 @@
                 {
                  "name":"TriggerGroup",
                  "type":"string",
-                 "value":"sign"
+                 "value":"player"
                 }, 
                 {
                  "name":"TriggerOnEnter",

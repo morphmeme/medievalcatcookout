@@ -25,6 +25,7 @@ export default class Player extends CharacterState {
         if (!this.owner.active) {
             return;
         }
+        // this.parent.speed = this.parent.originalSpeed;
         // Get the movement direction
         if (Input.isPressed("forward") && this.parent.rotation !== Math.PI) {
             this.parent.direction.y = -1;

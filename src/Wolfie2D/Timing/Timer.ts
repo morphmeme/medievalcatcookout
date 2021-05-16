@@ -34,6 +34,9 @@ export default class Timer implements Updateable {
         this.numRuns = 0;
     }
 
+    getTimeLeft(): number{
+        return this.timeLeft;
+    }
     isStopped(){
         return this.state === TimerState.STOPPED;
     }

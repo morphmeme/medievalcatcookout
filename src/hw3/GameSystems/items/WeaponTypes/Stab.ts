@@ -21,10 +21,11 @@ export default class Stab extends WeaponType {
         this.stab.animation.play("NORMAL", true);
 
         // Rotate this with the game node
-        this.stab.rotation = attacker.rotation;
-
+        this.stab.rotation = Vec2.DOWN.angleToCCW(direction)- Math.PI/2;
+        console.log(this.stab.size);
+        console.log(this.stab.size.scaled(2,1));
         // Move the slice out from the player
-        this.stab.position = attacker.position.clone().add(direction.scaled(16));
+        this.stab.position = attacker.position.clone().add(direction.scaled(32));
         
         // Play the slice animation w/o loop, but queue the normal animation
         this.stab.animation.play("STAB");

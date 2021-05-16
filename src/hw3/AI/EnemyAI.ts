@@ -14,6 +14,7 @@ import Patrol from "./EnemyStates/Patrol";
 import MathUtils from "../../Wolfie2D/Utils/MathUtils";
 import Charge from "./EnemyStates/Charge";
 import Timer from "../../Wolfie2D/Timing/Timer";
+import Boss from "./EnemyStates/Boss";
 
 export default class EnemyAI extends StateMachineAI implements BattlerAI {
     dead: boolean;
@@ -33,9 +34,11 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
 
     /** A reference to the player object */
     allies: Array<GameNode>;
+    enemies: Array<GameNode>;
     attack: string;
 
     rotation: number = 0;
+    spriteKey: string;
 
     protected invulTimer: Timer;
 
@@ -51,6 +54,8 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         if(options.defaultMode === "guard"){
             // Guard mode
             this.addState(EnemyStates.DEFAULT, new Guard(this, owner, options.guardPosition));
+        } else if (options.defaultMode === "boss") {
+            this.addState(EnemyStates.DEFAULT, new Boss(this, owner));
         } else {
             // Patrol mode
             this.addState(EnemyStates.DEFAULT, new Patrol(this, owner, options.patrolRoute));
@@ -62,6 +67,8 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
 
         this.health = options.health;
         this.maxHealth = options.health;
+        this.spriteKey = options.spriteKey;
+        this.enemies = options.enemies;
 
         this.weapon = options.weapon;
 
@@ -146,6 +153,10 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     }
 
     setMovingAnimation() {
+        if (this.spriteKey === "long-cat") {
+            this.owner.animation.playIfNotAlready("WALK", true);
+            return;
+        }
         const direction = MathUtils.radiansToCardinal(this.rotation);
         if (direction === 0)
             this.owner.animation.playIfNotAlready("WALK_BACK", true);

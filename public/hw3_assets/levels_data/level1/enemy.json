@@ -24,7 +24,7 @@
             "speed": 30
         },
         {
-            "position": [320, 704],
+            "position": [468, 704],
             "mode": "guard",
             "guardPosition": [320, 704],
             "health": 5,
@@ -51,18 +51,18 @@
             "speed": 60
         },
         {
-            "position": [252, 324],
+            "position": [702, 324],
             "mode": "guard",
-            "guardPosition": [252, 324],
+            "guardPosition": [702, 324],
             "health": 5,
             "attack": "attack",
             "weapon": "mustard_bottle",
             "speed": 30
         },
         {
-            "position": [324, 324],
+            "position": [468, 324],
             "mode": "guard",
-            "guardPosition": [324, 324],
+            "guardPosition": [468, 324],
             "health": 5,
             "attack": "attack",
             "weapon": "mustard_bottle",

@@ -30,7 +30,7 @@ export default class Projectile extends WeaponType {
             ? new Vec2(shooter.position.x + normDirection.x * boundaryHalfSize.x, shooter.position.y + normDirection.y * boundaryHalfSize.y)
             : new Vec2(shooter.position.x, shooter.position.y);
         projectile.position.set(projectilePosition.x, projectilePosition.y);
-        const hitBox = new Vec2(1, 1);
+        const hitBox = new Vec2(4, 4);
         projectile.addPhysics(new AABB(Vec2.ZERO, hitBox));
         projectile.addAI(ProjectileAI,
             {

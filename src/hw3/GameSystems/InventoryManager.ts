@@ -376,7 +376,7 @@ export default class InventoryManager {
             
         // Character hp
         this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
-        
+
         // Updates inventory slot positions an add new ones for those that were taken by characters
         if (!dontMove) {
             this.createInventorySlots(this.slotsCount, this.slotsCount+1);
