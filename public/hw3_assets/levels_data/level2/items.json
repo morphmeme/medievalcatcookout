@@ -3,82 +3,92 @@
         {
             "type": "weapon",
             "weaponType": "ketchup_bottle", 
-            "position": [896, 4576]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [256, 3424]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [1312, 4000]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [1504, 3456]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [1856, 3200]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [1376, 480]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [1408, 480]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [1440, 480]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "ketchup_bottle", 
-            "position": [1376, 4544]
+            "position": [1088, 4608]
         },
         {
             "type": "weapon",
             "weaponType": "spatula", 
-            "position": [736, 4544]
+            "position": [1152, 4608]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1248, 4608]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [896, 4064]
         },
         {
             "type": "weapon",
             "weaponType": "spatula", 
-            "position": [1888, 2272]
+            "position": [704, 3648]
         },
         {
             "type": "weapon",
-            "weaponType": "spatula", 
-            "position": [1888, 2240]
+            "weaponType": "ketchup_bottle", 
+            "position": [352, 3136]
         },
         {
             "type": "weapon",
-            "weaponType": "spatula", 
-            "position": [1888, 2208]
-        },
-        {
-            "type": "weapon",
-            "weaponType": "spatula", 
-            "position": [800, 3456]
+            "weaponType": "ketchup_bottle", 
+            "position": [352, 3200]
         },
         {
             "type": "weapon",
             "weaponType": "mustard_bottle", 
-            "position": [352, 2048]
+            "position": [512, 3488]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1216, 3936]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1216, 3840]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [896, 3744]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1920, 3168]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1248, 3296]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1024, 3200]
         },
         {
             "type": "weapon",
             "weaponType": "mustard_bottle", 
-            "position": [1088, 3552]
+            "position": [416, 2208]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1664, 2208]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1792, 2208]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [832, 480]
         }
     ]
 }

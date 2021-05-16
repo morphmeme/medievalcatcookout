@@ -59,9 +59,15 @@ export const TUTORIAL_TEXT = [
 ];
 
 export const LEVEL2_TEXT = [
-    "On your right are fallen cats from your kingdom.\n Pick them up and get moving! \n Don't forget, it's better if you give weapons\n to your teammates rather than the leader.\n Get the ketchup gun and leave the ruins!",
+    "On your right are fallen cats from your kingdom.\n Pick them up and get moving! \n Don't forget, it's better if you give weapons\n to your teammates rather than the leader.\n Watch out, the castle has fallen apart! \n Get the ketchup gun and leave the ruins!",
+    "Treasure ahead on your right!",
+    "Keep a lookout for these signs, \n they may have hints and might even lead to treasure!\n Find a way to exit the castle, you may want more cats first.",
+    "Carts are in the way, find another path.",
+    "This seems like the right path to the exit. \n Keep going!",
+    "Dead End",
     "Are the enemies getting tough? \n Well I didn't say it was easy. \n You'll pick up more strays along the way. \n The more strays, the more weapons you'll need. \n I believe in you, anything is paw-sible.",
-    "Keep a lookout for these signs, \n they may have hints and might even lead to treasure! \n Past this gate is an small but fierce squadron\n of tribal cats. Make sure you get enough cats\n and guns before you leave the gates.",
+    "Just up ahead is the entrance to the cafeteria.\n Scout out the plains for more enemies.\n Remember to always look for loot!",
+    "This is it, the cafeteria entrance.\n Venture deeper avenger, \n your destiny has just begun.",
     "Good work, you've made it to the cafeteria. \n Hopefully there are still some of you left, \n because we need all we can get."
 ]
 
