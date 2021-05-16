@@ -1,0 +1,14 @@
+{
+    "numEnemies": 1,
+    "enemies": [
+        {
+            "position": [480, 480],
+            "mode": "boss",
+            "guardPosition": [480, 480],
+            "health": 100,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 100
+        }
+    ]
+}

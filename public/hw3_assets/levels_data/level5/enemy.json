@@ -1,5 +1,5 @@
 {
-    "numEnemies": 38,
+    "numEnemies": 44,
     "enemies": [
         {
             "position": [544, 3072],
@@ -326,6 +326,60 @@
             "attack": "attack",
             "weapon": "ketchup_bottle",
             "speed": 30
+        },
+        {
+            "position": [1024, 320],
+            "mode": "guard",
+            "guardPosition": [1024, 320],
+            "health": 5,
+            "attack": "charge",
+            "spriteKey": "long-cat",
+            "speed": 150
+        },
+        {
+            "position": [2208, 480],
+            "mode": "guard",
+            "guardPosition": [2208, 480],
+            "health": 5,
+            "attack": "charge",
+            "spriteKey": "long-cat",
+            "speed": 150
+        },
+        {
+            "position": [864, 896],
+            "mode": "guard",
+            "guardPosition": [864, 896],
+            "health": 5,
+            "attack": "charge",
+            "spriteKey": "long-cat",
+            "speed": 150
+        },
+        {
+            "position": [2208, 896],
+            "mode": "guard",
+            "guardPosition": [2208, 896],
+            "health": 5,
+            "attack": "charge",
+            "spriteKey": "long-cat",
+            "speed": 150
+        },
+        {
+            "position": [2944, 384],
+            "mode": "guard",
+            "guardPosition": [2944, 384],
+            "health": 5,
+            "attack": "charge",
+            "spriteKey": "long-cat",
+            "speed": 150
+        },
+        {
+            "position": [160, 160],
+            "mode": "guard",
+            "guardPosition": [160, 160],
+            "health": 5,
+            "attack": "charge",
+            "spriteKey": "long-cat",
+            "speed": 150
         }
     ]
 }

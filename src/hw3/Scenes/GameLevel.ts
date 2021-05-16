@@ -51,7 +51,7 @@ export default class GameLevel extends Scene {
     public static allies: Array<AnimatedSprite>;
     
     // A list of enemies
-    private enemies: Array<AnimatedSprite>;
+    protected enemies: Array<AnimatedSprite>;
 
     // The wall layer of the tilemap to use for bullet visualization
     private walls: OrthogonalTilemap;
@@ -105,6 +105,7 @@ export default class GameLevel extends Scene {
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
         this.load.spritesheet("enemy", "mcc_assets/spritesheets/enemy/enemy1-cat-sheet.json");
+        this.load.spritesheet("long-cat", "mcc_assets/spritesheets/enemy/long-cat-sheet.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
@@ -287,12 +288,14 @@ export default class GameLevel extends Scene {
         
         // Add in the tilemap
         let tilemapLayers = this.add.tilemap("level");
-
+        console.log(tilemapLayers);
         // Get the wall layer
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
-        this.signs = <OrthogonalTilemap>tilemapLayers[2].getItems()[0];
-        for(let i = 0; i< this.signs.getLayer().getItems().length; i++){
-            this.signpos.push(this.signs.getLayer().getItems()[i].position);
+        this.signs = <OrthogonalTilemap>tilemapLayers[2]?.getItems()[0];
+        if (this.signs) {
+            for(let i = 0; i< this.signs.getLayer().getItems().length; i++){
+                this.signpos.push(this.signs.getLayer().getItems()[i].position);
+            }
         }
         // Set the viewport bounds to the tilemap
         let tilemapSize: Vec2 = this.walls.size; 
@@ -1019,7 +1022,8 @@ export default class GameLevel extends Scene {
             let data = enemyData.enemies[i];
 
             // Create an enemy
-            this.enemies[i] = this.add.animatedSprite("enemy", "primary");
+            const spriteKey = data.spriteKey ?? "enemy";
+            this.enemies[i] = this.add.animatedSprite(spriteKey, "primary");
             this.enemies[i].position.set(data.position[0], data.position[1]);
             this.enemies[i].animation.play("IDLE");
 
@@ -1043,6 +1047,8 @@ export default class GameLevel extends Scene {
                 weapon: data.weapon ? this.createWeapon(data.weapon) : null,
                 attack: data.attack,
                 speed: data.speed,
+                spriteKey: data.spriteKey,
+                enemies: this.enemies
             }
 
             this.enemies[i].addAI(EnemyAI, enemyOptions);

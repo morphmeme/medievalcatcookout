@@ -3,15 +3,16 @@ import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { LEVEL_NAMES } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
+import Level6 from "./Level6";
 export default class Level5 extends GameLevel {
-    public static nextLevel = Level5;
+    public static nextLevel = Level6;
     public static spawnPos = new Vec2(50*32, 95*32);
 
     unloadScene(){
         // TODO Keep resources - this is up to you
     }
     loadScene(){
-        this.levelName = LEVEL_NAMES[1];
+        this.levelName = LEVEL_NAMES[4];
         super.loadScene();
         this.load.tilemap("level", "hw3_assets/tilemaps/level5.json");
         // Load weapon data

@@ -13,6 +13,7 @@ import Level2 from "./Level2";
 import GameLevel from "./GameLevel";
 import Shop from "./Shop";
 import Level5 from "./Level5";
+import Level6 from "./Level6";
 
 
 export default class MainMenu extends Scene {
@@ -41,7 +42,7 @@ export default class MainMenu extends Scene {
             [LEVEL_NAMES[2], new Vec2(4.5 * center.x / 3, center.y), null],
             [LEVEL_NAMES[3], new Vec2(1.5 * center.x / 3, center.y + 100), null],
             [LEVEL_NAMES[4], new Vec2(3 * center.x / 3, center.y + 100), Level5],
-            [LEVEL_NAMES[5], new Vec2(4.5 * center.x / 3, center.y + 100), null],
+            [LEVEL_NAMES[5], new Vec2(4.5 * center.x / 3, center.y + 100), Level6],
         ];
 
         // The main menu
