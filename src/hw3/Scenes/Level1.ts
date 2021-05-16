@@ -9,7 +9,7 @@ import signLabel from "./GameLevel";
 import Shop1 from "./Shop1";
 export default class Level1 extends GameLevel {
     public static nextLevel = Shop1;
-    public static spawnPos = new Vec2(16 * 32, 2 * 32);
+    public static spawnPos = new Vec2(16 * 32, 95.5 * 32);
 
     unloadScene(){
         // TODO Keep resources - this is up to you

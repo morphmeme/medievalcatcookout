@@ -61,7 +61,7 @@ export const TUTORIAL_TEXT = [
 export const LEVEL2_TEXT = [
     "On your right are fallen cats from your kingdom.\n Pick them up and get moving! \n Don't forget, it's better if you give weapons\n to your teammates rather than the leader.\n Watch out, the castle has fallen apart! \n Get the ketchup gun and leave the ruins!",
     "Treasure ahead on your right!",
-    "Keep a lookout for these signs, \n they may have hints and might even lead to treasure! \n Past this gate is an small but fierce squadron\n of tribal cats. Make sure you get enough cats\n and guns before you leave the gates.",
+    "Keep a lookout for these signs, \n they may have hints and might even lead to treasure!\n Find a way to exit the castle, you may want more cats first.",
     "Carts are in the way, find another path.",
     "This seems like the right path to the exit. \n Keep going!",
     "Dead End",
