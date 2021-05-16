@@ -14,6 +14,11 @@
             "type": "weapon",
             "weaponType": "mustard_bottle",
             "position": [608, 1280]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun",
+            "position": [608, 1280]
         }
     ]
 }

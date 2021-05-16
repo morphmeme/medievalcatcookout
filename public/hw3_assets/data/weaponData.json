@@ -34,6 +34,17 @@
             "projectileSpriteKey": "mustardbottleprojectile"
         },
         {
+            "weaponType": "shotGun",
+            "name": "salt_gun",
+            "displayName": "SaltGun",
+            "spriteKey": "saltgun",
+            "damage": 2,
+            "cooldown": 1400,
+            "useVolume": 400,
+            "speed": 200,
+            "projectileSpriteKey": "saltgunprojectile"  
+        },
+        {
             "weaponType": "semiAutoGun",
             "name": "weak_pistol",
             "displayName": "WeakPistol",
@@ -52,16 +63,6 @@
             "cooldown": 20,
             "useVolume": 320,
             "color": "#00FF00"
-        },
-        {
-            "weaponType": "shotGun",
-            "name": "salt_gun",
-            "displayName": "SaltGun",
-            "spriteKey": "saltgun",
-            "damage": 2,
-            "cooldown": 1000,
-            "useVolume": 320,
-            "color": "#000000"
         }
     ]
 }

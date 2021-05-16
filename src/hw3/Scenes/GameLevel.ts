@@ -60,7 +60,7 @@ export default class GameLevel extends Scene {
     // Array of sign positions to distinguish signs
     private signpos: Array<Vec2> = new Array();
     // Timer for sign collision
-    private signTimer: Timer = new Timer(1500);
+    private signTimer: Timer = new Timer(2000);
     // The position graph for the navmesh
     private graph: PositionGraph;
 
@@ -111,6 +111,7 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         this.load.spritesheet("ketchupbottleprojectile", "mcc_assets/sprites/Sprites/ketchup.json");
         this.load.spritesheet("mustardbottleprojectile", "mcc_assets/sprites/Sprites/mustard.json");
+        this.load.spritesheet("saltgunprojectile", "mcc_assets/sprites/Sprites/salt.json");
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
 
         this.load.audio("squirt", "mcc_assets/sounds/squirt.mp3");
