@@ -26,7 +26,7 @@ export default class Stab extends WeaponType {
         console.log(this.stab.size.scaled(2,1));
         // Move the slice out from the player
         this.stab.position = attacker.position.clone().add(direction.scaled(32));
-        
+        scene.emitter.fireEvent("play_sound", {key: "slash", loop:false, holdReferemce: false});
         // Play the slice animation w/o loop, but queue the normal animation
         this.stab.animation.play("STAB");
         this.stab.animation.queue("NORMAL", true);

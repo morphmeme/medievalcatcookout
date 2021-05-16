@@ -50,10 +50,11 @@ export const TUTORIAL_TEXT = [
     "Looks like you've found three lost strays.\nWalk across them and they will join your squad automatically. \n\
      Once they have joined your squad, open your inventory with E.\nSee the characters and their equipment slot, you'll need them later",
     "Let's test out your controls cat!\nManeuver through these obstacles with your newfound squad!",
-    "There are three weapons ahead of you.\nWalk across them to pick them up.\nThen open your inventory. \n\
+    "There are some weapons in front of you.\nWalk across them to pick them up.\nThen open your inventory with E. \n\
     Since you are controlling your squad,\nit's best you leave the shooting and stabbing to them. \n\
-    However, if you're the last one alive,\nyou can pick up the damn ketchup bottle yourself and fire away! \n\
+    However, if you're the last one alive,\nyou can pick up the damn ketchup bottle yourself and fight! \n\
     Just up ahead are some troublemaking strays,\nslaughter the bastards!",
+    
     "Good work kitties!\nBut you aren't finished yet, this is just the beginning.\nJust up ahead is the exit. \n\
     Go on ahead and Avenge the Kingdom!"
 ];

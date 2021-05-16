@@ -3,10 +3,10 @@ import ResourceManager from "../../Wolfie2D/ResourceManager/ResourceManager";
 import LaserGun from "../GameSystems/items/WeaponTypes/LaserGun";
 import Projectile from "../GameSystems/items/WeaponTypes/Projectile";
 import SemiAutoGun from "../GameSystems/items/WeaponTypes/SemiAutoGun";
-import ShotGun from "../GameSystems/items/WeaponTypes/Shotgun";
+import Shotgun from "../GameSystems/items/WeaponTypes/Shotgun";
 import Stab from "../GameSystems/items/WeaponTypes/Stab";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
-
+import Cannon from "../GameSystems/items/WeaponTypes/Cannon";
 export default class WeaponTemplateRegistry extends Registry<WeaponConstructor> {
     
     public preload(): void {
@@ -18,14 +18,16 @@ export default class WeaponTemplateRegistry extends Registry<WeaponConstructor> 
         rm.image("lasergun", "hw3_assets/sprites/lasergun.png");
         rm.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         rm.image("saltgun", "hw3_assets/sprites/salt.png");
+        rm.image("peppergun", "hw3_assets/sprites/pepper.png");
         // Load spritesheets
         rm.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         // Register default types
         this.registerItem("stab", Stab);
         this.registerItem("semiAutoGun", SemiAutoGun);
         this.registerItem("laserGun", LaserGun);
-        this.registerItem("shotGun", ShotGun);
+        this.registerItem("shotGun", Shotgun);
         this.registerItem("projectile", Projectile);
+        this.registerItem("cannon", Cannon);
         
     }
 

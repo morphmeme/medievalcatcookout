@@ -60,7 +60,7 @@ export default class GameLevel extends Scene {
     // Array of sign positions to distinguish signs
     private signpos: Array<Vec2> = new Array();
     // Timer for sign collision
-    private signTimer: Timer = new Timer(1500);
+    private signTimer: Timer = new Timer(2000);
     // The position graph for the navmesh
     private graph: PositionGraph;
 
@@ -111,9 +111,14 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         this.load.spritesheet("ketchupbottleprojectile", "mcc_assets/sprites/Sprites/ketchup.json");
         this.load.spritesheet("mustardbottleprojectile", "mcc_assets/sprites/Sprites/mustard.json");
+        this.load.spritesheet("saltgunprojectile", "mcc_assets/sprites/Sprites/salt.json");
+        this.load.spritesheet("peppergunprojectile", "mcc_assets/sprites/Sprites/pepper.json");
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
 
         this.load.audio("squirt", "mcc_assets/sounds/squirt.mp3");
+        this.load.audio("shake", "mcc_assets/sounds/shake.mp3");
+        this.load.audio("slash", "mcc_assets/sounds/slash.mp3");
+        this.load.audio("cannon", "mcc_assets/sounds/cannon.mp3");
         this.load.audio("coin", "mcc_assets/sounds/coin.wav");
         this.load.audio("bump", "mcc_assets/sounds/bump.wav");
         this.load.audio("click", "mcc_assets/sounds/click.wav");
@@ -134,7 +139,8 @@ export default class GameLevel extends Scene {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
-        
+        this.load.image("peppergun", "hw3_assets/sprites/pepper.png");
+
         this.load.image("coin", "mcc_assets/sprites/Sprites/coin.png");
         this.load.image("chest-closed", "mcc_assets/sprites/Sprites/chest-closed.png");
         this.load.image("chest-open", "mcc_assets/sprites/Sprites/chest-open.png");

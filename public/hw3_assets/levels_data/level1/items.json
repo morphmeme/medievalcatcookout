@@ -3,17 +3,28 @@
         {
             "type": "weapon",
             "weaponType": "ketchup_bottle", 
-            "position": [416, 1280]
+            "position": [392, 1280]
         },
         {
             "type": "weapon",
             "weaponType": "spatula", 
-            "position": [512, 1280]
+            "position": [456, 1280]
         },
         {
             "type": "weapon",
             "weaponType": "mustard_bottle",
-            "position": [608, 1280]
+            "position": [528, 1280]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "pepper_gun",
+            "position": [592, 1280]
+        }
+        ,
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun",
+            "position": [652, 1280]
         }
     ]
 }
