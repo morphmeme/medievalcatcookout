@@ -96,7 +96,7 @@ export default class InventoryManager {
         const viewPortHalfSize = viewPort.getHalfSize();
         this.viewPortWidth = viewPortCenter.x + viewPortHalfSize.x;
         this.viewPortHeight = viewPortCenter.y + viewPortHalfSize.y;
-        const bgRect = <Rect>scene.add.graphic(GraphicType.RECT, LayerNames.BACKGROUND_LAYER, {position: viewPortCenter, size: viewPortHalfSize.scaled(2)});
+        const bgRect = <Rect>scene.add.graphic(GraphicType.RECT, LayerNames.BACKGROUND_LAYER, {position: viewPortCenter.scaled(zoomLevel), size: viewPortHalfSize.scaled(2 * zoomLevel)});
         bgRect.color = Color.BLACK;
 
         // Create the inventory slots
@@ -109,8 +109,20 @@ export default class InventoryManager {
             this.updateItemPositions();
         }
 
-        const nextPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.5, this.viewPortHeight * 0.60), text: "Next Characters"});
-        nextPage.size.set(300, 50);
+        const previousPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.4, this.viewPortHeight * 0.60), text: "Previous Cats"});
+        previousPage.size.set(200, 50);
+        previousPage.borderWidth = 2;
+        previousPage.borderColor = Color.WHITE;
+        previousPage.onClick = () => {
+            const newPage = this.currentPage === 0 ? this.numPages - 1 : this.currentPage - 1;
+            if (this.currentPage !== newPage) {
+                this.setPageVisiblity(newPage);
+            }
+            this.currentPage = newPage;
+        }
+
+        const nextPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.6, this.viewPortHeight * 0.60), text: "Next Cats"});
+        nextPage.size.set(200, 50);
         nextPage.borderWidth = 2;
         nextPage.borderColor = Color.WHITE;
         nextPage.onClick = () => {
@@ -364,7 +376,12 @@ export default class InventoryManager {
         characterImg.animation.play("IDLE");
         characterImg.position.set(centerOfPortait.x - width / 4, centerOfPortait.y);
         
-        const characterName = this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
+        const characterName = this.scene.add.uiElement(UIElementType.LABEL,
+            LayerNames.PORTRAIT_LAYER,
+            {
+                position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel),
+                text: `${i === 0 ? "Player Cat" : `Ally Cat ${i}`}`
+            });
         
         // Save data
         if (!deleting) {

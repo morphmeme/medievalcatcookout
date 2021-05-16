@@ -29,9 +29,9 @@ export default class Level6 extends GameLevel {
         this.load.object("itemData", "hw3_assets/levels_data/level6/items.json");
     }
     startScene(): void {
+        super.startScene();
         if (!AudioManager.getInstance().isPlaying("level6music"))
             this.emitter.fireEvent("play_sound", {key: "level6music", loop: true, holdReference: true});
-        super.startScene();
         // this.addLevelEnd(new Vec2(50.5*32, 0), new Vec2(18,1));
         this.nextLevel = Level6.nextLevel;
     }

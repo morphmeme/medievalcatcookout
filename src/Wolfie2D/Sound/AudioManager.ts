@@ -27,6 +27,7 @@ export default class AudioManager {
         this.receiver.subscribe([
             GameEventType.PLAY_SOUND,
             GameEventType.STOP_SOUND,
+            GameEventType.STOP_ALL_SOUNDS,
             GameEventType.PLAY_MUSIC,
             GameEventType.PLAY_SFX,
             GameEventType.MUTE_CHANNEL,
@@ -161,6 +162,13 @@ export default class AudioManager {
         }
     }
 
+    protected stopAllSounds(): void {
+        this.currentSounds.values().forEach(sound => {
+            sound.stop();
+        })
+        this.currentSounds.clear();
+    }
+
     protected muteChannel(channel: AudioChannelType){
         this.gainNodes[channel].gain.setValueAtTime(0, this.audioCtx.currentTime);
     }
@@ -216,6 +224,10 @@ export default class AudioManager {
                 }
 
                 this.playSound(soundKey, loop, holdReference, channel, event.data);
+            }
+
+            if(event.type === GameEventType.STOP_ALL_SOUNDS){
+                this.stopAllSounds();
             }
 
             if(event.type === GameEventType.STOP_SOUND){

@@ -33,11 +33,9 @@ export default class MainMenu extends Scene {
     }
 
     startScene(){
+        this.emitter.fireEvent("stop_all_sounds");
         if (!AudioManager.getInstance().isPlaying("mainmenumusic"))
             this.emitter.fireEvent("play_sound", {key: "mainmenumusic", loop: true, holdReference: true});
-        for (const lvl of [1, 2, 3, 4, 5, 6]) {
-            this.emitter.fireEvent("stop_sound", {key: `level${lvl}music`});
-        }
         GameLevel.allies = undefined;
         GameLevel.inventory = undefined;
         GameLevel.coinCount = 0;

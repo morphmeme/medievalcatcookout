@@ -54,6 +54,10 @@ export default class Map<T> implements Collection {
 	keys(): Array<string> {
 		return Object.keys(this.map);
 	}
+
+	values(): Array<T> {
+		return Object.values(this.map);
+	}
 	
 	// @implemented
 	forEach(func: (key: string) => void): void {

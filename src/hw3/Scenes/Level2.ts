@@ -29,9 +29,9 @@ export default class Level2 extends GameLevel {
         this.load.object("itemData", "hw3_assets/levels_data/level2/items.json");
     }
     startScene(): void {
+        super.startScene();
         if (!AudioManager.getInstance().isPlaying("gameplay"))
             this.emitter.fireEvent("play_sound", {key: "level2music", loop: true, holdReference: true});
-        super.startScene();
         this.addLevelEnd(new Vec2(1025, 0), new Vec2(12,1));
         this.nextLevel = Level2.nextLevel;
     }

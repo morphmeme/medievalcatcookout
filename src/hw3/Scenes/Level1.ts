@@ -32,9 +32,9 @@ export default class Level1 extends GameLevel {
         this.load.object("itemData", "hw3_assets/levels_data/level1/items.json");
     }
     startScene(): void {
+        super.startScene();
         if (!AudioManager.getInstance().isPlaying("level1music"))
             this.emitter.fireEvent("play_sound", {key: "level1music", loop: true, holdReference: true});
-        super.startScene();
         this.addLevelEnd(new Vec2(534, 32), new Vec2(7,1));
         this.nextLevel = Level1.nextLevel;
     }

@@ -212,6 +212,9 @@ export default class Shop extends Scene {
     }
 
     startScene() {
+        this.emitter.fireEvent("stop_all_sounds");
+        if (!AudioManager.getInstance().isPlaying("shopmusic"))
+            this.emitter.fireEvent("play_sound", {key: "shopmusic", loop: true, holdReference: true});
         this.viewport.setZoomLevel(1);
         this.loadWeaponTypeMap();
         const bgLayer = this.addUILayer("background");

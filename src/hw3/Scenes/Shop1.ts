@@ -51,10 +51,6 @@ export default class Shop1 extends Shop {
         this.nextLevel = Level2;
     }
     startScene(){
-        if (AudioManager.getInstance().isPlaying("level1music"))
-            this.emitter.fireEvent("stop_sound", {key: "level1music", loop: true, holdReference: true});
-        if (!AudioManager.getInstance().isPlaying("shopmusic"))
-            this.emitter.fireEvent("play_sound", {key: "shopmusic", loop: true, holdReference: true});
         super.startScene();
     }
 }
