@@ -6,7 +6,13 @@ import Straight from "./ProjectileStates/Straight";
 export default class ProjectileAI extends StateMachineAI {
     health: number = 1;
     maxHealth: number = 1;
-    direction: Vec2;
+    private _direction: Vec2;
+    public get direction(): Vec2 {
+        return this._direction;
+    }
+    public set direction(value: Vec2) {
+        this._direction = value;
+    }
     owner: AnimatedSprite;
     speed: number;
     dmg: number;

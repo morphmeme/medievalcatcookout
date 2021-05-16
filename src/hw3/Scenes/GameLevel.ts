@@ -181,12 +181,22 @@ export default class GameLevel extends Scene {
             }
         }
         return [...GameLevel.allies, ...this.enemies].map(character => {
-            if (character?.ai && !(character.ai as BattlerAI).dead && this.viewport.includes(character)) {
+            if (character?.ai && !(character.ai as BattlerAI).dead) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
+                let width = 12;
+                let height = 1;
+                let verticalPadding = -20;
+                if ((character.ai as EnemyAI).attack === "boss") {
+                    width = 24;
+                    height = 3;
+                } else if ((character.ai as EnemyAI).spriteKey === "long-cat") {
+                    verticalPadding = -30;
+                }
                 if (this.hpBars.has(character.id)) {
                     const existingHpBarData = this.hpBars.get(character.id);
                     if (existingHpBarData.lastHp != health) {
-                        const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -20), "health");
+                        const bars = drawProgressBar(this, health, maxHealth, width, character.position.clone().inc(0, verticalPadding), "health", height);
+                        
                         existingHpBarData.bars.forEach(bar => {
                             bar.destroy();
                         })
@@ -197,13 +207,13 @@ export default class GameLevel extends Scene {
                         })
                     } else {
                         // Move bars instead of redrawing
-                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, -20));
-                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, -20)
-                                                                                       .inc(-(12 - 12 * (health/maxHealth)) / 2, 0));
-                        existingHpBarData.bars[0].size.copy(new Vec2(12 * (health/maxHealth), 1));
+                        existingHpBarData.bars[1].position.copy(character.position.clone().inc(0, verticalPadding));
+                        existingHpBarData.bars[0].position.copy(character.position.clone().inc(0, verticalPadding)
+                                                                                       .inc(-(width - width * (health/maxHealth)) / 2, 0));
+                        existingHpBarData.bars[0].size.copy(new Vec2(width * (health/maxHealth), height));
                     }
                 } else {
-                    const bars = drawProgressBar(this, health, maxHealth, 12, character.position.clone().inc(0, -20), "health");
+                    const bars = drawProgressBar(this, health, maxHealth, width, character.position.clone().inc(0, verticalPadding), "health", height);
                     this.hpBars.set(character.id, {
                         lastHp: health,
                         bars,

@@ -6,7 +6,7 @@
             "mode": "boss",
             "guardPosition": [480, 480],
             "health": 100,
-            "attack": "attack",
+            "attack": "boss",
             "weapon": "mustard_bottle",
             "speed": 100
         }

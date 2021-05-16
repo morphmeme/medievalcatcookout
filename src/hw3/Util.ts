@@ -6,16 +6,16 @@ import Color from "../Wolfie2D/Utils/Color";
 // TODO: This will crash the game after awhile (not long enough to care)
 // because too many IDs are being generated for each node. Need to reuse IDs or use UUID.
 // Also a very expensive operation
-export function drawProgressBar(scene: Scene, progress: number, maxProgress: number, width: number, pos: Vec2, layer: string) {
+export function drawProgressBar(scene: Scene, progress: number, maxProgress: number, width: number, pos: Vec2, layer: string, height: number = 1) {
     progress = Math.max(0, progress);
-    const workBar = scene.add.graphic(GraphicType.RECT, layer, {position: pos.clone(), size: new Vec2(width, 1)});
+    const workBar = scene.add.graphic(GraphicType.RECT, layer, {position: pos.clone(), size: new Vec2(width, height)});
     workBar.color = Color.RED;
     const progressBar = scene.add.graphic(
         GraphicType.RECT,
         layer, 
         {
             position: pos.clone().inc(-(width - width * (progress/maxProgress)) / 2, 0),
-            size: new Vec2(width * (progress/maxProgress), 1)
+            size: new Vec2(width * (progress/maxProgress), height)
         }
         );
     progressBar.color = Color.GREEN;

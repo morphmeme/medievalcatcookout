@@ -11,6 +11,7 @@ export default class Shop1 extends Shop {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
+        this.load.image("peppergun", "hw3_assets/sprites/salt.png");
 
         this.hpBuffCost = 5;
         this.speedBuffCost = 5;
@@ -28,7 +29,7 @@ export default class Shop1 extends Shop {
             quantity: 3,
             gold: 1,
         }, {
-            itemName: "mustard_button",
+            itemName: "mustard_bottle",
             spriteKey: "mustardbottle",
             displayName: "Mustard Bottle",
             quantity: 3,
@@ -39,6 +40,12 @@ export default class Shop1 extends Shop {
             displayName: "Salt Gun",
             quantity: 3,
             gold: 2,
+        }, {
+            itemName: "pepper_gun",
+            spriteKey: "peppergun",
+            displayName: "Pepper Gun",
+            quantity: 3,
+            gold: 5,
         }];
 
         this.nextLevel = Level2;

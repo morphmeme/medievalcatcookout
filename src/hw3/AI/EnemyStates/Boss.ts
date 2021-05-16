@@ -52,12 +52,16 @@ export default class Boss extends EnemyState {
     private aoeProjectileRotation: number = 0;
     private laserTimer: Timer;
     private henchmanTimer: Timer;
+    private psychicTimer: Timer;
+
+    private psychicProjectiles: AnimatedSprite[] = [];
 
     constructor(parent: EnemyAI, owner: AnimatedSprite){
         super(parent, owner);
         this.aoeProjectileTimer = new Timer(1000);
         this.laserTimer = new Timer(100);
         this.henchmanTimer = new Timer(30000);
+        this.psychicTimer = new Timer(200);
     }
 
     onEnter(options: Record<string, any>): void {
@@ -94,6 +98,7 @@ export default class Boss extends EnemyState {
         projectile.setGroup("enemy_projectile");
         projectile.setTrigger("player", Events.PROJECTILE_COLLIDES_PLAYER, null);
         projectile.setTrigger("ground", Events.PROJECTILE_COLLIDES_GROUND, null);
+        return projectile;
     }
 
     loadWeaponTypeMap() {
@@ -163,11 +168,38 @@ export default class Boss extends EnemyState {
     laserAttack() {
         if (this.laserTimer.isStopped() && this.playerPos) {
             let dir = this.playerPos.clone().sub(this.owner.position).normalize();
-            this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 1, 100, Math.PI / 8);
-            this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 1, 100, 0);
-            this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 1, 100, -Math.PI / 8);
+            this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 2, 150, Math.PI / 8);
+            this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 2, 150, 0);
+            this.spawnProjectile(this.owner, "ketchupbottleprojectile", dir, 2, 150, -Math.PI / 8);
             this.laserTimer.start();
+            this.parent.rotation = Vec2.UP.angleToCCW(dir);
+            this.parent.setMovingAnimation();
         }
+    }
+
+    psychicAttack() {
+        if (!this.playerPos) {
+            return;
+        }
+        let dir = this.playerPos.clone().sub(this.owner.position).normalize();
+        this.parent.rotation = Vec2.UP.angleToCCW(dir);
+        this.parent.setMovingAnimation();
+        const projectileUntrackFlag = this.psychicProjectiles.map(_ => false);
+        this.psychicProjectiles.forEach((projectile, i) => {
+            if (projectile.ai && this.playerPos.distanceTo(projectile.position) > 32) {
+                (projectile.ai as ProjectileAI).direction = this.playerPos.clone().sub(projectile.position).normalize();
+                projectile.rotation = Vec2.UP.angleToCCW(dir);
+            } else {
+                projectileUntrackFlag[i] = true;
+            }
+        })
+        if (this.psychicTimer.isStopped()) {
+            this.psychicProjectiles.push(
+                this.spawnProjectile(this.owner, "peppergunprojectile", dir, 5, 200, 0)
+            );
+            this.psychicTimer.start();
+        }
+        this.psychicProjectiles = this.psychicProjectiles.filter((projectile, i) => projectile.ai && !projectileUntrackFlag[i]);
     }
 
     chargeAttack(deltaT: number) {
@@ -192,7 +224,22 @@ export default class Boss extends EnemyState {
            })
            this.henchmanTimer.start();
         }
-        
+    }
+
+    phase1Attack(deltaT: number) {
+        if (this.playerPos && this.playerPos.distanceTo(this.owner.position) >= 6*32) {
+            this.chargeAttack(deltaT);
+        } else {
+            this.laserAttack();
+        }
+    }
+
+    phase3Attack(deltaT: number) {
+        if (this.playerPos && this.playerPos.distanceTo(this.owner.position) >= 6*32) {
+            this.chargeAttack(deltaT);
+        } else {
+            this.psychicAttack();
+        }
     }
 
     update(deltaT: number): void {
@@ -200,14 +247,12 @@ export default class Boss extends EnemyState {
             return;
         }
         this.playerPos = this.parent.getPlayerPosition();
-        if (this.parent.health <= 0.5 * this.parent.maxHealth) {
+        if (this.parent.health > 0.5 * this.parent.maxHealth) {
+            this.phase1Attack(deltaT);
+        } else if (this.parent.health > 0.10 * this.parent.maxHealth) {
             this.aoeProjectileAttack()
         } else {
-            if (this.playerPos && this.playerPos.distanceTo(this.owner.position) >= 6*32) {
-                this.chargeAttack(deltaT);
-            } else {
-                this.laserAttack();
-            }
+            this.phase3Attack(deltaT);
         }
         
         this.spawnHenchman();
