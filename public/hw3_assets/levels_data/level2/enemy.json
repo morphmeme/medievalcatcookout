@@ -228,6 +228,60 @@
             "attack": "attack",
             "weapon": "mustard_bottle",
             "speed": 30
-        }
+        },
+        {
+            "position": [576, 1184],
+            "mode": "guard",
+            "guardPosition": [576, 1184],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "mustard_bottle",
+            "speed": 30
+        },
+        {
+            "position": [576, 1248],
+            "mode": "guard",
+            "guardPosition": [576, 1248],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup",
+            "speed": 30
+        },
+        {
+            "position": [576, 1312],
+            "mode": "guard",
+            "guardPosition": [576, 1312],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "spatula",
+            "speed": 30
+        },
+        {
+            "position": [224, 640],
+            "mode": "guard",
+            "guardPosition": [224, 640],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [224, 576],
+            "mode": "guard",
+            "guardPosition": [224, 576],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [224, 448],
+            "mode": "guard",
+            "guardPosition": [224, 448],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
     ]
 }
