@@ -11,7 +11,7 @@ export default class Shop1 extends Shop {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
-        this.load.image("peppergun", "hw3_assets/sprites/salt.png");
+        this.load.image("peppergun", "hw3_assets/sprites/pepper.png");
 
         this.hpBuffCost = 5;
         this.speedBuffCost = 5;
