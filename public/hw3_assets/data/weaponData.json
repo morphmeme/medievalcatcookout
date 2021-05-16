@@ -1,5 +1,5 @@
 {
-    "numWeapons": 6,
+    "numWeapons": 7,
     "weapons": [
         {
             "weaponType": "stab",
@@ -43,6 +43,17 @@
             "useVolume": 400,
             "speed": 200,
             "projectileSpriteKey": "saltgunprojectile"  
+        },
+        {
+            "weaponType": "cannon",
+            "name": "pepper_gun",
+            "displayName": "PepperGun",
+            "spriteKey": "peppergun",
+            "damage": 10,
+            "cooldown": 1500,
+            "useVolume": 400,
+            "speed": 300,
+            "projectileSpriteKey": "peppergunprojectile"  
         },
         {
             "weaponType": "semiAutoGun",

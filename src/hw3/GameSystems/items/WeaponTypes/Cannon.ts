@@ -17,7 +17,7 @@ export default class Projectile extends WeaponType {
         this.displayName = options.displayName;
         this.spriteKey = options.spriteKey;
         this.useVolume = options.useVolume;
-        this.speed = options.speed || 100;
+        this.speed = options.speed || 300;
         this.projectileSpriteKey = options.projectileSpriteKey || "player"; 
     }
 
@@ -40,7 +40,7 @@ export default class Projectile extends WeaponType {
             });
         projectile.animation.play("flying");
         projectile.rotation = Vec2.UP.angleToCCW(direction);
-        scene.emitter.fireEvent("play_sound", {key: "squirt", loop: false, holdReference: false});
+        scene.emitter.fireEvent("play_sound", {key: "shake", loop: false, holdReference: false});
         // Enemy shooter group (assuming groups dont change. a bit of a hack (pls dont change groups))
         if (shooter.group === 4) {
             projectile.setGroup("enemy_projectile");
