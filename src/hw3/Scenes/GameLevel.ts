@@ -115,6 +115,7 @@ export default class GameLevel extends Scene {
         this.load.object("weaponData", "hw3_assets/data/weaponData.json");
 
         this.load.audio("squirt", "mcc_assets/sounds/squirt.mp3");
+        this.load.audio("shake", "mcc_assets/sounds/shake.mp3");
         this.load.audio("coin", "mcc_assets/sounds/coin.wav");
         this.load.audio("bump", "mcc_assets/sounds/bump.wav");
         this.load.audio("click", "mcc_assets/sounds/click.wav");
