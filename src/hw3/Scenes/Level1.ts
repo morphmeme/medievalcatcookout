@@ -3,6 +3,7 @@ import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { LEVEL_NAMES } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 import Shop1 from "./Shop1";
 export default class Level1 extends GameLevel {
     public static nextLevel = Shop1;
@@ -12,6 +13,7 @@ export default class Level1 extends GameLevel {
         // TODO Keep resources - this is up to you
     }
     loadScene(){
+        this.load.audio("gameplay", "mcc_assets/music/level1music.mp3");
         this.levelName = LEVEL_NAMES[0];
         super.loadScene();
         this.load.tilemap("level", "hw3_assets/tilemaps/level1.json");
@@ -24,6 +26,8 @@ export default class Level1 extends GameLevel {
         this.load.object("itemData", "hw3_assets/levels_data/level1/items.json");
     }
     startScene(): void {
+        if (!AudioManager.getInstance().isPlaying("gameplay"))
+            this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});
         super.startScene();
         this.addLevelEnd(new Vec2(8, 0), new Vec2(8,1));
         this.nextLevel = Level1.nextLevel;

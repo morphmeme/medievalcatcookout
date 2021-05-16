@@ -105,23 +105,7 @@ export default class GameLevel extends Scene {
         this.load.audio("bump", "mcc_assets/sounds/bump.wav");
         this.load.audio("click", "mcc_assets/sounds/click.wav");
         this.load.audio("cathurt", "mcc_assets/sounds/cathurt.mp3");
-        this.load.audio("gameplay", "mcc_assets/music/levelmusic.mp3");
-        // Load the tilemap
-
-        /*
-        // Load the scene info
         
-
-        // Load the nav mesh
-        this.load.object("navmesh", "hw3_assets/data/navmesh.json");
-
-        // Load in the enemy info
-        this.load.object("enemyData", "hw3_assets/data/enemy.json");
-
-        // Load in item info
-        this.load.object("itemData", "hw3_assets/data/items.json");
-        */
-
         // Load the healthpack sprite
         this.load.image("healthpack", "hw3_assets/sprites/healthpack.png");
         this.load.image("inventorySlot", "hw3_assets/sprites/inventory.png");

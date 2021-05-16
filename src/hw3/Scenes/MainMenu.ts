@@ -11,7 +11,9 @@ import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
 import { CONTROLS_TEXT, LEVEL_NAMES, LEVEL_OPTIONS } from "../Constants";
 import Level2 from "./Level2";
 import GameLevel from "./GameLevel";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 import Shop from "./Shop";
+import Emitter from "../../Wolfie2D/Events/Emitter";
 
 
 export default class MainMenu extends Scene {
@@ -23,12 +25,15 @@ export default class MainMenu extends Scene {
     private levels: Array<[string, Vec2, new (viewport: Viewport, sceneManager: SceneManager, renderingManager: RenderingManager, options: Record<string, any>) => Scene]>
 
     loadScene(){
+        this.load.audio("gameplay", "mcc_assets/music/mainmenumusic.mp3");
         this.load.image("logo", "hw3_assets/static_images/logo.png")
         this.load.audio("click", "mcc_assets/sounds/click.wav");
     }
 
     startScene(){
-        this.emitter.fireEvent("stop_sound", {key: "gameplay"});
+        if (!AudioManager.getInstance().isPlaying("gameplay"))
+            this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});
+        //this.emitter.fireEvent("stop_sound", {key: "gameplay"});
         GameLevel.allies = undefined;
         GameLevel.inventory = undefined;
         GameLevel.coinCount = 0;
@@ -182,6 +187,8 @@ export default class MainMenu extends Scene {
 
             if(event.type === "play"){
                 this.sceneManager.changeToScene(Level1, {}, LEVEL_OPTIONS);
+                if (AudioManager.getInstance().isPlaying("gameplay"))
+                    this.emitter.fireEvent("stop_sound", {key: "gameplay", loop: true, holdReference: true});
             }
 
             if(event.type === "level_select"){

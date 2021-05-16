@@ -11,6 +11,7 @@ export default class Level2 extends GameLevel {
         // TODO Keep resources - this is up to you
     }
     loadScene(){
+        this.load.audio("gameplay", "mcc_assets/music/level2music.mp3");
         this.levelName = LEVEL_NAMES[1];
         super.loadScene();
         this.load.tilemap("level", "hw3_assets/tilemaps/level2.json");
