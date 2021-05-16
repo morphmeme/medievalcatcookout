@@ -945,7 +945,7 @@ export default class GameLevel extends Scene {
         for (const [posX, posY] of rescuePositions) {
             const allySprite = this.add.animatedSprite("player", "primary");
             allySprite.position.set(posX, posY);
-            allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
             allySprite.addAI(CharacterController,
                 {
                     health: GameLevel.initialPartyHp,
