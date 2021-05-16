@@ -4,6 +4,7 @@ import { LEVEL_NAMES } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
 import GameWon from "./GameWon";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 export default class Level6 extends GameLevel {
     public static nextLevel = Level6;
     public static spawnPos = new Vec2(15*32, 29*32);
@@ -14,6 +15,8 @@ export default class Level6 extends GameLevel {
     loadScene(){
         this.levelName = LEVEL_NAMES[5];
         super.loadScene();
+        this.load.audio("level6music", "mcc_assets/music/level6music.mp3");
+        
         this.load.tilemap("level", "hw3_assets/tilemaps/level6.json");
         // Load weapon data
         // Load enemy nav mesh
@@ -26,6 +29,8 @@ export default class Level6 extends GameLevel {
         this.load.object("itemData", "hw3_assets/levels_data/level6/items.json");
     }
     startScene(): void {
+        if (!AudioManager.getInstance().isPlaying("level6music"))
+            this.emitter.fireEvent("play_sound", {key: "level6music", loop: true, holdReference: true});
         super.startScene();
         // this.addLevelEnd(new Vec2(50.5*32, 0), new Vec2(18,1));
         this.nextLevel = Level6.nextLevel;
