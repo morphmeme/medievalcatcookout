@@ -49,7 +49,7 @@ export const TUTORIAL_TEXT = [
     "You've been asleep for quite some time warrior.\nDo you remember where you are?\nThis is the Cookout Kingdom!\nWell, the remains of it anyways.\n The kingdom has been attacked by the Fast Food Dynasty.\nThose bastards!\nNot many have survived their seige on us, but we won't back down\n Get on your feet! Find the others! Avenge the Kingdom!\nYour determination forces you to march without halting.\n Stop reading this sign and press ESC to find the controls.\nYou've only got one shot at this!",
     "Looks like you've found three lost strays.\nWalk across them and they will join your squad automatically. \n\
      Once they have joined your squad, open your inventory with E.\nSee the characters and their equipment slot, you'll need them later",
-    "Let's test out your controls cat!\nManeuver through these obstacles with your newfound squad!",
+    "Let's test out your controls cat!\nManeuver through the obstacles ahead with your newfound squad!\nMove away from the sign (A or D) to avoid colliding with your allies.",
     "There are some weapons in front of you.\nWalk across them to pick them up.\nThen open your inventory with E. \n\
     Since you are controlling your squad,\nit's best you leave the shooting and stabbing to them. \n\
     However, if you're the last one alive,\nyou can pick up the damn ketchup bottle yourself and fight! \n\
