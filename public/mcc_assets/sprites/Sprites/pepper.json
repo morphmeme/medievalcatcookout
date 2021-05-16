@@ -24,7 +24,7 @@
         "name": "collision",
         "repeat": false,
         "frames": [
-          { "index": 4, "duration": 8},
+          { "index": 4, "duration": 4},
           { "index": 5, "duration": 8},
           { "index": 6, "duration": 8},
           { "index": 7, "duration": 4}

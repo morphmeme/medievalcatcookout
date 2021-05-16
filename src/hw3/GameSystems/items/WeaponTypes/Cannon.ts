@@ -23,6 +23,7 @@ export default class Projectile extends WeaponType {
 
     doAnimation(scene: Scene, shooter: GameNode, direction: Vec2): void {
         const projectile = scene.add.animatedSprite(this.projectileSpriteKey, "primary");
+        direction = direction.clone().rotateCCW(Math.random() *0.3 - 0.15);
         const normDirection = direction.normalized();
         const shooterBoundary = (shooter as CanvasNode).boundary;
         const boundaryHalfSize = shooterBoundary?.halfSize;
@@ -40,7 +41,7 @@ export default class Projectile extends WeaponType {
             });
         projectile.animation.play("flying");
         projectile.rotation = Vec2.UP.angleToCCW(direction);
-        scene.emitter.fireEvent("play_sound", {key: "shake", loop: false, holdReference: false});
+        scene.emitter.fireEvent("play_sound", {key: "cannon", loop: false, holdReference: false});
         // Enemy shooter group (assuming groups dont change. a bit of a hack (pls dont change groups))
         if (shooter.group === 4) {
             projectile.setGroup("enemy_projectile");
