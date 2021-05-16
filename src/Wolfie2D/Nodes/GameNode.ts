@@ -89,25 +89,25 @@ export default abstract class GameNode implements Positioned, Unique, Updateable
 
 	destroy(){
 		// If tweens is undefined, already destroyed.
-		if (this.tweens === undefined) {
-			return;
-		}
-		this.tweens.destroy();
-		this.receiver.destroy();
+		// if (this.tweens === undefined) {
+		// 	return;
+		// }
+		this.tweens?.destroy();
+		this.receiver?.destroy();
 
 		if(this.hasPhysics){
 			this.removePhysics();
 		}
 
 		if(this._ai){
-			this._ai.destroy();
+			this._ai?.destroy();
 			delete this._ai;
-			this.scene.getAIManager().removeActor(this);
+			this.scene?.getAIManager().removeActor(this);
 		}
 
-		this.scene.remove(this);
+		this.scene?.remove(this);
 
-		this.layer.removeNode(this);
+		this.layer?.removeNode(this);
 	}
 
 	/*---------- POSITIONED ----------*/

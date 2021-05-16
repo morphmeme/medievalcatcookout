@@ -48,6 +48,12 @@ export default class OrthogonalTilemap extends Tilemap {
      * Gets the dimensions of the tilemap
      * @returns A Vec2 containing the number of columns and the number of rows in the tilemap.
      */
+    getNumCols(): number{
+        return this.numCols;
+    }
+    getNumRows(): number{
+        return this.numRows;
+    }
     getDimensions(): Vec2 {
         return new Vec2(this.numCols, this.numRows);
     }

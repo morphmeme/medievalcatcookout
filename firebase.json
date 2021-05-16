@@ -16,6 +16,10 @@
         "destination": "/index.html"
       },
       {
+        "source": "/benchmark3",
+        "destination": "/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

@@ -6,6 +6,7 @@ import TextInput from "../../Nodes/UIElements/TextInput";
 import ResourceManager from "../../ResourceManager/ResourceManager";
 import Scene from "../../Scene/Scene";
 import MathUtils from "../../Utils/MathUtils";
+import LabelShaderType from "../WebGLRendering/ShaderTypes/LabelShaderType";
 
 /**
  * A utility class to help the @reference[CanvasRenderer] render @reference[UIElement]s
@@ -33,33 +34,42 @@ export default class UIElementRenderer {
      * @param label The label to render
      */
     renderLabel(label: Label): void {
-        // If the size is unassigned (by the user or automatically) assign it
-        label.handleInitialSizing(this.ctx);
+        let previousAlpha = this.ctx.globalAlpha;
+        // Stroke and fill a rounded rect and give it text
+        this.ctx.globalAlpha = label.alpha > 0 ? label.alpha : label.backgroundColor.a;
+        this.ctx.fillStyle = label.calculateBackgroundColor().toStringRGBA();
+        this.ctx.fillRoundedRect(-label.size.x/2, -label.size.y/2,
+            label.size.x, label.size.y, label.borderRadius);
+        
+        this.ctx.strokeStyle = label.calculateBorderColor().toStringRGBA();
+        this.ctx.globalAlpha = label.alpha > 0 ? label.alpha : label.borderColor.a;
+        this.ctx.lineWidth = label.borderWidth;
+        this.ctx.strokeRoundedRect(-label.size.x/2, -label.size.y/2,
+            label.size.x, label.size.y, label.borderRadius);
+
+        const originalText = label.text;
+        let texts = label.text.split('\n');
+        for(var i =0; i < texts.length; i++){
+            // If the size is unassigned (by the user or automatically) assign it
+            label.text = texts[i];
+            label.handleInitialSizing(this.ctx);
+            
+            // Grab the global alpha so we can adjust it for this render
+            
+
+            // Get the font and text position in label
+            this.ctx.font = label.getFontString();
+            let offset = label.calculateTextOffset(this.ctx);
+
+            
+
+            this.ctx.fillStyle = label.calculateTextColor();
+            this.ctx.globalAlpha = label.alpha > 0 ? label.alpha : label.textColor.a;
+            this.ctx.fillText(texts[i], offset.x-label.size.x/2, offset.y - label.size.y/2 +((i - Math.floor(texts.length / 2))*label.fontSize));
+        }
+        this.ctx.globalAlpha = previousAlpha;
+        label.text = originalText;
 		
-		// Grab the global alpha so we can adjust it for this render
-		let previousAlpha = this.ctx.globalAlpha;
-
-        // Get the font and text position in label
-		this.ctx.font = label.getFontString();
-		let offset = label.calculateTextOffset(this.ctx);
-
-		// Stroke and fill a rounded rect and give it text
-		this.ctx.globalAlpha = label.backgroundColor.a;
-		this.ctx.fillStyle = label.calculateBackgroundColor().toStringRGBA();
-		this.ctx.fillRoundedRect(-label.size.x/2, -label.size.y/2,
-			label.size.x, label.size.y, label.borderRadius);
-		
-		this.ctx.strokeStyle = label.calculateBorderColor().toStringRGBA();
-		this.ctx.globalAlpha = label.borderColor.a;
-		this.ctx.lineWidth = label.borderWidth;
-		this.ctx.strokeRoundedRect(-label.size.x/2, -label.size.y/2,
-			label.size.x, label.size.y, label.borderRadius);
-
-		this.ctx.fillStyle = label.calculateTextColor();
-		this.ctx.globalAlpha = label.textColor.a;
-		this.ctx.fillText(label.text, offset.x - label.size.x/2, offset.y - label.size.y/2);
-	
-		this.ctx.globalAlpha = previousAlpha;
     }
 
     /**

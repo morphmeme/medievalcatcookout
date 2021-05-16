@@ -7,8 +7,78 @@
         },
         {
             "type": "weapon",
-            "weaponType": "projectile", 
-            "position": [928, 4576]
+            "weaponType": "ketchup_bottle", 
+            "position": [256, 3424]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1312, 4000]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1504, 3456]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1856, 3200]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1376, 480]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1408, 480]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1440, 480]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "ketchup_bottle", 
+            "position": [1376, 4544]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [736, 4544]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1888, 2272]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1888, 2240]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [1888, 2208]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "spatula", 
+            "position": [800, 3456]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "mustard_bottle", 
+            "position": [352, 2048]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "mustard_bottle", 
+            "position": [1088, 3552]
         }
     ]
 }

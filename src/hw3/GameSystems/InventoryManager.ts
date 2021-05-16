@@ -1,12 +1,14 @@
 import AABB from "../../Wolfie2D/DataTypes/Shapes/AABB";
 import Vec2 from "../../Wolfie2D/DataTypes/Vec2";
 import Input from "../../Wolfie2D/Input/Input";
+import CanvasNode from "../../Wolfie2D/Nodes/CanvasNode";
 import GameNode from "../../Wolfie2D/Nodes/GameNode";
 import Graphic from "../../Wolfie2D/Nodes/Graphic";
 import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
+import Button from "../../Wolfie2D/Nodes/UIElements/Button";
 import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import UILayer from "../../Wolfie2D/Scene/Layers/UILayer";
 import Scene from "../../Wolfie2D/Scene/Scene";
@@ -28,9 +30,11 @@ const LayerNames = {
 }
 
 type CharacterInfo = {
+    id: number,
     slotIdxStart: number,
     hpBars: Graphic[],
     character: AnimatedSprite,
+    portrait: CanvasNode[]
 }
 
 export default class InventoryManager {
@@ -43,6 +47,7 @@ export default class InventoryManager {
     private slotSize: Vec2;
     private padding: number;
     private viewPortWidth: number;
+    private viewPortHeight: number;
     private margin: number;
     private slotsCount: number;
     private portraitLayer: UILayer;
@@ -50,7 +55,9 @@ export default class InventoryManager {
     private currentlyMoving: [Item, number];
     private inventoryStart: number;
     // Partitions some slots for characters
-    private characterToInfo: Map<number, CharacterInfo>;
+    private characterToInfo: CharacterInfo[];
+    private numPages: number = 0;
+    private currentPage: number = 0;
 
     constructor(private scene: Scene, size: number, private inventorySlot: string, position: Vec2, padding: number, private zoomLevel: number, items?: Array<Item>, allies?: AnimatedSprite[]){
         size = items?.length || size;
@@ -62,7 +69,7 @@ export default class InventoryManager {
         this.margin = 120;
         this.currentlyMoving = null;
         this.inventoryStart = 0;
-        this.characterToInfo = new Map();
+        this.characterToInfo = [];
         this.slotPositions = new Map();
         this.slotsCount = size;
         
@@ -88,6 +95,7 @@ export default class InventoryManager {
         const viewPortCenter = viewPort.getCenter();
         const viewPortHalfSize = viewPort.getHalfSize();
         this.viewPortWidth = viewPortCenter.x + viewPortHalfSize.x;
+        this.viewPortHeight = viewPortCenter.y + viewPortHalfSize.y;
         const bgRect = <Rect>scene.add.graphic(GraphicType.RECT, LayerNames.BACKGROUND_LAYER, {position: viewPortCenter, size: viewPortHalfSize.scaled(2)});
         bgRect.color = Color.BLACK;
 
@@ -99,6 +107,18 @@ export default class InventoryManager {
                 this.addCharacter(ally, true);
             })
             this.updateItemPositions();
+        }
+
+        const nextPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.5, this.viewPortHeight * 0.60), text: "Next Characters"});
+        nextPage.size.set(300, 50);
+        nextPage.borderWidth = 2;
+        nextPage.borderColor = Color.WHITE;
+        nextPage.onClick = () => {
+            const newPage = (this.currentPage + 1) % this.numPages;
+            if (this.currentPage !== newPage) {
+                this.setPageVisiblity(newPage);
+            }
+            this.currentPage = newPage;
         }
     }
 
@@ -143,14 +163,12 @@ export default class InventoryManager {
             // create clickable rect
             const slotClick = this.scene.add.sprite(this.inventorySlot, LayerNames.CLICK_LAYER);
             slotClick.position.set(slotPos.x, slotPos.y);
-            slotClick.visible = false;
             slotClick.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)))
             slotClick.setGroup("item");
             slotClick.onClick = () => {
-                console.log(i);
-                this.slotOnClick(i);
+                this.slotOnClick(slotClick.position);
             }
-            this.inventoryClickSlots[i]= slotClick;
+            this.inventoryClickSlots[i] = slotClick;
         }
     }
 
@@ -164,11 +182,17 @@ export default class InventoryManager {
             return;
         }
         this.items[this.currentlyMoving[1]] = this.currentlyMoving[0];
-        this.currentlyMoving[0].moveSprite(this.getSlotPosition(this.currentlyMoving[1]));
+        this.currentlyMoving[0]?.moveSprite(this.getSlotPosition(this.currentlyMoving[1]));
         this.currentlyMoving = null;
     }
 
-    slotOnClick(i: number) {
+    slotOnClick(pos: Vec2) {
+        const i = Array.from(this.slotPositions.values()).findIndex((otherPos, j) => {
+            return (j >= this.characterToInfo.length || Math.floor(j / 4) === this.currentPage) && otherPos.equals(pos) 
+        });
+        if (i === -1) {
+            return;
+        }
         // If item is currently selected
         if (this.currentlyMoving?.[0]) {
             // If there already exists an item on this slot
@@ -195,15 +219,67 @@ export default class InventoryManager {
         }
     }
 
-    addCharacter(character: GameNode, dontMove?: boolean) {
-        this.characterToInfo.set(character.id, {character, slotIdxStart: this.inventoryStart, ...this.characterToInfo.get(character.id)});
+    addCharacter(character: AnimatedSprite, dontMove?: boolean) {
         // TODO edit player
         this.drawCharacterPortrait(this.inventoryStart, character, "player", dontMove);
         this.inventoryStart += 1;
+        this.numPages = Math.floor((this.characterToInfo.length-1) / 4) + 1;
     }
 
-    // TODO later
     deleteCharacter(character: AnimatedSprite) {
+        const idx = this.characterToInfo.findIndex((info) => info.id === character.id);
+        if (idx >= 0) {
+            this.characterToInfo.forEach((characterInfo, i) => {
+                if (i > idx) {
+                    characterInfo.slotIdxStart -= 1;
+                    const prevSlotPos = this.getSlotPosition(i-1);
+                    this.inventorySlots[i].position.copy(prevSlotPos);
+                    this.inventoryClickSlots[i].position.copy(prevSlotPos);
+                    this.items[i]?.moveSprite(prevSlotPos);
+                    
+                }
+            })
+            for (let i = this.characterToInfo.length - 1; i < this.inventorySlots.length; i++) {
+                this.setSlotPosition(i, this.getSlotPosition(i+1));
+            }
+            this.slotPositions.delete(this.inventorySlots.length);
+            // delete dead cats's portrait
+            this.characterToInfo[idx].hpBars?.forEach((hpBar) => hpBar.destroy());
+            this.characterToInfo[idx].portrait.forEach(node => {
+                node.destroy();
+            });
+            
+            // delete slot and item
+            this.inventorySlots[idx].destroy();
+            this.inventoryClickSlots[idx].destroy();
+            this.items[idx]?.sprite.destroy();
+
+            // delete from array
+            this.inventorySlots.splice(idx, 1);
+            this.inventoryClickSlots.splice(idx, 1);
+            this.characterToInfo.splice(idx, 1);
+            this.items.splice(idx, 1);
+            this.inventoryStart -= 1;
+            this.slotsCount -= 1;
+            this.numPages = Math.floor((this.characterToInfo.length-1) / 4) + 1;
+            this.currentPage = this.currentPage % this.numPages;
+
+            
+            // now delete and redraw
+            this.redrawPortraits();
+        }
+    }
+
+    redrawPortraits() {
+        this.characterToInfo.forEach((characterInfo) => {
+            // destroy all portraits
+            characterInfo.hpBars?.forEach((hpBar) => hpBar.destroy());
+            characterInfo.portrait.forEach(node => {
+                node.destroy();
+            });
+            //redraw
+            this.drawCharacterPortrait(characterInfo.slotIdxStart, characterInfo.character, "player", true, true);
+        })
     }
 
     moveSlotSprites(i: number, pos: Vec2) {
@@ -227,13 +303,14 @@ export default class InventoryManager {
             drawProgressBar(this.scene, (character.ai as BattlerAI).health, (character.ai as BattlerAI).maxHealth, 50, pos, LayerNames.PORTRAIT_LAYER)
             : drawProgressBar(this.scene, 0, 1, 50, pos, LayerNames.PORTRAIT_LAYER)
         ;
-        this.characterToInfo.set(character.id, {hpBars, ...this.characterToInfo.get(character.id)});
+        const characterInfo = this.characterToInfo.find((info) => info.id === character.id)
+        characterInfo.hpBars = hpBars;
     }
 
     updateHpBars() {
-        for (const {hpBars, character} of this.characterToInfo.values()) {
+        for (const {hpBars, character} of this.characterToInfo) {
             if (hpBars) {
-                const pos = hpBars[0].position.clone();
+                const pos = hpBars[1].position.clone();
                 const [prevGreenBar, prevRedBar] = hpBars;
                 if (prevGreenBar.tweens)
                     prevGreenBar.destroy();
@@ -242,10 +319,39 @@ export default class InventoryManager {
                 this.updateHpBar(character, pos);
             }
         }
+        this.setPageVisiblity(this.currentPage);
     }
 
-    drawCharacterPortrait(i: number, character: GameNode, spriteImageId: string, dontMove?: boolean) {
-        const centerOfPortait = this.position.clone().add(new Vec2(i * (this.viewPortWidth / (4*this.zoomLevel)) + 7 * this.padding, 10 * this.padding));
+    setPageVisiblity(page: number) {
+        this.characterToInfo.forEach((info, i) => {
+            if (Math.floor(i / 4) !== page) {
+                info.hpBars?.forEach(node => {
+                    node.visible = false;
+                })
+                info.portrait.forEach(node => {
+                    node.visible = false;
+                })
+                this.inventorySlots[i].visible = false;
+                this.inventoryClickSlots[i].visible = false;
+                if (this.items[i])
+                    this.items[i].sprite.visible = false;
+            } else {
+                info.hpBars?.forEach(node => {
+                    node.visible = true;
+                })
+                info.portrait.forEach(node => {
+                    node.visible = true;
+                })
+                this.inventorySlots[i].visible = true;
+                this.inventoryClickSlots[i].visible = true;
+                if (this.items[i])
+                    this.items[i].sprite.visible = true;
+            }
+        })
+    }
+
+    drawCharacterPortrait(i: number, character: AnimatedSprite, spriteImageId: string, dontMove?: boolean, deleting?: boolean) {
+        const centerOfPortait = this.position.clone().add(new Vec2((i % 4) * (this.viewPortWidth / (4*this.zoomLevel)) + 7 * this.padding, 10 * this.padding));
         const width = 60;
         const height = 90;
         let options = {
@@ -258,11 +364,18 @@ export default class InventoryManager {
         characterImg.animation.play("IDLE");
         characterImg.position.set(centerOfPortait.x - width / 4, centerOfPortait.y);
         
+        const characterName = this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
+        
+        // Save data
+        if (!deleting) {
+            this.characterToInfo.push({id: character.id, character, slotIdxStart: this.inventoryStart, hpBars: null, portrait: [border, characterImg, characterName]});
+        } else {
+            const characterInfo = this.characterToInfo.find((info) => info.id === character.id);
+            characterInfo.portrait = [border, characterImg, characterName];
+        }
+            
         // Character hp
         this.updateHpBar(character, centerOfPortait.clone().inc(0, -20));
-
-        // Character Name
-        this.scene.add.uiElement(UIElementType.LABEL, LayerNames.PORTRAIT_LAYER, {position: new Vec2(centerOfPortait.x * this.zoomLevel, (centerOfPortait.y - height / 3) * this.zoomLevel), text: `Character ${i+1}`});
 
         // Updates inventory slot positions an add new ones for those that were taken by characters
         if (!dontMove) {
@@ -270,27 +383,36 @@ export default class InventoryManager {
             this.slotsCount += 1;
         }
 
-        this.moveTailSlots(i, dontMove);
-        // Move to portrait
-        this.moveSlotSprites(i, centerOfPortait.clone().inc(10, 0));
+        if (!deleting) {
+            this.moveTailSlots(i, dontMove);
+            // Move to portrait
+            this.moveSlotSprites(i, centerOfPortait.clone().inc(10, 0));
+        }
+
+        this.setPageVisiblity(this.currentPage);
     }
 
     getWeapon(character: AnimatedSprite): any {
-        const slotIdx = this.characterToInfo.get(character.id).slotIdxStart;
+        const characterInfo = this.characterToInfo.find((info) => info.id === character.id);
+        const slotIdx = characterInfo.slotIdxStart;
         return this.items[slotIdx];
+    }
+
+    calculateInvSlotPosition(i: number) {
+        const posX = this.position.x + i*(this.slotSize.x + this.padding);
+        const posXZoomed = posX * this.zoomLevel;
+        const posXWrapped = (posXZoomed % this.viewPortWidth) / this.zoomLevel;
+        const rowNum = Math.floor(posXZoomed / this.viewPortWidth);
+        const slotPos = new Vec2(posXWrapped, rowNum * 16 + this.position.y + this.margin);
+        this.slotPositions.set(i, slotPos);
+        return slotPos;
     }
 
     getSlotPosition(i: number) {
         if (this.slotPositions.has(i)) {
             return this.slotPositions.get(i);
         } else {
-            const posX = this.position.x + i*(this.slotSize.x + this.padding);
-            const posXZoomed = posX * this.zoomLevel;
-            const posXWrapped = (posXZoomed % this.viewPortWidth) / this.zoomLevel;
-            const rowNum = Math.floor(posXZoomed / this.viewPortWidth);
-            const slotPos = new Vec2(posXWrapped, rowNum * 16 + this.position.y + this.margin);
-            this.slotPositions.set(i, slotPos);
-            return slotPos;
+            return this.calculateInvSlotPosition(i);
         }
     }
 
@@ -301,7 +423,7 @@ export default class InventoryManager {
     /**
      * Adds an item to the currently selected slot
      */
-    addItem(item: Item): boolean {
+    addItem(item: Item, dontUpdateItemLayer?: boolean): boolean {
         // addItem might happen twice in a row? TODO: better way to fix this
         for (const other of this.items) {
             if (other && other.sprite.id == item.sprite.id) {
@@ -321,7 +443,8 @@ export default class InventoryManager {
         this.items[firstSlotAvailable] = item;
             
         // Update the gui
-        item.moveSprite(this.getSlotPosition(firstSlotAvailable), LayerNames.ITEM_LAYER);
+        if (!dontUpdateItemLayer)
+            item.moveSprite(this.getSlotPosition(firstSlotAvailable), LayerNames.ITEM_LAYER);
 
         return true;
     }

@@ -1,8 +1,8 @@
 {
     "name": "stab",
     "spriteSheetImage": "stab.png",
-    "spriteWidth": 16,
-    "spriteHeight": 16,
+    "spriteWidth": 32,
+    "spriteHeight": 32,
     "columns": 4,
     "rows": 1,
     "durationType": "time",
@@ -13,7 +13,7 @@
         },
         {
             "name": "STAB",
-            "frames": [ {"index": 1, "duration": 4}, {"index": 2, "duration": 8}, {"index": 3, "duration": 4} ]
+            "frames": [ {"index": 1, "duration": 2}, {"index": 2, "duration": 8}, {"index": 3, "duration": 6} ]
         }
     ]
 }

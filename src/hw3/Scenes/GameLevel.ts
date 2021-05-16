@@ -5,7 +5,7 @@ import { GraphicType } from "../../Wolfie2D/Nodes/Graphics/GraphicTypes";
 import OrthogonalTilemap from "../../Wolfie2D/Nodes/Tilemaps/OrthogonalTilemap";
 import PositionGraph from "../../Wolfie2D/DataTypes/Graphs/PositionGraph";
 import Navmesh from "../../Wolfie2D/Pathfinding/Navmesh";
-import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names} from "../Constants";
+import {CONTROLS_TEXT, Events, LEVEL_OPTIONS, Names, TUTORIAL_TEXT} from "../Constants";
 import EnemyAI from "../AI/EnemyAI";
 import WeaponType from "../GameSystems/items/WeaponTypes/WeaponType";
 import RegistryManager from "../../Wolfie2D/Registry/RegistryManager";
@@ -16,7 +16,7 @@ import Item from "../GameSystems/items/Item";
 import AABB from "../../Wolfie2D/DataTypes/Shapes/AABB";
 import BattleManager from "../GameSystems/BattleManager";
 import BattlerAI from "../AI/BattlerAI";
-import Label from "../../Wolfie2D/Nodes/UIElements/Label";
+import Label, { HAlign } from "../../Wolfie2D/Nodes/UIElements/Label";
 import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import Color from "../../Wolfie2D/Utils/Color";
 import Input from "../../Wolfie2D/Input/Input";
@@ -29,11 +29,14 @@ import Timer from "../../Wolfie2D/Timing/Timer";
 import { drawProgressBar } from "../Util";
 import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import Graph from "../../Wolfie2D/DataTypes/Graphs/Graph";
-import {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
+import GameNode, {TweenableProperties} from "../../Wolfie2D/Nodes/GameNode";
 import { EaseFunctionType } from "../../Wolfie2D/Utils/EaseFunctions";
 import MainMenu from "./MainMenu";
 import Level1 from "./Level1";
 import ProjectileAI from "../AI/ProjectileAI";
+import Tilemap from "../../Wolfie2D/Nodes/Tilemap";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
+import RandUtils from "../../Wolfie2D/Utils/RandUtils";
 
 type HpBarData = {
     lastHp: number,
@@ -42,7 +45,7 @@ type HpBarData = {
 }
 
 export default class GameLevel extends Scene {
-    private static partySpeed = 100;
+    public static partySpeed = 100;
     private static initialPartyHp = 25;
     // The players
     public static allies: Array<AnimatedSprite>;
@@ -52,7 +55,12 @@ export default class GameLevel extends Scene {
 
     // The wall layer of the tilemap to use for bullet visualization
     private walls: OrthogonalTilemap;
-
+    // The sign layer of the tilemap to use for sign detection
+    private signs: OrthogonalTilemap;
+    // Array of sign positions to distinguish signs
+    private signpos: Array<Vec2> = new Array();
+    // Timer for sign collision
+    private signTimer: Timer = new Timer(1500);
     // The position graph for the navmesh
     private graph: PositionGraph;
 
@@ -62,7 +70,6 @@ export default class GameLevel extends Scene {
     private rescuePositions: number[][];
     // The battle manager for the scene
     private battleManager: BattleManager;
-
     // Characters healths
     private hpBars: Map<number, HpBarData>;
     private weaponTypeMap: Map<string, any>;
@@ -73,8 +80,11 @@ export default class GameLevel extends Scene {
     // end of level position
     private levelEndArea: Rect;
     private levelEndLabel: Label;
+    // sign frame
+    protected signLabel: Label;
+    private signToggle: boolean = false;
     // coins
-    protected static coinCount: number = 0;
+    public static coinCount: number = 0;
     protected coinCountLabel: Label;
 
     // timer
@@ -82,7 +92,14 @@ export default class GameLevel extends Scene {
     protected timerLabel: Label;
     protected timerStopped: boolean = false;
 
-    protected nextLevel: new (...args: any) => GameLevel;;
+    protected nextLevel: new (...args: any) => Scene;;
+
+    // bump timer
+    private bumpSoundTimer = new Timer(200);
+    protected levelName: string = "";
+
+    // coin chest timer
+    private coinTweenDuration = 500;
 
     loadScene(){
         // Load the player and enemy spritesheets
@@ -91,11 +108,22 @@ export default class GameLevel extends Scene {
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
+        this.load.spritesheet("ketchupbottleprojectile", "mcc_assets/sprites/Sprites/ketchup.json");
+        this.load.spritesheet("mustardbottleprojectile", "mcc_assets/sprites/Sprites/mustard.json");
+        this.load.object("weaponData", "hw3_assets/data/weaponData.json");
+
+        this.load.audio("squirt", "mcc_assets/sounds/squirt.mp3");
+        this.load.audio("coin", "mcc_assets/sounds/coin.wav");
+        this.load.audio("bump", "mcc_assets/sounds/bump.wav");
+        this.load.audio("click", "mcc_assets/sounds/click.wav");
+        this.load.audio("cathurt", "mcc_assets/sounds/cathurt.mp3");
+        this.load.audio("gameplay", "mcc_assets/music/levelmusic.mp3");
+        this.load.audio("chest-open", "mcc_assets/sounds/chest-open.wav");
         // Load the tilemap
 
         /*
         // Load the scene info
-        this.load.object("weaponData", "hw3_assets/data/weaponData.json");
+        
 
         // Load the nav mesh
         this.load.object("navmesh", "hw3_assets/data/navmesh.json");
@@ -116,9 +144,10 @@ export default class GameLevel extends Scene {
         this.load.image("ketchupbottle", "hw3_assets/sprites/ketchup.png");
         this.load.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
-        this.load.image("projectile", "hw3_assets/sprites/projectile.png");
         
-        this.load.image("coin", "hw3_assets/sprites/coin.png");
+        this.load.image("coin", "mcc_assets/sprites/Sprites/coin.png");
+        this.load.image("chest-closed", "mcc_assets/sprites/Sprites/chest-closed.png");
+        this.load.image("chest-open", "mcc_assets/sprites/Sprites/chest-open.png");
     }
 
     /**
@@ -141,12 +170,14 @@ export default class GameLevel extends Scene {
             Events.PROJECTILE_COLLIDES_ENEMY,
             Events.PROJECTILE_COLLIDES_PLAYER,
             Events.PROJECTILE_COLLIDES_GROUND,
+            Events.PLAYER_HIT_SIGN,
+            Events.PLAYER_HIT_CHEST,
         ]);
     }
 
     private displayHp() {
         for (const [id, data] of this.hpBars.entries()) {
-            if (!data?.character?.ai) {
+            if (!data?.character?.ai || (data.character.ai as BattlerAI).dead) {
                 data.bars.forEach(bar => {
                     bar.destroy();
                 })
@@ -154,7 +185,7 @@ export default class GameLevel extends Scene {
             }
         }
         return [...GameLevel.allies, ...this.enemies].map(character => {
-            if (character?.ai && this.viewport.includes(character)) {
+            if (character?.ai && !(character.ai as BattlerAI).dead && this.viewport.includes(character)) {
                 const { health, maxHealth } = (character.ai as BattlerAI);
                 if (this.hpBars.has(character.id)) {
                     const existingHpBarData = this.hpBars.get(character.id);
@@ -195,8 +226,18 @@ export default class GameLevel extends Scene {
             return;
         }
         (other.ai as BattlerAI).damage((projectile.ai as ProjectileAI).dmg);
-        (projectile.ai as ProjectileAI).damage(1);
-        other.animation.override("HURT");
+        projectile.disablePhysics();
+        if (this.viewport.includes(projectile)) {
+            projectile.animation.play("collision", false, undefined, () => {
+                (projectile.ai as ProjectileAI).damage(1);
+            });
+        } else {
+            (projectile.ai as ProjectileAI).damage(1);
+        }
+        
+        if ((other.ai as BattlerAI).health > 0) {
+            other.animation.override("HURT");
+        }
     }
 
     protected handleCharacterCollision(character0: AnimatedSprite, character1: AnimatedSprite) {
@@ -215,21 +256,32 @@ export default class GameLevel extends Scene {
             cardinalRad0 == 3 && cardinalRad1 == 1) {
             (character1.ai as BattlerAI).damage(1);
             (character0.ai as BattlerAI).damage(1);
-            character0.animation.override("HURT");
-            character1.animation.override("HURT");
+            if ((character0.ai as BattlerAI).health > 0) {
+                character0.animation.override("HURT");
+            }
+            if ((character1.ai as BattlerAI).health > 0) {
+                character1.animation.override("HURT");
+            }
+            
         } else if (up_0to1 && cardinalRad0 == 2 ||
             down_0to1 && cardinalRad0 == 0 ||
             left_0to1 && cardinalRad0 == 3 ||
             right_0to1 && cardinalRad0 == 1) {
             (character1.ai as BattlerAI).damage(1);
-            character1.animation.override("HURT");
+            if ((character1.ai as BattlerAI).health > 0) {
+                character1.animation.override("HURT");
+            }
         } else {
             (character0.ai as BattlerAI).damage(1);
-            character0.animation.override("HURT");
+            if ((character0.ai as BattlerAI).health > 0) {
+                character0.animation.override("HURT");
+            }
         }
     }
 
     startScene(){
+        if (!AudioManager.getInstance().isPlaying("gameplay"))
+            this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});
         this.zoomLevel = 2;
         this.hpBars = new Map();
         
@@ -238,7 +290,10 @@ export default class GameLevel extends Scene {
 
         // Get the wall layer
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
-
+        this.signs = <OrthogonalTilemap>tilemapLayers[2].getItems()[0];
+        for(let i = 0; i< this.signs.getLayer().getItems().length; i++){
+            this.signpos.push(this.signs.getLayer().getItems()[i].position);
+        }
         // Set the viewport bounds to the tilemap
         let tilemapSize: Vec2 = this.walls.size; 
         this.viewport.setBounds(0, 0, tilemapSize.x, tilemapSize.y);
@@ -249,6 +304,7 @@ export default class GameLevel extends Scene {
         this.battleManager = new BattleManager();
 
         this.initializeWeapons();
+        this.initializeChests([]);
 
         // Initialize the items array - this represents items that are in the game world
         this.items = new Map();
@@ -302,6 +358,8 @@ export default class GameLevel extends Scene {
         this.drawControlScreen();
         this.drawPauseLayer();
 
+
+
         // UI layer
         this.addUILayer("UI");
         const viewportHalfSize = this.viewport.getHalfSize();
@@ -318,12 +376,15 @@ export default class GameLevel extends Scene {
         this.timerLabel.font = "PixelSimple";
 
         // Placeholder for image
-        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(7 * width / 8, height / 20), text: `STAGE 1-1 Burger Kat`});
+        const stageNameLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(6.5 * width / 8, height / 20), text: `STAGE ${this.levelName}`});
         stageNameLabel.textColor = Color.WHITE
         stageNameLabel.font = "PixelSimple";
 
         // level end
-        this.addUI();
+        this.addLevelEndUI();
+
+        // sign
+        this.addSignUI();
         
     }
 
@@ -346,6 +407,75 @@ export default class GameLevel extends Scene {
         coin.setTrigger("player", Events.PLAYER_HIT_COIN, null);
     }
 
+    initializeChests(positions: Vec2[]) {
+        for (const position of positions) {
+            const chest = this.add.sprite("chest-closed", "primary");
+            chest.position.copy(position);
+            chest.addPhysics(new AABB(Vec2.ZERO, new Vec2(16, 16)));
+            chest.setGroup("chest");
+            chest.setTrigger("player", Events.PLAYER_HIT_CHEST, null);
+        }
+    }
+
+    fixAllies() {
+        for (let i = GameLevel.allies.length - 1; i >= 1; i--) {
+            const current = GameLevel.allies[i];
+            const following = (current.ai as CharacterController).following;
+            const dist = current.position.distanceTo(following.owner.position);
+            if (dist < (current.ai as CharacterController).followingDistance) {
+                (current.ai as CharacterController).slowed = 0.5;
+                break;
+            }
+        }
+    }
+
+    playChestCoinsAnimation(position: Vec2, count: number, chest: AnimatedSprite) {
+        for (let i = 0; i < count; i++) {
+            const coin = this.add.sprite("coin", "primary");
+            coin.position.copy(position);
+            coin.alpha = 0;
+            coin.tweens.add("coin", {
+                startDelay: this.coinTweenDuration * i,
+                duration: this.coinTweenDuration,
+                effects: [
+                    {
+                        property: "positionY",
+                        resetOnComplete: true,
+                        start: coin.position.y - 16,
+                        end: coin.position.y - 64,
+                        ease: EaseFunctionType.OUT_SINE
+                    },
+                    {
+                        property: "alpha",
+                        resetOnComplete: true,
+                        start: 1,
+                        end: 0,
+                        ease: EaseFunctionType.OUT_SINE
+                    }
+                ],
+                onStartCallback: () => {
+                    this.emitter.fireEvent("play_sound", {key: "coin", loop: false, holdReference: false});
+                    this.incPlayerCoins(1);
+                }
+            });
+            coin.tweens.play("coin");
+        }
+        chest.tweens.add("chest", {
+            startDelay: this.coinTweenDuration * count,
+            duration: this.coinTweenDuration,
+            effects: [
+                {
+                    property: "alpha",
+                    resetOnComplete: true,
+                    start: 1,
+                    end: 0,
+                    ease: EaseFunctionType.OUT_SINE
+                }
+            ],
+        });
+        chest.tweens.play("chest");
+    }
+
     updateScene(deltaT: number): void {
         if (GameLevel.allies.length === 0) {
             this.sceneManager.changeToScene(GameOver);
@@ -356,6 +486,7 @@ export default class GameLevel extends Scene {
             switch(event.type){
                 case Events.DROP_COIN: {
                     this.dropCoin(event.data.get("position"));
+                    break;
                 }
                 case Events.DROP_WEAPON: {
                     this.dropWeapon(event.data.get("weapon"), event.data.get("position"));
@@ -366,13 +497,11 @@ export default class GameLevel extends Scene {
                     break;
                 }
                 case Events.PLAYER_COLLIDES_RESCUE: {
-                    if (GameLevel.allies.length < 4) {
-                        let node = this.sceneGraph.getNode(event.data.get("other"));
-                        (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 22);
-                        (node?.ai as CharacterController).setEnemies(this.enemies);
-                        GameLevel.inventory.addCharacter(node);
-                        GameLevel.allies.push(node as AnimatedSprite);
-                    }
+                    let node = this.sceneGraph.getNode(event.data.get("other"));
+                    (node?.ai as CharacterController).rescued(GameLevel.allies[GameLevel.allies.length - 1].ai as CharacterController, 20);
+                    (node?.ai as CharacterController).setEnemies(this.enemies);
+                    GameLevel.inventory.addCharacter(node as AnimatedSprite);
+                    GameLevel.allies.push(node as AnimatedSprite);
                     
                     break;
                 }
@@ -386,7 +515,14 @@ export default class GameLevel extends Scene {
                 }
                 case Events.PLAYER_COLLIDES_GROUND: {
                     let node = this.sceneGraph.getNode(event.data.get("node"));
+                    if (node?.ai && this.bumpSoundTimer.isStopped()) {
+                        this.emitter.fireEvent("play_sound", {key: "bump", loop: false, holdReference: false});
+                        this.bumpSoundTimer.start();
+                    }
                     (node?.ai as BattlerAI)?.damage(1);
+                    if ((node.ai as BattlerAI).health > 0) {
+                        (node as AnimatedSprite).animation.override("HURT");
+                    }
                     break;
                 }
                 case Events.PLAYER_COLLIDES_ITEM: {
@@ -407,8 +543,17 @@ export default class GameLevel extends Scene {
                     break;
                 }
                 case Events.PROJECTILE_COLLIDES_GROUND: {
-                    let projectile = this.sceneGraph.getNode(event.data.get("node"));
-                    (projectile?.ai as ProjectileAI)?.damage(1);
+                    let projectile = this.sceneGraph.getNode(event.data.get("node")) as AnimatedSprite;
+                    if (projectile) {
+                        projectile.disablePhysics();
+                        if (this.viewport.includes(projectile)) {
+                            projectile.animation.play("collision", false, undefined, () => {
+                                (projectile.ai as ProjectileAI).damage(1);
+                            });
+                        } else {
+                            (projectile.ai as ProjectileAI).damage(1);
+                        }
+                    }
                     break;
                 }
                 case Events.CHARACTER_DEATH:{
@@ -426,7 +571,7 @@ export default class GameLevel extends Scene {
                     // Remove coin
                     if (coin) {
                         coin.destroy();
-
+                        this.emitter.fireEvent("play_sound", {key: "coin", loop: false, holdReference: false});
                         // Increment our number of coins
                         this.incPlayerCoins(1);
                     }
@@ -440,7 +585,38 @@ export default class GameLevel extends Scene {
                 {
                     this.levelEndLabel.tweens.play("slideIn");
                     this.changeLevel(this.nextLevel);
+                    break;
                 }
+                case Events.PLAYER_HIT_SIGN:
+                {   
+                    if(!this.signTimer.isStopped()){
+                        break;
+                    }
+                    else{
+                        this.signTimer.reset();
+                    }
+                    let node = this.sceneGraph.getNode(event.data.get("node"));
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    for(let i =0; i < this.signpos.length; i++){
+                        if(this.signpos[i] == other.position){
+                            this.editSignUI(i);
+                            break;
+                        }
+                    }
+                    this.signToggle = true;
+                    this.signLabel.tweens.play("fadeIn");
+                    this.toggleSign();
+                    this.signTimer.start(3000);
+                    break;
+                }
+                case Events.PLAYER_HIT_CHEST:
+                    let other = this.sceneGraph.getNode(event.data.get("other"));
+                    const openChest = this.add.sprite("chest-open", "primary");
+                    openChest.position.copy(other.position);
+                    this.emitter.fireEvent("play_sound", {key: "chest-open", loop: false, holdReference: false});
+                    this.playChestCoinsAnimation(other.position, RandUtils.randInt(1, 6), openChest as AnimatedSprite);
+                    other?.destroy();
+                    break;
                 default: {
 
                 }
@@ -458,12 +634,13 @@ export default class GameLevel extends Scene {
         // if(Input.isKeyJustPressed("g")){
         //     this.getLayer("graph").setHidden(!this.getLayer("graph").isHidden());
         // }
-        if(Input.isJustPressed("inventory")){
+        if(Input.isJustPressed("inventory") && this.signToggle == false && this.getLayer("pauseLayer").isHidden()){
             GameLevel.inventory.undoCurrentlyMoving();
             this.toggleInventory();
             this.togglePause();
             GameLevel.inventory.updateHpBars();
-        } else if (Input.isJustPressed("pauseMenu")) {
+        } else if (Input.isJustPressed("pauseMenu") && this.signToggle == false && this.getLayer("inv_bg").isHidden()) {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         } else if (Input.isKeyJustPressed("1")) {
             this.changeLevel(Level1);
@@ -471,21 +648,31 @@ export default class GameLevel extends Scene {
             this.changeLevel(Level1.nextLevel);
         } else if (Input.isKeyJustPressed("9")) {
             GameLevel.allies.forEach(ally => {
-                (ally.ai as CharacterController).health = 100000;
-                (ally.ai as CharacterController).maxHealth = 100000;
+                if (ally.ai) {
+                    (ally.ai as CharacterController).health = 100000;
+                    (ally.ai as CharacterController).maxHealth = 100000;
+                }
             } )
         } else if (Input.isKeyJustPressed("0")) {
             GameLevel.allies.forEach(ally => {
-                const speed = (ally.ai as CharacterController).speed;
-                if (speed === 501)
-                    (ally.ai as CharacterController).speed = GameLevel.partySpeed;
-                else
-                    (ally.ai as CharacterController).speed = 501
+                if (ally.ai) {
+                    const speed = (ally.ai as CharacterController).speed;
+                    if (speed === 501)
+                        (ally.ai as CharacterController).speed = GameLevel.partySpeed;
+                    else
+                        (ally?.ai as CharacterController).speed = 501;
+                }
             } )
+        } else if((this.signToggle) && (Input.isPressed("forward") || Input.isPressed("left") || Input.isPressed("right") || Input.isPressed("backward"))){
+            this.signToggle = false;
+            this.signLabel.tweens.play("fadeOut");
+            this.toggleSign();
         }
+        
+        this.fixAllies();
     }
 
-    changeLevel(level: new (...args: any) => GameLevel) {
+    changeLevel(level: new (...args: any) => Scene) {
         if(level){
             this.updateTimerLabel(0);
             this.timerStopped = true;
@@ -538,6 +725,7 @@ export default class GameLevel extends Scene {
         play.borderColor = Color.WHITE;
         play.backgroundColor = Color.TRANSPARENT;
         play.onClick = () => {
+            this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
         }
 
@@ -563,21 +751,27 @@ export default class GameLevel extends Scene {
             this.sceneManager.changeToScene(MainMenu);
         }
     }
+    toggleSign(){
+        GameLevel.allies.forEach(ally => ally.togglePhysics());
+        this.enemies.forEach(enemy => enemy.togglePhysics());
+    }
 
     togglePause() {
         this.getLayer("primary").toggle();
         this.getLayer("health").toggle();
-        this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
         GameLevel.allies.forEach(ally => ally.togglePhysics());
         this.enemies.forEach(enemy => enemy.togglePhysics());
-        
+        this.sceneGraph.getAllNodes().forEach(node => {
+            if (node.group === 128 || node.group === 256)
+                node.togglePhysics();
+        })
     }
 
     toggleInventory() {
         this.getLayer("slots").setHidden(!this.getLayer("slots").isHidden())
         this.getLayer("items").setHidden(!this.getLayer("items").isHidden())
         this.getLayer("inv_click").setHidden(!this.getLayer("inv_click").isHidden())
-        this.getLayer("inv_bg").setHidden(!this.getLayer("inv_portrait").isHidden())
+        this.getLayer("inv_bg").setHidden(!this.getLayer("inv_bg").isHidden())
         this.getLayer("inv_portrait").setHidden(!this.getLayer("inv_portrait").isHidden())
         // Zoom level 4 for inventory
         if (this.viewport.getZoomLevel() !== 4) {
@@ -696,6 +890,8 @@ export default class GameLevel extends Scene {
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
         player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
+        player.setTrigger("sign", Events.PLAYER_HIT_SIGN, null);
+        player.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         inventory.addCharacter(player);
         GameLevel.allies.push(player);
     }
@@ -718,7 +914,7 @@ export default class GameLevel extends Scene {
                     allies: newAllies,
                     viewport: this.viewport,
                     following: i == 0 ? undefined : newAllies[newAllies.length-1].ai,
-                    followingDistance: i == 0 ? undefined : 22,
+                    followingDistance: i == 0 ? undefined : 20,
                 });
             allySprite.animation.play("IDLE");
             allySprite.setGroup("player");
@@ -726,7 +922,7 @@ export default class GameLevel extends Scene {
             allySprite.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
             allySprite.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
             allySprite.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
-            allySprite.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
+            allySprite.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
             newAllies.push(allySprite);
             // GameLevel.inventory.addCharacter(player);
             // ally.destroy();
@@ -852,7 +1048,7 @@ export default class GameLevel extends Scene {
             this.enemies[i].addAI(EnemyAI, enemyOptions);
             this.enemies[i].setGroup("enemy");
             this.enemies[i].setTrigger("player", Events.PLAYER_COLLIDES_ENEMY, null);
-            this.enemies[i].setTrigger("projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
+            this.enemies[i].setTrigger("player_projectile", Events.PROJECTILE_COLLIDES_ENEMY, null);
         }
 
         GameLevel.allies.forEach(character => {
@@ -876,7 +1072,7 @@ export default class GameLevel extends Scene {
         this.timerLabel.text = `${date.toISOString().substr(11, 8)}`;
     }
 
-    protected addUI(){
+    protected addLevelEndUI(){
         this.levelEndLabel = <Label>this.add.uiElement(UIElementType.LABEL, "UI", {position: new Vec2(-700, 200), text: "Level Complete"});
         this.levelEndLabel.size.set(1400, 60);
         this.levelEndLabel.borderRadius = 0;
@@ -899,10 +1095,62 @@ export default class GameLevel extends Scene {
         });
     }
 
-    protected addLevelEnd(Tile: Vec2, size: Vec2): void{
-        this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: Tile.add(size.scale(1.0)).scaled(32), size: size.scale(16)});
+    protected addSignUI(){
+        let center = this.viewport.getCenter();
+        this.signLabel = <Label> this.add.uiElement(UIElementType.LABEL, "UI",{position: new Vec2(center.x, center.y), text:""});
+        this.signLabel.size.set(900,600);
+        //this.signLabel.setHAlign(HAlign.LEFT);
+        this.signLabel.alpha = 0.0;
+        this.signLabel.backgroundColor = new Color(164,116,73,0.0);
+        this.signLabel.textColor = new Color(0, 0, 0, 0);
+        this.signLabel.tweens.add("fadeIn", {
+            startDelay: 0,
+            duration: 500,
+            effects: [
+                {
+                    property: TweenableProperties.alpha,
+                    start: 0,
+                    end: 1,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        });
+        this.signLabel.tweens.add("fadeOut", {
+            startDelay: 0,
+            duration: 500,
+            effects: [
+                {
+                    property: TweenableProperties.alpha,
+                    start: 1,
+                    end: 0,
+                    ease: EaseFunctionType.IN_OUT_QUAD
+                }
+            ]
+        })
+    }
+
+    protected editSignUI(index: number): void{
+    }
+
+    protected addLevelEnd(tile: Vec2, size: Vec2): void{
+        this.levelEndArea= <Rect>this.add.graphic(GraphicType.RECT, "primary", {position: tile, size: size.scale(16)});
         this.levelEndArea.addPhysics(undefined, undefined, false, true);
         this.levelEndArea.setTrigger("player", Events.PLAYER_LEVEL_END, null);
         this.levelEndArea.color = new Color(255,0,0,1);
     }
+
+    
+    protected getSignPositions(map: OrthogonalTilemap): void{
+        let cols = map.getNumCols();
+        let rows = map.getNumRows();
+        let size = new Vec2(cols, rows);
+        let tiles = size.x * size.y;
+        for(let i =0; i < tiles; i++){
+            if(map.getTile(i) == 7){
+                this.signpos.push(map.getTileWorldPosition(i));
+            }
+        }
+    }
+    
+
 }

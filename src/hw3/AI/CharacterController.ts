@@ -15,6 +15,7 @@ import Rescue from "./CharacterStates/Rescue";
 import Timer from "../../Wolfie2D/Timing/Timer";
 
 export default class CharacterController extends StateMachineAI implements BattlerAI {
+    dead: boolean;
 
     invulnerable: boolean;
     // Fields from BattlerAI
@@ -32,6 +33,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     inventory: InventoryManager;
 
     following: CharacterController;
+    followingDistance: number;
 
     rescue: boolean;
 
@@ -50,7 +52,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     set speed(x: number) {
         this._speed = x;
     }
-
+    public slowed: number;
     private viewport: Viewport;
     public rotation: number = 0;
     protected invulTimer: Timer;
@@ -75,9 +77,11 @@ export default class CharacterController extends StateMachineAI implements Battl
         this.viewport = options.viewport;
         this.direction = Vec2.ZERO;
         this.speed = options.speed || 0;
+        this.slowed = 1;
         this.following = options.following;
         this.enemies = [];
         this.rescue = options.rescue;
+        this.followingDistance = options.followingDistance;
 
         this.invulTimer = new Timer(300, ()=> {
             this.invulnerable = false;
@@ -98,6 +102,7 @@ export default class CharacterController extends StateMachineAI implements Battl
     }
 
     rescued(following: CharacterController, followingDistance: number) {
+        this.followingDistance = followingDistance;
         this.rescue = false;
         this.following = following;
         this.owner.setGroup("player");
@@ -118,6 +123,7 @@ export default class CharacterController extends StateMachineAI implements Battl
         if(this.invulnerable){
             return;
         }
+        this.emitter.fireEvent("play_sound", {key: "cathurt", loop: false, holdReference: false})
         this.health -= damage;
         this.invulnerable = true;
         this.invulTimer.start();
@@ -142,12 +148,17 @@ export default class CharacterController extends StateMachineAI implements Battl
                 if (this.allies[indexOfCharacter-1]?.ai && this.allies[indexOfCharacter+1]?.ai)
                     (this.allies[indexOfCharacter+1].ai as CharacterController).following = (this.allies[indexOfCharacter-1].ai as CharacterController);
             }
-            this.owner.setAIActive(false, {});
-            this.owner.isCollidable = false;
-            this.owner.visible = false;
+            this.dead = true;
             this.owner.disablePhysics();
-            this.owner.destroy();
+            this.owner.isCollidable = false;
+            this.inventory.deleteCharacter(this.owner);
+            this.owner.setAIActive(false, {});
             this.allies.splice(indexOfCharacter, 1);
+            this.owner.animation.override("DOWNED", false, undefined, () => {
+                this.owner.visible = false;
+                this.owner.animation.stop();
+                this.owner.destroy();
+            });
         }
     }
 

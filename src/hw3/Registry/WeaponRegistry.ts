@@ -18,7 +18,6 @@ export default class WeaponTemplateRegistry extends Registry<WeaponConstructor> 
         rm.image("lasergun", "hw3_assets/sprites/lasergun.png");
         rm.image("mustardbottle", "hw3_assets/sprites/mustard.png");
         rm.image("saltgun", "hw3_assets/sprites/salt.png");
-        rm.image("projectile", "hw3_assets/sprites/projectile.png");
         // Load spritesheets
         rm.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         // Register default types

@@ -65,4 +65,5 @@ export class TweenData {
 
     // Added by Alex F. Allows you to call a callback on end of tween duration
     onEndCallback: () => void;
+    onStartCallback: () => void;
 }

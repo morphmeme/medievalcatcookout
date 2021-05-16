@@ -8,9 +8,11 @@ import Level1 from "./Level1";
 import RenderingManager from "../../Wolfie2D/Rendering/RenderingManager";
 import SceneManager from "../../Wolfie2D/Scene/SceneManager";
 import Viewport from "../../Wolfie2D/SceneGraph/Viewport";
-import { CONTROLS_TEXT, LEVEL_OPTIONS } from "../Constants";
+import { CONTROLS_TEXT, LEVEL_NAMES, LEVEL_OPTIONS } from "../Constants";
 import Level2 from "./Level2";
 import GameLevel from "./GameLevel";
+import Shop from "./Shop";
+import Level5 from "./Level5";
 
 
 export default class MainMenu extends Scene {
@@ -23,18 +25,23 @@ export default class MainMenu extends Scene {
 
     loadScene(){
         this.load.image("logo", "hw3_assets/static_images/logo.png")
+        this.load.audio("click", "mcc_assets/sounds/click.wav");
     }
 
     startScene(){
+        this.emitter.fireEvent("stop_sound", {key: "gameplay"});
+        GameLevel.allies = undefined;
+        GameLevel.inventory = undefined;
+        GameLevel.coinCount = 0;
         const center = this.viewport.getCenter();
 
         this.levels = [
-            ["1-1 Awaken", new Vec2(1.5 * center.x / 3, center.y), Level1],
-            ["1-2 Emerging Ruins", new Vec2(3 * center.x / 3, center.y), Level2],
-            ["1-3 Untitled", new Vec2(4.5 * center.x / 3, center.y), null],
-            ["1-4 Untitled", new Vec2(1.5 * center.x / 3, center.y + 100), null],
-            ["1-5 Untitled", new Vec2(3 * center.x / 3, center.y + 100), null],
-            ["1-6 Untitled", new Vec2(4.5 * center.x / 3, center.y + 100), null],
+            [LEVEL_NAMES[0], new Vec2(1.5 * center.x / 3, center.y), Level1],
+            [LEVEL_NAMES[1], new Vec2(3 * center.x / 3, center.y), Level2],
+            [LEVEL_NAMES[2], new Vec2(4.5 * center.x / 3, center.y), null],
+            [LEVEL_NAMES[3], new Vec2(1.5 * center.x / 3, center.y + 100), null],
+            [LEVEL_NAMES[4], new Vec2(3 * center.x / 3, center.y + 100), Level5],
+            [LEVEL_NAMES[5], new Vec2(4.5 * center.x / 3, center.y + 100), null],
         ];
 
         // The main menu
@@ -175,8 +182,6 @@ export default class MainMenu extends Scene {
             let event = this.receiver.getNextEvent();
 
             if(event.type === "play"){
-                GameLevel.allies = undefined;
-                GameLevel.inventory = undefined;
                 this.sceneManager.changeToScene(Level1, {}, LEVEL_OPTIONS);
             }
 
@@ -204,8 +209,6 @@ export default class MainMenu extends Scene {
 
             const levelSelected = this.levels.find(levelInfo => levelInfo[0] === event.type);
             if (levelSelected && levelSelected[2]) {
-                GameLevel.allies = undefined;
-                GameLevel.inventory = undefined;
                 this.sceneManager.changeToScene(levelSelected[2], {}, LEVEL_OPTIONS);
             }
         }

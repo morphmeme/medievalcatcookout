@@ -168,7 +168,7 @@ export default abstract class CanvasNode extends GameNode implements Region {
 	public checkMouseClick() {
 		if(Input.isMouseJustPressed()){
 			let clickPos = Input.getMousePressPosition();
-			if(this.contains(clickPos.x, clickPos.y) && !this.layer.isHidden()){
+			if(this.contains(clickPos.x, clickPos.y) && !this.layer.isHidden() && this.visible){
 				if(this.onClick !== null){
 					this.onClick();
 				}
@@ -176,8 +176,9 @@ export default abstract class CanvasNode extends GameNode implements Region {
 		}
 	}
 
-	update(deltaT: number): void {
+	update(deltaT: number, isUIElement?: boolean): void {
 		super.update(deltaT);
-		this.checkMouseClick();
+		if (!isUIElement)
+			this.checkMouseClick();
 	}
 }

@@ -16,6 +16,7 @@ import Charge from "./EnemyStates/Charge";
 import Timer from "../../Wolfie2D/Timing/Timer";
 
 export default class EnemyAI extends StateMachineAI implements BattlerAI {
+    dead: boolean;
     /** The owner of this AI */
     owner: AnimatedSprite;
 
@@ -89,22 +90,23 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     
         if(this.health <= 0){
             // Drop weapon
-            if (Math.random() < 0.5) {
-                this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
-            } else {
-                this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
-            }
+            // if (Math.random() < 0.5) {
+            //     this.emitter.fireEvent(Events.DROP_WEAPON, {weapon: this.weapon, position: this.owner.position});
+            // } else {
+            //     this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
+            // }
+            this.dead = true;
+            this.emitter.fireEvent(Events.DROP_COIN, {position: this.owner.position});
             
-            this.owner.setAIActive(false, {});
             this.owner.isCollidable = false;
-            this.owner.visible = false;
             this.owner.disablePhysics();
+            this.owner.setAIActive(false, {});
             
-            if(Math.random() < 0.2){
-                // Spawn a healthpack
-                this.emitter.fireEvent(Events.HEALTHPACK_SPAWN, {position: this.owner.position});
-            }
-            this.owner.destroy();
+            this.owner.animation.override("DOWNED", false, undefined, () => {
+                this.owner.visible = false;
+                this.owner.animation.stop();
+                this.owner.destroy();
+            });
             // this.owner.animation.forcePlay("DOWNED", false, Events.CHARACTER_DEATH);
         }
     }
@@ -135,6 +137,12 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
         if (MathUtils.visibleBetweenPos(start, pos, walls))
             return pos;
         return null;
+    }
+
+    moveWithRotation(deltaT: number) {
+        const cardinal = MathUtils.radiansToCardinal(this.rotation);
+        const dir = MathUtils.cardinalToVec2(cardinal);
+        this.owner.move(dir.normalized().scale(this.speed * deltaT));
     }
 
     setMovingAnimation() {
