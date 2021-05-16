@@ -3,6 +3,7 @@ import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { LEVEL2_TEXT, LEVEL_NAMES } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
+import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 export default class Level2 extends GameLevel {
     public static nextLevel = Level2;
     public static spawnPos = new Vec2(28*32, 155*32);
@@ -11,21 +12,27 @@ export default class Level2 extends GameLevel {
         // TODO Keep resources - this is up to you
     }
     loadScene(){
-        this.load.audio("gameplay", "mcc_assets/music/level2music.mp3");
+        //change music
+        this.load.audio("level2music", "mcc_assets/music/level2music.mp3");
         this.levelName = LEVEL_NAMES[1];
         super.loadScene();
+        //load tilemap
         this.load.tilemap("level", "hw3_assets/tilemaps/level2.json");
-        // Load weapon data
-            // Load enemy nav mesh
-            this.load.object("navmesh", "hw3_assets/levels_data/level2/navmesh.json");
+        
+        // Load enemy nav mesh
+        this.load.object("navmesh", "hw3_assets/levels_data/level2/navmesh.json");
 
-            // Load in the enemy info
-            this.load.object("enemyData", "hw3_assets/levels_data/level2/enemy.json");
+        // Load in the enemy info
+        this.load.object("enemyData", "hw3_assets/levels_data/level2/enemy.json");
 
-            // Load in item info
-            this.load.object("itemData", "hw3_assets/levels_data/level2/items.json");
+        // Load in item info
+        this.load.object("itemData", "hw3_assets/levels_data/level2/items.json");
     }
     startScene(): void {
+        if (AudioManager.getInstance().isPlaying("level1music"))
+            this.emitter.fireEvent("stop_sound", {key: "level1music", loop: true, holdReference: true});
+        if (!AudioManager.getInstance().isPlaying("gameplay"))
+            this.emitter.fireEvent("play_sound", {key: "level2music", loop: true, holdReference: true});
         super.startScene();
         this.addLevelEnd(new Vec2(1025, 0), new Vec2(12,1));
         this.nextLevel = Level2.nextLevel;

@@ -118,12 +118,11 @@ export default class GameLevel extends Scene {
         this.load.audio("bump", "mcc_assets/sounds/bump.wav");
         this.load.audio("click", "mcc_assets/sounds/click.wav");
         this.load.audio("cathurt", "mcc_assets/sounds/cathurt.mp3");
-        this.load.audio("gameplay", "mcc_assets/music/levelmusic.mp3");
         this.load.audio("chest-open", "mcc_assets/sounds/chest-open.wav");
-    }
+    
         // Load the tilemap
-
-        /*
+        
+        
         // Load the scene info
         
         // Load the healthpack sprite
@@ -278,7 +277,7 @@ export default class GameLevel extends Scene {
         
         // Add in the tilemap
         let tilemapLayers = this.add.tilemap("level");
-        console.log(tilemapLayers);
+        
         // Get the wall layer
         this.walls = <OrthogonalTilemap>tilemapLayers[1].getItems()[0];
         this.signs = <OrthogonalTilemap>tilemapLayers[2]?.getItems()[0];
@@ -577,7 +576,9 @@ export default class GameLevel extends Scene {
                 case Events.PLAYER_LEVEL_END:
                 {
                     this.levelEndLabel.tweens.play("slideIn");
+                    this.emitter.fireEvent("stop_sound", {key: "gameplay", loop: true, holdReference: true});
                     this.changeLevel(this.nextLevel);
+
                     break;
                 }
                 case Events.PLAYER_HIT_SIGN:

@@ -27,14 +27,14 @@ export default class MainMenu extends Scene {
     private levels: Array<[string, Vec2, new (viewport: Viewport, sceneManager: SceneManager, renderingManager: RenderingManager, options: Record<string, any>) => Scene]>
 
     loadScene(){
-        this.load.audio("gameplay", "mcc_assets/music/mainmenumusic.mp3");
+        this.load.audio("mainmenumusic", "mcc_assets/music/mainmenumusic.mp3");
         this.load.image("logo", "hw3_assets/static_images/logo.png")
         this.load.audio("click", "mcc_assets/sounds/click.wav");
     }
 
     startScene(){
-        if (!AudioManager.getInstance().isPlaying("gameplay"))
-            this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});
+        if (!AudioManager.getInstance().isPlaying("mainmenumusic"))
+            this.emitter.fireEvent("play_sound", {key: "mainmenumusic", loop: true, holdReference: true});
         //this.emitter.fireEvent("stop_sound", {key: "gameplay"});
         GameLevel.allies = undefined;
         GameLevel.inventory = undefined;
@@ -189,8 +189,8 @@ export default class MainMenu extends Scene {
 
             if(event.type === "play"){
                 this.sceneManager.changeToScene(Level1, {}, LEVEL_OPTIONS);
-                if (AudioManager.getInstance().isPlaying("gameplay"))
-                    this.emitter.fireEvent("stop_sound", {key: "gameplay", loop: true, holdReference: true});
+                if (AudioManager.getInstance().isPlaying("mainmenumusic"))
+                    this.emitter.fireEvent("stop_sound", {key: "mainmenumusic", loop: true, holdReference: true});
             }
 
             if(event.type === "level_select"){
@@ -218,6 +218,8 @@ export default class MainMenu extends Scene {
             const levelSelected = this.levels.find(levelInfo => levelInfo[0] === event.type);
             if (levelSelected && levelSelected[2]) {
                 this.sceneManager.changeToScene(levelSelected[2], {}, LEVEL_OPTIONS);
+                if (AudioManager.getInstance().isPlaying("mainmenumusic"))
+                    this.emitter.fireEvent("stop_sound", {key: "mainmenumusic", loop: true, holdReference: true});
             }
         }
     }
