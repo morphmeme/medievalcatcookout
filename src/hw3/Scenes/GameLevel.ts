@@ -813,7 +813,7 @@ export default class GameLevel extends Scene {
         weaponType.initialize(data);
         let sprite = this.add.sprite(weaponType.spriteKey, "primary");
         const weapon = new Weapon(sprite, weaponType, this.battleManager);
-        weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+        weapon.sprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(8, 8)));
         weapon.sprite.setGroup("item");
         weapon.sprite.setTrigger("player", Events.PLAYER_COLLIDES_ITEM, null);
         this.items.set(weapon.sprite, weapon);
