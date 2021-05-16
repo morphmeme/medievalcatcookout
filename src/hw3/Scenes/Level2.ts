@@ -17,7 +17,7 @@ export default class Level2 extends GameLevel {
         this.levelName = LEVEL_NAMES[1];
         super.loadScene();
         //load tilemap
-        this.load.tilemap("level", "hw3_assets/tilemaps/level2-2.json");
+        this.load.tilemap("level", "hw3_assets/tilemaps/level2.json");
         
         // Load enemy nav mesh
         this.load.object("navmesh", "hw3_assets/levels_data/level2/navmesh.json");

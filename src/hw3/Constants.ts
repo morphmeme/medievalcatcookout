@@ -67,7 +67,7 @@ export const LEVEL2_TEXT = [
     "Dead End",
     "Are the enemies getting tough? \n Well I didn't say it was easy. \n You'll pick up more strays along the way. \n The more strays, the more weapons you'll need. \n I believe in you, anything is paw-sible.",
     "Just up ahead is the entrance to the cafeteria.\n Scout out the plains for more enemies.\n Remember to always look for loot!",
-    "This is it, the cafeteria entrancen.\n Venture deeper avenger, \n your destiny has just begun.",
+    "This is it, the cafeteria entrance.\n Venture deeper avenger, \n your destiny has just begun.",
     "Good work, you've made it to the cafeteria. \n Hopefully there are still some of you left, \n because we need all we can get."
 ]
 
