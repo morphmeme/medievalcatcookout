@@ -898,7 +898,7 @@ export default class GameLevel extends Scene {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
         player.position.set(x, y)
-        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 10)));
+        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
         player.addAI(CharacterController,
             {
                 health: GameLevel.initialPartyHp,
