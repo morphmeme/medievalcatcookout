@@ -1,6 +1,6 @@
-import Level2 from "./Level2";
+import Level6 from "./Level6";
 import Shop from "./Shop";
-export default class Shop1 extends Shop {
+export default class Shop5 extends Shop {
     loadScene() {
         super.loadScene();
         // Load weapons
@@ -49,7 +49,7 @@ export default class Shop1 extends Shop {
             gold: 5,
         }];
 
-        this.nextLevel = Level2;
+        this.nextLevel = Level6;
     }
     startScene(){
         super.startScene();
