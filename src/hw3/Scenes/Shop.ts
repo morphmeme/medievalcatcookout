@@ -36,7 +36,9 @@ export default class Shop extends Scene {
     protected shopItems: ShopItem[] = [];
     private hpBuffBought = false;
     protected hpBuffCost = 10;
+    protected hpBuffRatio = 1.1;
     protected speedBuffCost = 10;
+    protected speedRatio = 1.1;
     private speedBuffBought = false;
     protected partyHealCost = 10;
     private partyHealBought = false;
@@ -79,14 +81,16 @@ export default class Shop extends Scene {
         const buffHeight = buffHeightRatio * this.viewPortHeight;
         const rectSize = new Vec2(buffWidth, buffHeight);
         const hpBuffPosition = new Vec2(this.viewPortWidth * 0.75, buffHeight - 64);
-        const hpBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: hpBuffPosition.clone(), text: "Increase Max HP By 10%"});
+        const hpBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: hpBuffPosition.clone(), text: `Increase Max HP By ${this.hpBuffRatio}x`});
         hpBuffRect.size.copy(rectSize);
         hpBuffRect.borderColor = Color.WHITE;
         hpBuffRect.onClick = () => {
             if (!this.hpBuffBought && GameLevel.coinCount >= this.hpBuffCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.hpBuffCost);
                 GameLevel.allies.forEach(ally => {
-                    (ally?.ai as BattlerAI).maxHealth *= 1.1
+                    const newHp = Math.ceil((ally?.ai as BattlerAI).maxHealth * 1.1);
+                    GameLevel.initialPartyHp = newHp;
+                    (ally?.ai as BattlerAI).maxHealth = newHp; 
                     hpBuffRect.backgroundColor.a = 0.5;
                     this.hpBuffBought = true;
                     this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
@@ -105,18 +109,16 @@ export default class Shop extends Scene {
         coin.animation.play("spinning");
 
         const speedBuffPosition = new Vec2(this.viewPortWidth * 0.75, 2 * buffHeight - 64);
-        const speedBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: speedBuffPosition.clone(), text: "Increase Speed By 10%"});
+        const speedBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: speedBuffPosition.clone(), text: `Increase Speed By ${this.speedRatio}x`});
         speedBuffRect.size.copy(rectSize);
         speedBuffRect.borderColor = Color.WHITE;
         speedBuffRect.onClick = () => {
             if (!this.speedBuffBought && GameLevel.coinCount >= this.speedBuffCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.speedBuffCost);
-                GameLevel.allies.forEach(ally => {
-                    (ally?.ai as CharacterController).speed *= 1.1;
-                    speedBuffRect.backgroundColor.a = 0.5;
-                    this.speedBuffBought = true;
-                    this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
-                })
+                GameLevel.partySpeed *= 1.1;
+                speedBuffRect.backgroundColor.a = 0.5;
+                this.speedBuffBought = true;
+                this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
             }
         }
 
@@ -139,10 +141,10 @@ export default class Shop extends Scene {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.partyHealCost);
                 GameLevel.allies.forEach(ally => {
                     (ally?.ai as CharacterController).health = (ally?.ai as CharacterController).maxHealth;
-                    partyHealRect.backgroundColor.a = 0.5;
-                    this.partyHealBought = true;
-                    this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
                 })
+                partyHealRect.backgroundColor.a = 0.5;
+                this.partyHealBought = true;
+                this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
             }
         }
 

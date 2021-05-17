@@ -46,7 +46,7 @@ type HpBarData = {
 
 export default class GameLevel extends Scene {
     public static partySpeed = 100;
-    private static initialPartyHp = 25;
+    public static initialPartyHp = 25;
     // The players
     public static allies: Array<AnimatedSprite>;
     
@@ -286,6 +286,7 @@ export default class GameLevel extends Scene {
     }
 
     startScene(){
+        console.log(GameLevel.partySpeed);
         this.emitter.fireEvent("stop_all_sounds");
         if (!AudioManager.getInstance().isPlaying("gameplay"))
             this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});
@@ -900,7 +901,6 @@ export default class GameLevel extends Scene {
         player.setTrigger("player", Events.PLAYER_COLLIDES_PLAYER, null);
         player.setTrigger("ground", Events.PLAYER_COLLIDES_GROUND, null);
         player.setTrigger("coin", Events.PLAYER_HIT_COIN, null);
-        player.setTrigger("projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         player.setTrigger("sign", Events.PLAYER_HIT_SIGN, null);
         player.setTrigger("enemy_projectile", Events.PROJECTILE_COLLIDES_PLAYER, null);
         inventory.addCharacter(player);

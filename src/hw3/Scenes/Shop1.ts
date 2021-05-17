@@ -14,7 +14,9 @@ export default class Shop1 extends Shop {
         this.load.image("peppergun", "hw3_assets/sprites/pepper.png");
 
         this.hpBuffCost = 5;
+        this.hpBuffRatio = 1.1;
         this.speedBuffCost = 5;
+        this.speedRatio = 1.1;
         this.partyHealCost = 3;
         this.shopItems = [{
             itemName: "ketchup_bottle",

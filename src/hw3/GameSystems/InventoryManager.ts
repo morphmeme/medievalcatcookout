@@ -9,6 +9,7 @@ import Rect from "../../Wolfie2D/Nodes/Graphics/Rect";
 import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
 import Button from "../../Wolfie2D/Nodes/UIElements/Button";
+import Label from "../../Wolfie2D/Nodes/UIElements/Label";
 import { UIElementType } from "../../Wolfie2D/Nodes/UIElements/UIElementTypes";
 import UILayer from "../../Wolfie2D/Scene/Layers/UILayer";
 import Scene from "../../Wolfie2D/Scene/Scene";
@@ -34,7 +35,8 @@ type CharacterInfo = {
     slotIdxStart: number,
     hpBars: Graphic[],
     character: AnimatedSprite,
-    portrait: CanvasNode[]
+    portrait: CanvasNode[],
+    hpText: Label,
 }
 
 export default class InventoryManager {
@@ -257,6 +259,8 @@ export default class InventoryManager {
             this.slotPositions.delete(this.inventorySlots.length);
             // delete dead cats's portrait
             this.characterToInfo[idx].hpBars?.forEach((hpBar) => hpBar.destroy());
+            if (this.characterToInfo[idx].hpText)
+                this.characterToInfo[idx].hpText.destroy();
             this.characterToInfo[idx].portrait.forEach(node => {
                 node.destroy();
             });
@@ -286,6 +290,8 @@ export default class InventoryManager {
         this.characterToInfo.forEach((characterInfo) => {
             // destroy all portraits
             characterInfo.hpBars?.forEach((hpBar) => hpBar.destroy());
+            if (characterInfo.hpText)
+                characterInfo.hpText.destroy();
             characterInfo.portrait.forEach(node => {
                 node.destroy();
             });
@@ -312,15 +318,24 @@ export default class InventoryManager {
 
     private updateHpBar(character: GameNode, pos: Vec2) {
         const hpBars = character.ai ?
-            drawProgressBar(this.scene, (character.ai as BattlerAI).health, (character.ai as BattlerAI).maxHealth, 50, pos, LayerNames.PORTRAIT_LAYER)
-            : drawProgressBar(this.scene, 0, 1, 50, pos, LayerNames.PORTRAIT_LAYER)
+            drawProgressBar(this.scene, (character.ai as BattlerAI).health, (character.ai as BattlerAI).maxHealth, 50, pos, LayerNames.PORTRAIT_LAYER, 4)
+            : drawProgressBar(this.scene, 0, 1, 50, pos, LayerNames.PORTRAIT_LAYER, 4)
         ;
         const characterInfo = this.characterToInfo.find((info) => info.id === character.id)
         characterInfo.hpBars = hpBars;
+
+        const hpTextDisplay = <Label> this.scene.add.uiElement(UIElementType.LABEL,
+            LayerNames.PORTRAIT_LAYER,
+            {
+                position: pos.clone().scaled(this.zoomLevel),
+                text: `${(character.ai as BattlerAI).health} / ${(character.ai as BattlerAI).maxHealth}`
+            });
+        hpTextDisplay.fontSize = 15;
+        characterInfo.hpText = hpTextDisplay;
     }
 
     updateHpBars() {
-        for (const {hpBars, character} of this.characterToInfo) {
+        for (const {hpBars, character, hpText} of this.characterToInfo) {
             if (hpBars) {
                 const pos = hpBars[1].position.clone();
                 const [prevGreenBar, prevRedBar] = hpBars;
@@ -328,8 +343,11 @@ export default class InventoryManager {
                     prevGreenBar.destroy();
                 if (prevRedBar.tweens)
                     prevRedBar.destroy();
+                if (hpText)
+                    hpText.destroy();
                 this.updateHpBar(character, pos);
             }
+            
         }
         this.setPageVisiblity(this.currentPage);
     }
@@ -340,6 +358,8 @@ export default class InventoryManager {
                 info.hpBars?.forEach(node => {
                     node.visible = false;
                 })
+                if (info.hpText)
+                    info.hpText.visible = false;
                 info.portrait.forEach(node => {
                     node.visible = false;
                 })
@@ -351,6 +371,8 @@ export default class InventoryManager {
                 info.hpBars?.forEach(node => {
                     node.visible = true;
                 })
+                if (info.hpText)
+                    info.hpText.visible = true;
                 info.portrait.forEach(node => {
                     node.visible = true;
                 })
@@ -385,7 +407,7 @@ export default class InventoryManager {
         
         // Save data
         if (!deleting) {
-            this.characterToInfo.push({id: character.id, character, slotIdxStart: this.inventoryStart, hpBars: null, portrait: [border, characterImg, characterName]});
+            this.characterToInfo.push({id: character.id, character, slotIdxStart: this.inventoryStart, hpBars: null, hpText: null, portrait: [border, characterImg, characterName]});
         } else {
             const characterInfo = this.characterToInfo.find((info) => info.id === character.id);
             characterInfo.portrait = [border, characterImg, characterName];
