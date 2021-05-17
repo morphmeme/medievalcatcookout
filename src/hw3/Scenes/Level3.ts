@@ -32,7 +32,7 @@ export default class Level3 extends GameLevel {
         super.startScene();
         if (!AudioManager.getInstance().isPlaying("level3music"))
             this.emitter.fireEvent("play_sound", {key: "level3music", loop: true, holdReference: true});
-        this.addLevelEnd(new Vec2(50.5*32, 0), new Vec2(18,1));
+        this.addLevelEnd(new Vec2(0*32, 18*32), new Vec2(1,10));
         this.nextLevel = Level3.nextLevel;
     }
     initializePlayer(inventory: InventoryManager): void{
