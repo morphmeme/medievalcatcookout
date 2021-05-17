@@ -13,7 +13,7 @@ export default class Level3 extends GameLevel {
         // TODO Keep resources - this is up to you
     }
     loadScene(){
-        this.levelName = LEVEL_NAMES[4];
+        this.levelName = LEVEL_NAMES[2];
         super.loadScene();
         this.load.audio("level3music", "mcc_assets/music/level3music.mp3");
 
