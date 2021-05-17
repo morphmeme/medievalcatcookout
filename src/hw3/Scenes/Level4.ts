@@ -47,10 +47,8 @@ export default class Level4 extends GameLevel {
         super.initializeRescues(inventory, pos);
     }
     initializeChests(positions: Vec2[]) {
-        super.initializeChests([new Vec2(21*32, 74*32), new Vec2(28*32, 74*32),
-            new Vec2(22*32, 66*32), new Vec2(43*32, 63*32), new Vec2(53*32, 89*32),
-            new Vec2(93*32, 97*32), new Vec2(95*32, 97*32), new Vec2(97*32, 97*32),
-            new Vec2(41*32, 28*32), new Vec2(16*32, 16*32), new Vec2(83*32, 16*32)]);
+        super.initializeChests([new Vec2(25*32, 55*32), new Vec2(18*32, 37*32),
+            new Vec2(55*32, 41*32), new Vec2(30*32, 19*32), new Vec2(1*32, 34*32), new Vec2(58*32, 0*32)]);
     }
     updateScene(deltaT: number): void {
         super.updateScene(deltaT);
