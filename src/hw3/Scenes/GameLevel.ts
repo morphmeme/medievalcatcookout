@@ -898,7 +898,7 @@ export default class GameLevel extends Scene {
         // Create the player
         const player = this.add.animatedSprite("player", "primary");
         player.position.set(x, y)
-        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
+        player.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 10)));
         player.addAI(CharacterController,
             {
                 health: GameLevel.initialPartyHp,
@@ -958,7 +958,7 @@ export default class GameLevel extends Scene {
         for (const [posX, posY] of rescuePositions) {
             const allySprite = this.add.animatedSprite("player", "primary");
             allySprite.position.set(posX, posY);
-            allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(4, 4)));
+            allySprite.addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
             allySprite.addAI(CharacterController,
                 {
                     health: GameLevel.initialPartyHp,
