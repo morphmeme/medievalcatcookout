@@ -286,7 +286,6 @@ export default class GameLevel extends Scene {
     }
 
     startScene(){
-        console.log(GameLevel.partySpeed);
         this.emitter.fireEvent("stop_all_sounds");
         if (!AudioManager.getInstance().isPlaying("gameplay"))
             this.emitter.fireEvent("play_sound", {key: "gameplay", loop: true, holdReference: true});

@@ -35,7 +35,7 @@ export default class EventQueue {
 	private receivers: Map<Array<Receiver>>;
 
     private constructor(){
-        this.MAX_SIZE = 100;
+        this.MAX_SIZE = 1000000;
         this.q = new Queue<GameEvent>(this.MAX_SIZE);
         this.receivers = new Map<Array<Receiver>>();
 	}
