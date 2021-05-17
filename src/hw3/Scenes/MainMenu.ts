@@ -111,7 +111,7 @@ export default class MainMenu extends Scene {
         controlsHeader.textColor = Color.WHITE;
 
 
-        let controlMargin = [-200, -150, -100, -50, 0, 50, 100];
+        let controlMargin = [-200, -150, -100, -50, 0, 50, 100, 150];
         CONTROLS_TEXT.forEach((text, i) => {
             const controlLine = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + controlMargin[i]), text});
             controlLine.textColor = Color.WHITE;

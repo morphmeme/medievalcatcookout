@@ -669,6 +669,8 @@ export default class GameLevel extends Scene {
             this.changeLevel(Level1.nextLevel4);
         } else if (Input.isKeyJustPressed("6")) {
             this.changeLevel(Level1.nextLevel5);
+        } else if (Input.isKeyJustPressed("8")) {
+            this.incPlayerCoins(1000);
         } else if (Input.isKeyJustPressed("9")) {
             GameLevel.allies.forEach(ally => {
                 if (ally.ai) {
@@ -718,14 +720,14 @@ export default class GameLevel extends Scene {
         const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 250), text: "Controls"});
         controlsHeader.textColor = Color.WHITE;
 
-        let controlMargin = [-200, -150, -100, -50, 0, 50, 100];
+        let controlMargin = [-200, -150, -100, -50, 0, 50, 100, 150];
         CONTROLS_TEXT.forEach((text, i) => {
             const controlLine = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y + controlMargin[i]), text});
             controlLine.textColor = Color.WHITE;
         })
 
 
-        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 175), text: "Back"});
+        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 250), text: "Back"});
         controlsBack.size.set(200, 50);
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.WHITE;

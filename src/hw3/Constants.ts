@@ -74,4 +74,4 @@ export const LEVEL2_TEXT = [
 
 export const LEVEL_NAMES = ["1-1 Awaken", "1-2 Feline Ruins", "1-3 Cat-feteria", "1-4 Paw-lains", "1-5 Radi-claw", "1-6 Luci-furr"];
 
-export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]
+export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "8 to increase gold", "9 to increase max hp", "0 for toggle speed hack"]
