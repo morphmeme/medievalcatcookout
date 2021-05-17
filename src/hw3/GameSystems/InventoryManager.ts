@@ -98,8 +98,11 @@ export default class InventoryManager {
         const viewPortHalfSize = viewPort.getHalfSize();
         this.viewPortWidth = viewPortCenter.x + viewPortHalfSize.x;
         this.viewPortHeight = viewPortCenter.y + viewPortHalfSize.y;
-        const bgRect = <Rect>scene.add.graphic(GraphicType.RECT, LayerNames.BACKGROUND_LAYER, {position: viewPortCenter.scaled(zoomLevel), size: viewPortHalfSize.scaled(2 * zoomLevel)});
-        bgRect.color = Color.BLACK;
+        const bgRect = scene.add.sprite("inventory-bg", LayerNames.BACKGROUND_LAYER);
+        const invZoomLevel = 1 / this.zoomLevel;
+        bgRect.scale = new Vec2(invZoomLevel, invZoomLevel);
+        bgRect.position.inc(viewPortHalfSize.x * invZoomLevel, viewPortHalfSize.y * invZoomLevel);
+        // {position: viewPortCenter.scaled(zoomLevel), size: viewPortHalfSize.scaled(2 * zoomLevel)}
 
         // Create the inventory slots
         this.createInventorySlots(0, size);
@@ -114,7 +117,7 @@ export default class InventoryManager {
         const previousPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.4, this.viewPortHeight * 0.60), text: "Previous Cats"});
         previousPage.size.set(200, 50);
         previousPage.borderWidth = 2;
-        previousPage.borderColor = Color.WHITE;
+        previousPage.borderColor = Color.BLACK;
         previousPage.onClick = () => {
             const newPage = this.currentPage === 0 ? this.numPages - 1 : this.currentPage - 1;
             if (this.currentPage !== newPage) {
@@ -122,11 +125,12 @@ export default class InventoryManager {
             }
             this.currentPage = newPage;
         }
+        previousPage.setBackgroundColor(Color.fromStringHex("#f1851e"));
 
         const nextPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.6, this.viewPortHeight * 0.60), text: "Next Cats"});
         nextPage.size.set(200, 50);
         nextPage.borderWidth = 2;
-        nextPage.borderColor = Color.WHITE;
+        nextPage.borderColor = Color.BLACK;
         nextPage.onClick = () => {
             const newPage = (this.currentPage + 1) % this.numPages;
             if (this.currentPage !== newPage) {
@@ -134,6 +138,7 @@ export default class InventoryManager {
             }
             this.currentPage = newPage;
         }
+        nextPage.setBackgroundColor(Color.fromStringHex("#f1851e"));
     }
 
     updateItemPositions() {
@@ -392,8 +397,9 @@ export default class InventoryManager {
             size: new Vec2(width, height),
             position: centerOfPortait,
         }
-        const border = this.scene.add.graphic(GraphicType.RECT, LayerNames.PORTRAIT_LAYER, options);
-        border.color = Color.WHITE;
+        const border = this.scene.add.sprite("inventory-portrait", LayerNames.PORTRAIT_LAYER);
+        border.scale = new Vec2(1 / this.zoomLevel, 1 / this.zoomLevel);
+        border.position.copy(options.position);
         const characterImg = this.scene.add.animatedSprite(spriteImageId, LayerNames.PORTRAIT_LAYER);
         characterImg.animation.play("IDLE");
         characterImg.position.set(centerOfPortait.x - width / 4, centerOfPortait.y);

@@ -143,6 +143,8 @@ export default class GameLevel extends Scene {
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
         this.load.image("peppergun", "hw3_assets/sprites/pepper.png");
 
+        this.load.image("inventory-bg", "mcc_assets/static_images/inventory_bg.png")
+        this.load.image("inventory-portrait", "mcc_assets/static_images/inventory_portrait.png")
         this.load.image("coin", "mcc_assets/sprites/Sprites/coin.png");
         this.load.image("chest-closed", "mcc_assets/sprites/Sprites/chest-closed.png");
         this.load.image("chest-open", "mcc_assets/sprites/Sprites/chest-open.png");

@@ -278,6 +278,10 @@ export default class Input {
 		return Input.mousePosition.scaled(1/this.viewport.getZoomLevel());
 	}
 
+	 static getMousePositionUI(): Vec2 {
+		return Input.mousePosition;
+	}
+
 	/**
 	 * Gets the position of the player's mouse in the game world,
 	 * taking into consideration the scrolling of the viewport

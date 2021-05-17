@@ -91,10 +91,10 @@ export default class Shop extends Scene {
                     const newHp = Math.ceil((ally?.ai as BattlerAI).maxHealth * 1.1);
                     GameLevel.initialPartyHp = newHp;
                     (ally?.ai as BattlerAI).maxHealth = newHp; 
-                    hpBuffRect.backgroundColor.a = 0.5;
-                    this.hpBuffBought = true;
-                    this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
                 })
+                hpBuffRect.backgroundColor.a = 0.5;
+                this.hpBuffBought = true;
+                this.emitter.fireEvent("play_sound", {key: "purchase", loop: false, holdReference: false});
             }
         }
 
