@@ -661,6 +661,14 @@ export default class GameLevel extends Scene {
             this.changeLevel(Level1);
         } else if (Input.isKeyJustPressed("2")) {
             this.changeLevel(Level1.nextLevel);
+        } else if (Input.isKeyJustPressed("3")) {
+            this.changeLevel(Level1.nextLevel2);
+        } else if (Input.isKeyJustPressed("4")) {
+            this.changeLevel(Level1.nextLevel3);
+        } else if (Input.isKeyJustPressed("5")) {
+            this.changeLevel(Level1.nextLevel4);
+        } else if (Input.isKeyJustPressed("6")) {
+            this.changeLevel(Level1.nextLevel5);
         } else if (Input.isKeyJustPressed("9")) {
             GameLevel.allies.forEach(ally => {
                 if (ally.ai) {

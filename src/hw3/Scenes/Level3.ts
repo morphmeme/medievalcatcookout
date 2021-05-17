@@ -3,10 +3,10 @@ import AnimatedSprite from "../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import { LEVEL_NAMES } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
-import Level4 from "./Level4";
 import AudioManager from "../../Wolfie2D/Sound/AudioManager";
+import Shop3 from "./Shop3";
 export default class Level3 extends GameLevel {
-    public static nextLevel = Level4;
+    public static nextLevel = Shop3;
     public static spawnPos = new Vec2(62*32, 58*32);
 
     unloadScene(){

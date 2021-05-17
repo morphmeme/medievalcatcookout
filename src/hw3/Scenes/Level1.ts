@@ -7,8 +7,16 @@ import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 import {TUTORIAL_TEXT} from "../Constants";
 import signLabel from "./GameLevel";
 import Shop1 from "./Shop1";
+import Shop2 from "./Shop2";
+import Shop3 from "./Shop3";
+import Shop4 from "./Shop4";
+import Shop5 from "./Shop5";
 export default class Level1 extends GameLevel {
     public static nextLevel = Shop1;
+    public static nextLevel2 = Shop2;
+    public static nextLevel3 = Shop3;
+    public static nextLevel4 = Shop4;
+    public static nextLevel5 = Shop5;
     public static spawnPos = new Vec2(16.5 * 32, 95 * 32);
 
 

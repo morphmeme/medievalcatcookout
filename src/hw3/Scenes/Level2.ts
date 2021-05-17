@@ -4,8 +4,9 @@ import { LEVEL2_TEXT, LEVEL_NAMES } from "../Constants";
 import InventoryManager from "../GameSystems/InventoryManager";
 import GameLevel from "./GameLevel";
 import AudioManager from "../../Wolfie2D/Sound/AudioManager";
+import Shop2 from "./Shop2";
 export default class Level2 extends GameLevel {
-    public static nextLevel = Level2;
+    public static nextLevel = Shop2;
     public static spawnPos = new Vec2(29.5*32, 156*32);
 
     unloadScene(){

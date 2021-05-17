@@ -17,6 +17,8 @@ import Emitter from "../../Wolfie2D/Events/Emitter";
 import Level5 from "./Level5";
 import Level6 from "./Level6";
 import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
+import Level3 from "./Level3";
+import Level4 from "./Level4";
 
 
 export default class MainMenu extends Scene {
@@ -47,8 +49,8 @@ export default class MainMenu extends Scene {
         this.levels = [
             [LEVEL_NAMES[0], new Vec2(1.3 * center.x / 3, center.y), Level1],
             [LEVEL_NAMES[1], new Vec2(3 * center.x / 3, center.y), Level2],
-            [LEVEL_NAMES[2], new Vec2(4.7 * center.x / 3, center.y), null],
-            [LEVEL_NAMES[3], new Vec2(1.3 * center.x / 3, center.y + 100), null],
+            [LEVEL_NAMES[2], new Vec2(4.7 * center.x / 3, center.y), Level3],
+            [LEVEL_NAMES[3], new Vec2(1.3 * center.x / 3, center.y + 100), Level4],
             [LEVEL_NAMES[4], new Vec2(3 * center.x / 3, center.y + 100), Level5],
             [LEVEL_NAMES[5], new Vec2(4.7 * center.x / 3, center.y + 100), Level6],
         ];
