@@ -721,7 +721,7 @@ export default class GameLevel extends Scene {
         controlsBack.size.set(200, 50);
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.WHITE;
-        controlsBack.backgroundColor = Color.TRANSPARENT;
+        controlsBack.backgroundColor = Color.fromStringHex("#0275d8");
         controlsBack.onClick = () => {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
@@ -738,7 +738,7 @@ export default class GameLevel extends Scene {
         play.size.set(200, 50);
         play.borderWidth = 2;
         play.borderColor = Color.WHITE;
-        play.backgroundColor = Color.TRANSPARENT;
+        play.backgroundColor = Color.fromStringHex("#0275d8");
         play.onClick = () => {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
@@ -749,7 +749,7 @@ export default class GameLevel extends Scene {
         controls.size.set(200, 50);
         controls.borderWidth = 2;
         controls.borderColor = Color.WHITE;
-        controls.backgroundColor = Color.TRANSPARENT;
+        controls.backgroundColor = Color.fromStringHex("#0275d8");
         controls.onClick = () => {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
@@ -760,7 +760,7 @@ export default class GameLevel extends Scene {
         endGame.size.set(200, 50);
         endGame.borderWidth = 2;
         endGame.borderColor = Color.WHITE;
-        endGame.backgroundColor = Color.TRANSPARENT;
+        endGame.backgroundColor = Color.fromStringHex("#0275d8");
         endGame.onClick = () => {
             this.viewport.setZoomLevel(1);
             this.sceneManager.changeToScene(MainMenu);
@@ -1039,7 +1039,12 @@ export default class GameLevel extends Scene {
             this.enemies[i].animation.play("IDLE");
 
             // Activate physics
-            this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            if (spriteKey === "king-cat") {
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(24, 24)));
+            } else {
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            }
+            
 
             if(data.route){
                 data.route = data.route.map((index: number) => this.graph.getNodePosition(index));                

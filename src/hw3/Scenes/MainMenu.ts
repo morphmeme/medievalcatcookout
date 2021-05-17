@@ -43,7 +43,6 @@ export default class MainMenu extends Scene {
         GameLevel.inventory = undefined;
         GameLevel.coinCount = 0;
         const center = this.viewport.getCenter();
-        const halfSize = this.viewport.getHalfSize();
 
         this.levels = [
             [LEVEL_NAMES[0], new Vec2(1.3 * center.x / 3, center.y), Level1],
