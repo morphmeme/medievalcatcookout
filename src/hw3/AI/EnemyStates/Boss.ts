@@ -94,7 +94,10 @@ export default class Boss extends EnemyState {
             });
         projectile.animation.play("flying");
         projectile.rotation = Vec2.UP.angleToCCW(direction.rotateCCW(rotateCCW));
-        this.owner.getScene().emitter.fireEvent("play_sound", {key: "squirt", loop: false, holdReference: false});
+        if(type == "peppergunprojectile")
+            this.owner.getScene().emitter.fireEvent("play_sound", {key: "cannon", loop: false, holdReference: false});
+        else
+            this.owner.getScene().emitter.fireEvent("play_sound", {key: "squirt", loop: false, holdReference: false});
         projectile.setGroup("enemy_projectile");
         projectile.setTrigger("player", Events.PROJECTILE_COLLIDES_PLAYER, null);
         projectile.setTrigger("ground", Events.PROJECTILE_COLLIDES_GROUND, null);

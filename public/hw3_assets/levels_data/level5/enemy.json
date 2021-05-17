@@ -5,67 +5,74 @@
             "position": [544, 3072],
             "mode": "guard",
             "guardPosition": [544, 3072],
-            "health": 5,
+            "health": 100,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [704, 3072],
             "mode": "guard",
             "guardPosition": [704, 3072],
-            "health": 5,
+            "health": 100,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1056, 2784],
             "mode": "guard",
             "guardPosition": [1056, 2784],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "mustard_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1408, 3136],
             "mode": "guard",
             "guardPosition": [1408, 3136],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1568, 2784],
             "mode": "guard",
             "guardPosition": [1568, 2784],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [96, 3072],
             "mode": "guard",
             "guardPosition": [96, 3072],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [64, 2688],
             "mode": "guard",
             "guardPosition": [64, 2688],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [64, 2496],
             "mode": "guard",
             "guardPosition": [64, 2496],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
             "speed": 30
@@ -74,23 +81,25 @@
             "position": [736, 2112],
             "mode": "guard",
             "guardPosition": [736, 2112],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [736, 2144],
             "mode": "guard",
             "guardPosition": [736, 2144],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [736, 2176],
             "mode": "guard",
             "guardPosition": [736, 2176],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "speed": 100
         },
@@ -98,7 +107,7 @@
             "position": [224, 1952],
             "mode": "guard",
             "guardPosition": [224, 1952],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "speed": 100
         },
@@ -106,15 +115,16 @@
             "position": [64, 1856],
             "mode": "guard",
             "guardPosition": [64, 1856],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [384, 1888],
             "mode": "guard",
             "guardPosition": [384, 1888],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
             "speed": 30
@@ -123,25 +133,27 @@
             "position": [1376, 2048],
             "mode": "guard",
             "guardPosition": [1376, 2048],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1408, 2208],
             "mode": "guard",
             "guardPosition": [1408, 2208],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1184, 2048],
             "mode": "guard",
             "guardPosition": [1184, 2048],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "speed": 100
         },
@@ -149,16 +161,17 @@
             "position": [1120, 2432],
             "mode": "guard",
             "guardPosition": [1120, 2432],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1376, 2624],
             "mode": "guard",
             "guardPosition": [1376, 2624],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
             "speed": 30
@@ -167,15 +180,16 @@
             "position": [1824, 3040],
             "mode": "guard",
             "guardPosition": [1824, 3040],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1952, 2752],
             "mode": "guard",
             "guardPosition": [1952, 2752],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "speed": 100
         },
@@ -183,16 +197,17 @@
             "position": [1888, 3104],
             "mode": "guard",
             "guardPosition": [1888, 3104],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2080, 2880],
             "mode": "guard",
             "guardPosition": [2080, 2880],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
             "speed": 30
@@ -201,25 +216,27 @@
             "position": [2368, 2880],
             "mode": "guard",
             "guardPosition": [2368, 2880],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2080, 2528],
             "mode": "guard",
             "guardPosition": [2080, 2528],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2080, 2208],
             "mode": "guard",
             "guardPosition": [2080, 2208],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
             "speed": 30
@@ -228,24 +245,26 @@
             "position": [2368, 2208],
             "mode": "guard",
             "guardPosition": [2368, 2208],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2816, 2080],
             "mode": "guard",
             "guardPosition": [2816, 2080],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2560, 2272],
             "mode": "guard",
             "guardPosition": [2560, 2272],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "speed": 100
         },
@@ -253,41 +272,45 @@
             "position": [3040, 2272],
             "mode": "guard",
             "guardPosition": [3040, 2272],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2784, 2560],
             "mode": "guard",
             "guardPosition": [2784, 2560],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2688, 3008],
             "mode": "guard",
             "guardPosition": [2688, 3008],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2912, 2752],
             "mode": "guard",
             "guardPosition": [2912, 2752],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [3072, 2048],
             "mode": "guard",
             "guardPosition": [3072, 2048],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "speed": 100
         },
@@ -295,43 +318,47 @@
             "position": [3104, 1856],
             "mode": "guard",
             "guardPosition": [3104, 1856],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2304, 1856],
             "mode": "guard",
             "guardPosition": [2304, 1856],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1824, 2080],
             "mode": "guard",
             "guardPosition": [1824, 2080],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2176, 1856],
             "mode": "guard",
             "guardPosition": [2176, 1856],
-            "health": 5,
+            "health": 10,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1024, 320],
             "mode": "guard",
             "guardPosition": [1024, 320],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "spriteKey": "long-cat",
             "speed": 150
@@ -340,7 +367,7 @@
             "position": [2208, 480],
             "mode": "guard",
             "guardPosition": [2208, 480],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "spriteKey": "long-cat",
             "speed": 150
@@ -349,7 +376,7 @@
             "position": [864, 896],
             "mode": "guard",
             "guardPosition": [864, 896],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "spriteKey": "long-cat",
             "speed": 150
@@ -358,7 +385,7 @@
             "position": [2208, 896],
             "mode": "guard",
             "guardPosition": [2208, 896],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "spriteKey": "long-cat",
             "speed": 150
@@ -367,7 +394,7 @@
             "position": [2944, 384],
             "mode": "guard",
             "guardPosition": [2944, 384],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "spriteKey": "long-cat",
             "speed": 150
@@ -376,7 +403,7 @@
             "position": [160, 160],
             "mode": "guard",
             "guardPosition": [160, 160],
-            "health": 5,
+            "health": 10,
             "attack": "charge",
             "spriteKey": "long-cat",
             "speed": 150

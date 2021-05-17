@@ -153,11 +153,23 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
     }
 
     setMovingAnimation() {
+        const direction = MathUtils.radiansToCardinal(this.rotation);
         if (this.spriteKey === "long-cat") {
-            this.owner.animation.playIfNotAlready("WALK", true);
+            if (direction === 0)
+                this.owner.animation.playIfNotAlready("WALK_RIGHT", true);
+            else if (direction === 2) {
+                this.owner.animation.playIfNotAlready("WALK_RIGHT", true);
+            } else if (direction === 1) {
+                this.owner.animation.playIfNotAlready("WALK_LEFT", true);
+            } else if (direction === 3) {
+                this.owner.animation.playIfNotAlready("WALK_RIGHT", true);
+            }
             return;
         }
-        const direction = MathUtils.radiansToCardinal(this.rotation);
+        if (this.spriteKey === "king-cat") {
+            this.owner.animation.playIfNotAlready("MOVE", true);
+            return;
+        }
         if (direction === 0)
             this.owner.animation.playIfNotAlready("WALK_BACK", true);
         else if (direction === 2) {

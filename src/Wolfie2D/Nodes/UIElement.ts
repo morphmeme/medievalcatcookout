@@ -103,7 +103,7 @@ export default abstract class UIElement extends CanvasNode {
 		}
 
 		// Check if the mouse is hovering over this element
-		let mousePos = Input.getMousePosition();
+		let mousePos = Input.getMousePositionUI();
 		if(mousePos && this.contains(mousePos.x, mousePos.y)){
 			this.isEntered = true;
 

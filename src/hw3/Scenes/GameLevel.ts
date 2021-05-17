@@ -105,7 +105,9 @@ export default class GameLevel extends Scene {
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
         this.load.spritesheet("enemy", "mcc_assets/spritesheets/enemy/enemy1-cat-sheet.json");
+        this.load.spritesheet("enemy2", "mcc_assets/spritesheets/enemy/enemy2-cat-sheet.json");
         this.load.spritesheet("long-cat", "mcc_assets/spritesheets/enemy/long-cat-sheet.json");
+        this.load.spritesheet("king-cat", "mcc_assets/spritesheets/enemy/king-sheet.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
@@ -141,6 +143,8 @@ export default class GameLevel extends Scene {
         this.load.image("saltgun", "hw3_assets/sprites/salt.png");
         this.load.image("peppergun", "hw3_assets/sprites/pepper.png");
 
+        this.load.image("inventory-bg", "mcc_assets/static_images/inventory_bg.png")
+        this.load.image("inventory-portrait", "mcc_assets/static_images/inventory_portrait.png")
         this.load.image("coin", "mcc_assets/sprites/Sprites/coin.png");
         this.load.image("chest-closed", "mcc_assets/sprites/Sprites/chest-closed.png");
         this.load.image("chest-open", "mcc_assets/sprites/Sprites/chest-open.png");
@@ -700,8 +704,8 @@ export default class GameLevel extends Scene {
         const controls = this.addUILayer("controls");
         controls.setHidden(true);
 
-        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.75)});
-        pauseBg.color = Color.BLACK;
+        // const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.75)});
+        // pauseBg.color = Color.BLACK;
 
         const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 250), text: "Controls"});
         controlsHeader.textColor = Color.WHITE;
@@ -713,11 +717,11 @@ export default class GameLevel extends Scene {
         })
 
 
-        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
+        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 175), text: "Back"});
         controlsBack.size.set(200, 50);
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.WHITE;
-        controlsBack.backgroundColor = Color.TRANSPARENT;
+        controlsBack.backgroundColor = Color.fromStringHex("#0275d8");
         controlsBack.onClick = () => {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
@@ -727,14 +731,14 @@ export default class GameLevel extends Scene {
     drawPauseLayer() {
         const center = this.viewport.getCenter();
         const vpHalfSize = this.viewport.getHalfSize();
-        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "pauseLayer", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
-        pauseBg.color = Color.BLACK;
+        // const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "pauseLayer", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        // pauseBg.color = Color.BLACK;
 
         const play = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y - 100), text: "Resume"});
         play.size.set(200, 50);
         play.borderWidth = 2;
         play.borderColor = Color.WHITE;
-        play.backgroundColor = Color.TRANSPARENT;
+        play.backgroundColor = Color.fromStringHex("#0275d8");
         play.onClick = () => {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.togglePause();
@@ -745,7 +749,7 @@ export default class GameLevel extends Scene {
         controls.size.set(200, 50);
         controls.borderWidth = 2;
         controls.borderColor = Color.WHITE;
-        controls.backgroundColor = Color.TRANSPARENT;
+        controls.backgroundColor = Color.fromStringHex("#0275d8");
         controls.onClick = () => {
             this.getLayer("pauseLayer").setHidden(!this.getLayer("pauseLayer").isHidden())
             this.getLayer("controls").setHidden(!this.getLayer("controls").isHidden())
@@ -756,7 +760,7 @@ export default class GameLevel extends Scene {
         endGame.size.set(200, 50);
         endGame.borderWidth = 2;
         endGame.borderColor = Color.WHITE;
-        endGame.backgroundColor = Color.TRANSPARENT;
+        endGame.backgroundColor = Color.fromStringHex("#0275d8");
         endGame.onClick = () => {
             this.viewport.setZoomLevel(1);
             this.sceneManager.changeToScene(MainMenu);
@@ -1035,7 +1039,12 @@ export default class GameLevel extends Scene {
             this.enemies[i].animation.play("IDLE");
 
             // Activate physics
-            this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            if (spriteKey === "king-cat") {
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(24, 24)));
+            } else {
+                this.enemies[i].addPhysics(new AABB(Vec2.ZERO, new Vec2(5, 5)));
+            }
+            
 
             if(data.route){
                 data.route = data.route.map((index: number) => this.graph.getNodePosition(index));                

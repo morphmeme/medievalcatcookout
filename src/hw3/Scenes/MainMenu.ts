@@ -16,6 +16,7 @@ import Shop from "./Shop";
 import Emitter from "../../Wolfie2D/Events/Emitter";
 import Level5 from "./Level5";
 import Level6 from "./Level6";
+import Sprite from "../../Wolfie2D/Nodes/Sprites/Sprite";
 
 
 export default class MainMenu extends Scene {
@@ -25,11 +26,13 @@ export default class MainMenu extends Scene {
     private controls: Layer;
     private levelSelect: Layer;
     private levels: Array<[string, Vec2, new (viewport: Viewport, sceneManager: SceneManager, renderingManager: RenderingManager, options: Record<string, any>) => Scene]>
-
+    private bg: Sprite;
+    private bgCopy: Sprite;
     loadScene(){
         this.load.audio("mainmenumusic", "mcc_assets/music/mainmenumusic.mp3");
         this.load.image("logo", "hw3_assets/static_images/logo.png")
         this.load.audio("click", "mcc_assets/sounds/click.wav");
+        this.load.image("main-menu-bg", "mcc_assets/static_images/main_menu_bg.png");
     }
 
     startScene(){
@@ -50,8 +53,16 @@ export default class MainMenu extends Scene {
             [LEVEL_NAMES[5], new Vec2(4.7 * center.x / 3, center.y + 100), Level6],
         ];
 
+        this.addUILayer("bgLayer");
         // The main menu
         this.mainMenu = this.addUILayer("mainMenu");
+
+        this.bg = this.add.sprite("main-menu-bg", "bgLayer");
+        this.bg.position.copy(new Vec2(center.x, center.y));
+        this.bg.scale = new Vec2(2, 2);
+        this.bgCopy = this.add.sprite("main-menu-bg", "bgLayer");
+        this.bgCopy.position.copy(new Vec2(center.x - 2560, center.y));
+        this.bgCopy.scale = new Vec2(2, 2);
 
         // Add logo
         const logo = this.add.sprite("logo", "mainMenu");
@@ -185,6 +196,16 @@ export default class MainMenu extends Scene {
     }
 
     updateScene(){
+        this.bg.position.inc(1, 0);
+        this.bgCopy.position.inc(1, 0);
+        if (this.bg.position.x >= 2560) {
+            const center = this.viewport.getCenter();
+            this.bg.position.copy(new Vec2(center.x - 2560, center.y));
+        }
+        if (this.bgCopy.position.x >= 2560) {
+            const center = this.viewport.getCenter();
+            this.bgCopy.position.copy(new Vec2(center.x - 2560, center.y));
+        }
         while(this.receiver.hasNextEvent()){
             let event = this.receiver.getNextEvent();
 
