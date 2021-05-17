@@ -28,7 +28,7 @@ export type ShopItem = {
 }
 
 const shopItemRectWidthRatio = 0.4;
-const shopItemRectHeightRatio = 0.05;
+const shopItemRectHeightRatio = 0.075;
 const buffWidthRatio = 0.4;
 const buffHeightRatio = 0.25;
 const buttonBgColor = new Color(32, 32, 32);
@@ -172,7 +172,7 @@ export default class Shop extends Scene {
         for (const shopItem of this.shopItems) {
             const {itemName, spriteKey, displayName, quantity, gold} = shopItem;
             const rectSize = new Vec2(shopItemRectWidth, shopItemRectHeight);
-            const clickableRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: itemPosition.clone(), text: `     ${displayName} (${quantity})`});
+            const clickableRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: itemPosition.clone(), text: `      ${displayName} (${quantity})`});
             clickableRect.size.copy(rectSize);
             clickableRect.borderColor = Color.WHITE;
             clickableRect.setBackgroundColor(Color.fromStringHex(buttonBgColor.toString()));
@@ -191,6 +191,7 @@ export default class Shop extends Scene {
             const sprite = this.add.sprite(spriteKey, "primary");
             const iconPosition = itemPosition.clone().inc(-shopItemRectWidth * 0.5 + 25,0);
             sprite.position.copy(iconPosition);
+            sprite.scale = new Vec2(2, 2);
 
             const goldTextPosition = itemPosition.clone().inc(shopItemRectWidth * 0.5 - 64, 0);
             const goldText = <Label>this.add.uiElement(UIElementType.LABEL, "click", {position: goldTextPosition, text: this.pad(`${gold}`, 3)});
