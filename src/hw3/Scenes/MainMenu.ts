@@ -42,12 +42,12 @@ export default class MainMenu extends Scene {
         const center = this.viewport.getCenter();
 
         this.levels = [
-            [LEVEL_NAMES[0], new Vec2(1.5 * center.x / 3, center.y), Level1],
+            [LEVEL_NAMES[0], new Vec2(1.3 * center.x / 3, center.y), Level1],
             [LEVEL_NAMES[1], new Vec2(3 * center.x / 3, center.y), Level2],
-            [LEVEL_NAMES[2], new Vec2(4.5 * center.x / 3, center.y), null],
-            [LEVEL_NAMES[3], new Vec2(1.5 * center.x / 3, center.y + 100), null],
+            [LEVEL_NAMES[2], new Vec2(4.7 * center.x / 3, center.y), null],
+            [LEVEL_NAMES[3], new Vec2(1.3 * center.x / 3, center.y + 100), null],
             [LEVEL_NAMES[4], new Vec2(3 * center.x / 3, center.y + 100), Level5],
-            [LEVEL_NAMES[5], new Vec2(4.5 * center.x / 3, center.y + 100), Level6],
+            [LEVEL_NAMES[5], new Vec2(4.7 * center.x / 3, center.y + 100), Level6],
         ];
 
         // The main menu
@@ -153,7 +153,7 @@ export default class MainMenu extends Scene {
 
     createLevelButton(levelName: string, position: Vec2)  {
         const controlsBack = this.add.uiElement(UIElementType.BUTTON, "levelSelect", {position: position, text: levelName});
-        controlsBack.size.set(200, 50);
+        controlsBack.size.set(300, 50);
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.WHITE;
         controlsBack.backgroundColor = Color.TRANSPARENT;
@@ -172,6 +172,7 @@ export default class MainMenu extends Scene {
         
         for (const [levelName, position] of this.levels) {
             this.createLevelButton(levelName, position);
+            
         }
       
 

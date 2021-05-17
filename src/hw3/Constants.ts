@@ -72,6 +72,6 @@ export const LEVEL2_TEXT = [
     "Good work, you've made it to the cafeteria. \n Hopefully there are still some of you left, \n because we need all we can get."
 ]
 
-export const LEVEL_NAMES = ["1-1 Awaken", "1-2 Emerging Ruins", "1-3 Untitled", "1-4 Untitled", "1-5 Untitled", "1-6 Untitled"];
+export const LEVEL_NAMES = ["1-1 Awaken", "1-2 Feline Ruins", "1-3 Cat-feteria", "1-4 Paw-lains", "1-5 Radi-claw", "1-6 Luci-furr"];
 
 export const CONTROLS_TEXT = ["WASD to move", "E to open inventory", "ESC or P to pause", "Left Mouse to use weapon", "1-6 Skip Level", "9 to increase max hp", "0 for toggle speed hack"]
