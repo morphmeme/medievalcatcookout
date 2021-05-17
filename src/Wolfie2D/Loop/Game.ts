@@ -6,7 +6,7 @@ import Debug from "../Debug/Debug";
 import ResourceManager from "../ResourceManager/ResourceManager";
 import Viewport from "../SceneGraph/Viewport";
 import SceneManager from "../Scene/SceneManager";
-import AudioManager from "../Sound/AudioManager";
+import AudioManager, { AudioChannelType } from "../Sound/AudioManager";
 import Stats from "../Debug/Stats";
 import RenderingManager from "../Rendering/RenderingManager";
 import CanvasRenderer from "../Rendering/CanvasRenderer";
@@ -107,6 +107,7 @@ export default class Game {
         this.resourceManager = ResourceManager.getInstance();
         this.sceneManager = new SceneManager(this.viewport, this.renderingManager);
         this.audioManager = AudioManager.getInstance();
+        AudioManager.setVolume(AudioChannelType.SFX, 0.25);
     }
 
     /**
