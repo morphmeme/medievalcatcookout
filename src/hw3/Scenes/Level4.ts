@@ -8,7 +8,7 @@ import AudioManager from "../../Wolfie2D/Sound/AudioManager";
 import Shop4 from "./Shop4";
 export default class Level4 extends GameLevel {
     public static nextLevel = Shop4;
-    public static spawnPos = new Vec2(11*32, 62*32);
+    public static spawnPos = new Vec2(63*32, 58*32);
 
     unloadScene(){
         // TODO Keep resources - this is up to you
