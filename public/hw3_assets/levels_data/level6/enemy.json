@@ -8,7 +8,8 @@
             "health": 100,
             "attack": "boss",
             "weapon": "mustard_bottle",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "king-cat"
         }
     ]
 }

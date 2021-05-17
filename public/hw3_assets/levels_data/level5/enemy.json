@@ -7,7 +7,8 @@
             "guardPosition": [544, 3072],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [704, 3072],
@@ -16,7 +17,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1056, 2784],
@@ -25,7 +27,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "mustard_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1408, 3136],
@@ -34,7 +37,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1568, 2784],
@@ -42,7 +46,8 @@
             "guardPosition": [1568, 2784],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [96, 3072],
@@ -50,7 +55,8 @@
             "guardPosition": [96, 3072],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [64, 2688],
@@ -59,7 +65,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [64, 2496],
@@ -76,7 +83,8 @@
             "guardPosition": [736, 2112],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [736, 2144],
@@ -84,7 +92,8 @@
             "guardPosition": [736, 2144],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [736, 2176],
@@ -108,7 +117,8 @@
             "guardPosition": [64, 1856],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [384, 1888],
@@ -126,7 +136,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1408, 2208],
@@ -135,7 +146,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1184, 2048],
@@ -152,7 +164,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1376, 2624],
@@ -169,7 +182,8 @@
             "guardPosition": [1824, 3040],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1952, 2752],
@@ -186,7 +200,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2080, 2880],
@@ -204,7 +219,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2080, 2528],
@@ -213,7 +229,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2080, 2208],
@@ -231,7 +248,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2816, 2080],
@@ -239,7 +257,8 @@
             "guardPosition": [2816, 2080],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2560, 2272],
@@ -255,7 +274,8 @@
             "guardPosition": [3040, 2272],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2784, 2560],
@@ -264,7 +284,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2688, 3008],
@@ -273,7 +294,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2912, 2752],
@@ -281,7 +303,8 @@
             "guardPosition": [2912, 2752],
             "health": 5,
             "attack": "charge",
-            "speed": 100
+            "speed": 100,
+            "spriteKey": "enemy2"
         },
         {
             "position": [3072, 2048],
@@ -298,7 +321,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2304, 1856],
@@ -307,7 +331,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1824, 2080],
@@ -316,7 +341,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [2176, 1856],
@@ -325,7 +351,8 @@
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
-            "speed": 30
+            "speed": 30,
+            "spriteKey": "enemy2"
         },
         {
             "position": [1024, 320],

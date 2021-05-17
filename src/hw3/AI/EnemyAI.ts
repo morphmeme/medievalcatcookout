@@ -166,6 +166,10 @@ export default class EnemyAI extends StateMachineAI implements BattlerAI {
             }
             return;
         }
+        if (this.spriteKey === "king-cat") {
+            this.owner.animation.playIfNotAlready("MOVE", true);
+            return;
+        }
         if (direction === 0)
             this.owner.animation.playIfNotAlready("WALK_BACK", true);
         else if (direction === 2) {

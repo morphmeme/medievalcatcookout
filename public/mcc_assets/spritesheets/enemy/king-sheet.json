@@ -1,6 +1,6 @@
 {
     "name": "King Cat",
-    "spriteSheetImage": "king-sheet.png",
+    "spriteSheetImage": "king.png",
     "spriteWidth": 64,
     "spriteHeight": 64,
     "columns": 5,

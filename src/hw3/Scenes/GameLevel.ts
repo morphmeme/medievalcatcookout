@@ -105,7 +105,9 @@ export default class GameLevel extends Scene {
         // Load the player and enemy spritesheets
         this.load.spritesheet("player", "mcc_assets/spritesheets/player/player-cat-sheet.json");
         this.load.spritesheet("enemy", "mcc_assets/spritesheets/enemy/enemy1-cat-sheet.json");
+        this.load.spritesheet("enemy2", "mcc_assets/spritesheets/enemy/enemy2-cat-sheet.json");
         this.load.spritesheet("long-cat", "mcc_assets/spritesheets/enemy/long-cat-sheet.json");
+        this.load.spritesheet("king-cat", "mcc_assets/spritesheets/enemy/king-sheet.json");
         this.load.spritesheet("slice", "hw3_assets/spritesheets/slice.json");
         this.load.spritesheet("stab", "hw3_assets/spritesheets/stab.json");
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
