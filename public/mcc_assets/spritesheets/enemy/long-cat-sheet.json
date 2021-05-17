@@ -4,7 +4,7 @@
     "spriteWidth": 32,
     "spriteHeight": 64,
     "columns": 7,
-    "rows": 4,
+    "rows": 5,
     "leftBuffer": 0,
     "rightBuffer": 0,
     "topBuffer": 0, 
@@ -18,26 +18,33 @@
         },
     
         {
-            "name": "WALK",
+            "name": "WALK_RIGHT",
             "repeat": true,
             "frames": [{"index": 7, "duration": 10}, {"index": 8, "duration": 10},
                 {"index": 9, "duration": 10}, {"index": 10, "duration": 10}, {"index": 11, "duration": 10},
                 {"index": 12, "duration": 10}, {"index": 13, "duration": 10}]
         },
         {
+            "name": "WALK_LEFT",
+            "repeat": true,
+            "frames": [{"index": 14, "duration": 10}, {"index": 15, "duration": 10},
+                {"index": 16, "duration": 10}, {"index": 17, "duration": 10}, {"index": 18, "duration": 10},
+                {"index": 19, "duration": 10}, {"index": 20, "duration": 10}]
+        },
+        {
             "name": "HURT",
             "repeat": false,
             "next":"IDLE",
-            "frames": [{"index": 14, "duration": 10}, {"index": 15, "duration": 10},
-                {"index": 16, "duration": 15}, {"index": 17, "duration": 10},
-                {"index": 18, "duration": 15}]
+            "frames": [{"index": 21, "duration": 10}, {"index": 22, "duration": 10},
+                {"index": 23, "duration": 15}, {"index": 24, "duration": 10},
+                {"index": 25, "duration": 15}]
         },
         {
             "name": "DOWNED",
             "repeat": false,
-            "frames": [{"index": 21, "duration":15}, {"index": 22, "duration": 15},
-                {"index": 23, "duration": 10}, {"index": 24, "duration": 10},
-                {"index": 25, "duration": 10}, {"index": 26, "duration": 10}, {"index": 27, "duration": 30}]
+            "frames": [{"index": 28, "duration":15}, {"index": 29, "duration": 15},
+                {"index": 30, "duration": 10}, {"index": 31, "duration": 10},
+                {"index": 32, "duration": 10}, {"index": 33, "duration": 10}, {"index": 34, "duration": 30}]
         }
     ]
     }
