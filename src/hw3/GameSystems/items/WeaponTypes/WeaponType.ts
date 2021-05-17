@@ -30,7 +30,7 @@ export default abstract class WeaponType {
 
     abstract hits(node: GameNode, ...args: any): boolean;
 
-    playerSpecial(user: GameNode, userType: string): void {
+    playerSpecial(user: GameNode): void {
         
     };
 }

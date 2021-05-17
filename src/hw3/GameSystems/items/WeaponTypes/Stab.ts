@@ -40,7 +40,7 @@ export default class Stab extends WeaponType {
         return this.stab.boundary.overlaps(node.collisionShape);
     }
 
-    playerSpecial(user: GameNode, userType: string) {
+    playerSpecial(user: GameNode) {
         // speed up speed by 10x
         (user.ai as CharacterController).slowed = 10;
     }

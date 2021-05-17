@@ -52,7 +52,7 @@ export default class Weapon extends Item {
             return false;
         }
         if (userType === "player")
-            this.type.playerSpecial(user, userType);
+            this.type.playerSpecial(user);
 
         // Do a type specific weapon animation
         this.type.doAnimation(this.sprite.getScene(), user, direction);
