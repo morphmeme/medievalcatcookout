@@ -53,7 +53,7 @@ export default class Level2 extends GameLevel {
     }
     initializeChests(positions: Vec2[]) {
         super.initializeChests([new Vec2(2*32, 117*32), new Vec2(61*32, 117*32), new Vec2(61*32, 116*32), new Vec2(60*32, 116*32),
-            new Vec2(2*32, 69*32), new Vec2(58*32, 7*32), new Vec2(58*32, 7*32), new Vec2(30*32, 98*32), new Vec2(4*32, 71*32), new Vec2(4*32, 70*32),
+            new Vec2(2*32, 69*32), new Vec2(58*32, 7*32), new Vec2(58*32, 7*32), new Vec2(31*32, 98*32), new Vec2(4*32, 71*32), new Vec2(4*32, 70*32),
             new Vec2(4*32, 69*32), new Vec2(4*32, 68*32), new Vec2(58*32, 7*32)]);
     }
     updateScene(deltaT: number): void {
