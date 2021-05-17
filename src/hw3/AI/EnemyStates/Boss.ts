@@ -160,7 +160,7 @@ export default class Boss extends EnemyState {
                     return new Vec2(newX, newY);
                 });
             for (const direction of directions) {
-                this.spawnProjectile(this.owner, "mustardbottleprojectile", direction, 1, 20, 0);
+                this.spawnProjectile(this.owner, "mustardbottleprojectile", direction, 2, 20, 0);
             }
             this.aoeProjectileTimer.start();
             const rotationDeg = 10;
