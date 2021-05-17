@@ -163,6 +163,7 @@ export default class Shop extends Scene {
         coin.position.copy(goldPosition);
         coin.animation.play("spinning");
 
+        //this.drawCoinCount();
     }
 
     drawShopItems() {
@@ -205,6 +206,7 @@ export default class Shop extends Scene {
 
             itemPosition.inc(0, shopItemRectHeight);
         }
+        //this.drawCoinCount();
     }
 
     drawNextLevelButton() {
@@ -219,6 +221,16 @@ export default class Shop extends Scene {
                 this.emitter.fireEvent("stop_sound", {key: "shopmusic", loop: true, holdReference: true});
         }
     }
+
+    /*
+    drawCoinCount(){
+        const coinLabel = this.add.uiElement(UIElementType.LABEL, "click", {position: new Vec2(this.viewPortWidth* 0.1, this.viewPortHeight*0.6), text: "Coins: " +`${GameLevel.coinCount}`});
+        coinLabel.size.set(200, 50);
+        coinLabel.borderWidth = 2;
+        coinLabel.borderColor = Color.WHITE;
+        coinLabel.backgroundColor = Color.fromStringHex("#ffdf00");
+    }
+    */
 
     startScene() {
         this.emitter.fireEvent("stop_all_sounds");
@@ -244,6 +256,8 @@ export default class Shop extends Scene {
         // const bgRect = <Rect>this.add.graphic(GraphicType.RECT, "background", {position: viewPortCenter, size: viewPortHalfSize.scaled(2)});
         // bgRect.color = Color.BLACK;
         
+
+        //this.drawCoinCount();
         this.drawShopItems();
         this.drawNextLevelButton();
         this.drawShopBuffs();

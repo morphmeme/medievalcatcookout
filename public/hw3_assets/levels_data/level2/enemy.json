@@ -1,5 +1,5 @@
 {
-    "numEnemies": 26,
+    "numEnemies": 44,
     "enemies": [
         {
             "position": [864, 4384],
@@ -26,11 +26,12 @@
             "speed": 75
         },
         {
-            "position": [1024, 4160],
+            "position": [1060, 4160],
             "mode": "guard",
-            "guardPosition": [1024, 4160],
+            "guardPosition": [1060, 4160],
             "health": 5,
-            "attack": "charge",
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
             "speed": 75
         },
         {
@@ -185,9 +186,9 @@
             "speed": 30
         },
         {
-            "position": [416, 736],
+            "position": [600, 730],
             "mode": "guard",
-            "guardPosition": [416, 736],
+            "guardPosition": [600, 730],
             "health": 5,
             "attack": "attack",
             "weapon": "mustard_bottle",
@@ -244,7 +245,7 @@
             "guardPosition": [576, 1248],
             "health": 5,
             "attack": "attack",
-            "weapon": "ketchup",
+            "weapon": "ketchup_bottle",
             "speed": 30
         },
         {
@@ -252,9 +253,8 @@
             "mode": "guard",
             "guardPosition": [576, 1312],
             "health": 5,
-            "attack": "attack",
-            "weapon": "spatula",
-            "speed": 30
+            "attack": "charge",
+            "speed": 75
         },
         {
             "position": [224, 640],
@@ -325,7 +325,7 @@
             "guardPosition": [276, 3500],
             "health": 5,
             "attack": "charge",
-            "speed": 30
+            "speed": 60
         },
         {
             "position": [95, 3500],
@@ -333,7 +333,7 @@
             "guardPosition": [95, 3500],
             "health": 5,
             "attack": "charge",
-            "speed": 30
+            "speed": 50
         },
         {
             "position": [112, 3150],
@@ -366,6 +366,31 @@
             "position": [1660, 3760],
             "mode": "guard",
             "guardPosition": [1660, 3760],
+            "health": 5,
+            "attack": "attack",
+            "weapon": "ketchup_bottle",
+            "speed": 30
+        },
+        {
+            "position": [95, 3750],
+            "mode": "guard",
+            "guardPosition": [95, 3750],
+            "health": 5,
+            "attack": "charge",
+            "speed": 60
+        },
+        {
+            "position": [462, 3500],
+            "mode": "guard",
+            "guardPosition": [462, 3500],
+            "health": 5,
+            "attack": "charge",
+            "speed": 50
+        },
+        {
+            "position": [1570, 3153],
+            "mode": "guard",
+            "guardPosition": [1570, 3153    ],
             "health": 5,
             "attack": "attack",
             "weapon": "ketchup_bottle",
