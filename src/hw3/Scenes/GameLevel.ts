@@ -704,8 +704,8 @@ export default class GameLevel extends Scene {
         const controls = this.addUILayer("controls");
         controls.setHidden(true);
 
-        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.75)});
-        pauseBg.color = Color.BLACK;
+        // const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "controls", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.75)});
+        // pauseBg.color = Color.BLACK;
 
         const controlsHeader = <Label>this.add.uiElement(UIElementType.LABEL, "controls", {position: new Vec2(center.x, center.y - 250), text: "Controls"});
         controlsHeader.textColor = Color.WHITE;
@@ -717,7 +717,7 @@ export default class GameLevel extends Scene {
         })
 
 
-        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 150), text: "Back"});
+        const controlsBack = this.add.uiElement(UIElementType.BUTTON, "controls", {position: new Vec2(center.x, center.y + 175), text: "Back"});
         controlsBack.size.set(200, 50);
         controlsBack.borderWidth = 2;
         controlsBack.borderColor = Color.WHITE;
@@ -731,8 +731,8 @@ export default class GameLevel extends Scene {
     drawPauseLayer() {
         const center = this.viewport.getCenter();
         const vpHalfSize = this.viewport.getHalfSize();
-        const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "pauseLayer", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
-        pauseBg.color = Color.BLACK;
+        // const pauseBg = <Rect> this.add.graphic(GraphicType.RECT, "pauseLayer", {position: center.scaled(1/this.zoomLevel), size: vpHalfSize.scaled(1, 1.5)});
+        // pauseBg.color = Color.BLACK;
 
         const play = this.add.uiElement(UIElementType.BUTTON, "pauseLayer", {position: new Vec2(center.x, center.y - 100), text: "Resume"});
         play.size.set(200, 50);

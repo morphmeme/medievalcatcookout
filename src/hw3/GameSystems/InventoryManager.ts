@@ -125,7 +125,7 @@ export default class InventoryManager {
             }
             this.currentPage = newPage;
         }
-        previousPage.setBackgroundColor(Color.fromStringHex("#f1851e"));
+        previousPage.setBackgroundColor(Color.fromStringHex("#0275d8"));
 
         const nextPage = <Button> scene.add.uiElement(UIElementType.BUTTON, LayerNames.PORTRAIT_LAYER, {position: new Vec2(this.viewPortWidth * 0.6, this.viewPortHeight * 0.60), text: "Next Cats"});
         nextPage.size.set(200, 50);
@@ -138,7 +138,7 @@ export default class InventoryManager {
             }
             this.currentPage = newPage;
         }
-        nextPage.setBackgroundColor(Color.fromStringHex("#f1851e"));
+        nextPage.setBackgroundColor(Color.fromStringHex("#0275d8"));
     }
 
     updateItemPositions() {

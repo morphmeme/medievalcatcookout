@@ -31,6 +31,7 @@ const shopItemRectWidthRatio = 0.4;
 const shopItemRectHeightRatio = 0.05;
 const buffWidthRatio = 0.4;
 const buffHeightRatio = 0.25;
+const buttonBgColor = new Color(32, 32, 32);
 export default class Shop extends Scene {
     private weaponTypeMap: Map<string, any> = new Map();
     protected shopItems: ShopItem[] = [];
@@ -52,6 +53,7 @@ export default class Shop extends Scene {
         this.load.spritesheet("coin", "mcc_assets/sprites/Sprites/animated-coin.json");
         this.load.image("coin", "hw3_assets/sprites/coin.png");
         this.load.audio("purchase", "mcc_assets/sounds/purchase.mp3");
+        this.load.image("shop-bg", "mcc_assets/static_images/shop_bg.png")
     }
 
     loadWeaponTypeMap() {
@@ -84,6 +86,7 @@ export default class Shop extends Scene {
         const hpBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: hpBuffPosition.clone(), text: `Increase Max HP By ${this.hpBuffRatio}x`});
         hpBuffRect.size.copy(rectSize);
         hpBuffRect.borderColor = Color.WHITE;
+        hpBuffRect.setBackgroundColor(buttonBgColor);
         hpBuffRect.onClick = () => {
             if (!this.hpBuffBought && GameLevel.coinCount >= this.hpBuffCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.hpBuffCost);
@@ -112,6 +115,7 @@ export default class Shop extends Scene {
         const speedBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: speedBuffPosition.clone(), text: `Increase Speed By ${this.speedRatio}x`});
         speedBuffRect.size.copy(rectSize);
         speedBuffRect.borderColor = Color.WHITE;
+        speedBuffRect.setBackgroundColor(buttonBgColor);
         speedBuffRect.onClick = () => {
             if (!this.speedBuffBought && GameLevel.coinCount >= this.speedBuffCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.speedBuffCost);
@@ -136,6 +140,7 @@ export default class Shop extends Scene {
         const partyHealRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: partyHealPosition.clone(), text: "Party Heal"});
         partyHealRect.size.copy(rectSize);
         partyHealRect.borderColor = Color.WHITE;
+        partyHealRect.setBackgroundColor(buttonBgColor);
         partyHealRect.onClick = () => {
             if (!this.partyHealBought && GameLevel.coinCount >= this.partyHealCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.partyHealCost);
@@ -170,6 +175,7 @@ export default class Shop extends Scene {
             const clickableRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: itemPosition.clone(), text: `     ${displayName} (${quantity})`});
             clickableRect.size.copy(rectSize);
             clickableRect.borderColor = Color.WHITE;
+            clickableRect.setBackgroundColor(buttonBgColor);
             clickableRect.setHAlign(HAlign.LEFT);
             clickableRect.onClick = () => {
                 if (shopItem.quantity > 0 && GameLevel.coinCount >= gold) {
@@ -205,7 +211,7 @@ export default class Shop extends Scene {
         nextLevel.size.set(200, 50);
         nextLevel.borderWidth = 2;
         nextLevel.borderColor = Color.WHITE;
-        nextLevel.backgroundColor = Color.TRANSPARENT;
+        nextLevel.backgroundColor = Color.fromStringHex("#0275d8");
         nextLevel.onClick = () => {
             this.sceneManager.changeToScene(this.nextLevel, {}, LEVEL_OPTIONS);
             if (AudioManager.getInstance().isPlaying("shopmusic"))
@@ -232,8 +238,10 @@ export default class Shop extends Scene {
         const viewPortHalfSize = viewPort.getHalfSize();
         this.viewPortHeight = viewPortCenter.y + viewPortHalfSize.y;
         this.viewPortWidth = viewPortCenter.x + viewPortHalfSize.x;
-        const bgRect = <Rect>this.add.graphic(GraphicType.RECT, "background", {position: viewPortCenter, size: viewPortHalfSize.scaled(2)});
-        bgRect.color = Color.BLACK;
+        const bg = this.add.sprite("shop-bg", "background");
+        bg.position.copy(viewPortCenter);
+        // const bgRect = <Rect>this.add.graphic(GraphicType.RECT, "background", {position: viewPortCenter, size: viewPortHalfSize.scaled(2)});
+        // bgRect.color = Color.BLACK;
         
         this.drawShopItems();
         this.drawNextLevelButton();
