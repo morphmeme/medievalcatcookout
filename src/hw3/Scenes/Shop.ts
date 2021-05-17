@@ -86,7 +86,7 @@ export default class Shop extends Scene {
         const hpBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: hpBuffPosition.clone(), text: `Increase Max HP By ${this.hpBuffRatio}x`});
         hpBuffRect.size.copy(rectSize);
         hpBuffRect.borderColor = Color.WHITE;
-        hpBuffRect.setBackgroundColor(buttonBgColor);
+        hpBuffRect.setBackgroundColor(Color.fromStringHex(buttonBgColor.toString()));
         hpBuffRect.onClick = () => {
             if (!this.hpBuffBought && GameLevel.coinCount >= this.hpBuffCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.hpBuffCost);
@@ -115,7 +115,7 @@ export default class Shop extends Scene {
         const speedBuffRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: speedBuffPosition.clone(), text: `Increase Speed By ${this.speedRatio}x`});
         speedBuffRect.size.copy(rectSize);
         speedBuffRect.borderColor = Color.WHITE;
-        speedBuffRect.setBackgroundColor(buttonBgColor);
+        speedBuffRect.setBackgroundColor(Color.fromStringHex(buttonBgColor.toString()));
         speedBuffRect.onClick = () => {
             if (!this.speedBuffBought && GameLevel.coinCount >= this.speedBuffCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.speedBuffCost);
@@ -140,7 +140,7 @@ export default class Shop extends Scene {
         const partyHealRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: partyHealPosition.clone(), text: "Party Heal"});
         partyHealRect.size.copy(rectSize);
         partyHealRect.borderColor = Color.WHITE;
-        partyHealRect.setBackgroundColor(buttonBgColor);
+        partyHealRect.setBackgroundColor(Color.fromStringHex(buttonBgColor.toString()));
         partyHealRect.onClick = () => {
             if (!this.partyHealBought && GameLevel.coinCount >= this.partyHealCost) {
                 GameLevel.coinCount = Math.max(0, GameLevel.coinCount - this.partyHealCost);
@@ -175,7 +175,7 @@ export default class Shop extends Scene {
             const clickableRect = <Button> this.add.uiElement(UIElementType.BUTTON, "click", {position: itemPosition.clone(), text: `     ${displayName} (${quantity})`});
             clickableRect.size.copy(rectSize);
             clickableRect.borderColor = Color.WHITE;
-            clickableRect.setBackgroundColor(buttonBgColor);
+            clickableRect.setBackgroundColor(Color.fromStringHex(buttonBgColor.toString()));
             clickableRect.setHAlign(HAlign.LEFT);
             clickableRect.onClick = () => {
                 if (shopItem.quantity > 0 && GameLevel.coinCount >= gold) {
