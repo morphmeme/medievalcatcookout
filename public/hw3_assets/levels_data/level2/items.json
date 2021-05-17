@@ -32,13 +32,18 @@
         },
         {
             "type": "weapon",
-            "weaponType": "ketchup_bottle", 
+            "weaponType": "pepper_gun", 
             "position": [352, 3200]
         },
         {
             "type": "weapon",
-            "weaponType": "mustard_bottle", 
+            "weaponType": "pepper_gun", 
             "position": [512, 3488]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun", 
+            "position": [480, 3488]
         },
         {
             "type": "weapon",
@@ -87,8 +92,13 @@
         },
         {
             "type": "weapon",
-            "weaponType": "spatula", 
+            "weaponType": "pepper_gun", 
             "position": [832, 480]
+        },
+        {
+            "type": "weapon",
+            "weaponType": "salt_gun", 
+            "position": [402, 2100]
         }
     ]
 }
