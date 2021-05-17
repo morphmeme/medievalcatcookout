@@ -3,6 +3,7 @@ import Emitter from "../../../Wolfie2D/Events/Emitter";
 import GameNode from "../../../Wolfie2D/Nodes/GameNode";
 import Sprite from "../../../Wolfie2D/Nodes/Sprites/Sprite";
 import Timer from "../../../Wolfie2D/Timing/Timer";
+import CharacterController from "../../AI/CharacterController";
 import { Events } from "../../Constants";
 import BattleManager from "../BattleManager";
 import Item from "./Item";
@@ -50,6 +51,11 @@ export default class Weapon extends Item {
         if(!this.cooldownTimer.isStopped()){
             return false;
         }
+        if (userType === "player" && this.type.spriteKey === "spatula") {
+            // speed up speed by 10x
+            (user.ai as CharacterController).slowed = 10;
+        }
+
         // Do a type specific weapon animation
         this.type.doAnimation(this.sprite.getScene(), user, direction);
 

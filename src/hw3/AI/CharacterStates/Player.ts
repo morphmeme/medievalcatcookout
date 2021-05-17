@@ -25,7 +25,13 @@ export default class Player extends CharacterState {
         if (!this.owner.active) {
             return;
         }
-        // this.parent.speed = this.parent.originalSpeed;
+        let slowed = false;
+        if (this.parent.slowed !== 1) {
+            this.parent.previousSpeed = this.parent.speed;
+            this.parent.speed *= this.parent.slowed;
+            this.parent.slowed = 1;
+            slowed = true;
+        }
         // Get the movement direction
         if (Input.isPressed("forward") && this.parent.rotation !== Math.PI) {
             this.parent.direction.y = -1;
@@ -83,9 +89,11 @@ export default class Player extends CharacterState {
             
             // If there is an item in the current slot, use it
             if(item){
-                item?.use(this.owner, "player", lookDirection);
+                item.use(this.owner, "player", lookDirection);
             }
         }
+        if (slowed)
+            this.parent.setBackToPreviousSpeed();
     }
 
     onExit(): Record<string, any> {

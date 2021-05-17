@@ -70,7 +70,7 @@ export default class Ally extends CharacterState {
                 let dir = enemyPos.clone().sub(this.owner.position).normalize();
                 dir.rotateCCW(Math.PI / 4 * Math.random() - Math.PI/8);
                 const weapon = this.parent.inventory.getWeapon(this.owner);
-                weapon?.use(this.owner, "player", dir)
+                weapon?.use(this.owner, "ally", dir)
             }
         }
         // this.parent.speed = this.parent.originalSpeed;

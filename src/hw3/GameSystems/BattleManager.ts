@@ -8,7 +8,7 @@ export default class BattleManager {
     enemies: Array<BattlerAI>;
 
     handleInteraction(attackerType: string, weapon: Weapon){
-        if(attackerType === "player"){
+        if(attackerType === "player" || attackerType === "ally"){
             // Check for collisions with enemies
             for(let enemy of this.enemies){
                 if(weapon.hits(enemy.owner)){

@@ -46,12 +46,18 @@ export default class CharacterController extends StateMachineAI implements Battl
     }
 
     _speed: number;
+    previousSpeed: number;
     get speed() {
         return this._speed;
     }
     set speed(x: number) {
+        this.previousSpeed = this._speed;
         this._speed = x;
     }
+    setBackToPreviousSpeed() {
+        this._speed = this.previousSpeed;
+    }
+
     public slowed: number;
     private viewport: Viewport;
     public rotation: number = 0;
