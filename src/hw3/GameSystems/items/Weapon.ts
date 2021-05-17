@@ -51,10 +51,8 @@ export default class Weapon extends Item {
         if(!this.cooldownTimer.isStopped()){
             return false;
         }
-        if (userType === "player" && this.type.spriteKey === "spatula") {
-            // speed up speed by 10x
-            (user.ai as CharacterController).slowed = 10;
-        }
+        if (this.type.playerSpecial)
+            this.type.playerSpecial(user, userType);
 
         // Do a type specific weapon animation
         this.type.doAnimation(this.sprite.getScene(), user, direction);

@@ -4,6 +4,7 @@ import Graphic from "../../../../Wolfie2D/Nodes/Graphic";
 import AnimatedSprite from "../../../../Wolfie2D/Nodes/Sprites/AnimatedSprite";
 import Sprite from "../../../../Wolfie2D/Nodes/Sprites/Sprite";
 import Scene from "../../../../Wolfie2D/Scene/Scene";
+import CharacterController from "../../../AI/CharacterController";
 import WeaponType from "./WeaponType";
 
 export default class Stab extends WeaponType {
@@ -38,4 +39,12 @@ export default class Stab extends WeaponType {
         }
         return this.stab.boundary.overlaps(node.collisionShape);
     }
+
+    playerSpecial(user: GameNode, userType: string) {
+        if (userType === "player") {
+            // speed up speed by 10x
+            (user.ai as CharacterController).slowed = 10;
+        }
+    }
+    
 }

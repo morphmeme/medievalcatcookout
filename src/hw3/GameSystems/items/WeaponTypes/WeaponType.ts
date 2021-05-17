@@ -29,4 +29,6 @@ export default abstract class WeaponType {
     abstract doAnimation(scene: Scene, ...args: any): void;
 
     abstract hits(node: GameNode, ...args: any): boolean;
+
+    abstract playerSpecial(user: GameNode, userType: string): void;
 }
