@@ -37,7 +37,7 @@ export default class Level4 extends GameLevel {
         this.nextLevel = Level4.nextLevel;
     }
     initializePlayer(inventory: InventoryManager): void{
-        super.initializePlayer(inventory, Level4.spawnPos.x, Level5.spawnPos.y);
+        super.initializePlayer(inventory, Level4.spawnPos.x, Level4.spawnPos.y);
     }
     reinitializeAllies(allies: Array<AnimatedSprite>, position: Vec2) {
         super.reinitializeAllies(allies, Level4.spawnPos);;
