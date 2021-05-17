@@ -41,10 +41,8 @@ export default class Stab extends WeaponType {
     }
 
     playerSpecial(user: GameNode, userType: string) {
-        if (userType === "player") {
-            // speed up speed by 10x
-            (user.ai as CharacterController).slowed = 10;
-        }
+        // speed up speed by 10x
+        (user.ai as CharacterController).slowed = 10;
     }
     
 }

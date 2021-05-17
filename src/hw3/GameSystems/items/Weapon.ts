@@ -51,7 +51,7 @@ export default class Weapon extends Item {
         if(!this.cooldownTimer.isStopped()){
             return false;
         }
-        if (this.type.playerSpecial)
+        if (userType === "player")
             this.type.playerSpecial(user, userType);
 
         // Do a type specific weapon animation
